@@ -3,27 +3,71 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Collaboration Tool">
+    <meta name="author" content="Alexander Fuchsberger">
 
-    <title>Hello Collaboration!</title>
+    <title>Collaboration Tool</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
-        </nav>
-        <span class="logo"></span>
-      </header>
 
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-3">
+      <div class="container">
+        <a class="navbar-brand" href="/">Collaboration Tool</a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarText"
+          aria-controls="navbarText"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <!-- No current user (show login and register)-->
+            <%= if !@current_user do %>
+              <li class="<%= nav_class(@conn, "/login") %>">
+                <%= link("Login", to: "/login", class: "nav-link") %>
+              </li>
+              <li class="<%= nav_class(@conn, "/register") %>">
+                <%= link("Register", to: "/register", class: "nav-link") %>
+              </li>
+            <% end %>
+
+            <!-- Current User (show settings and logout)-->
+            <%= if @current_user do %>
+              <li class="<%= nav_class(@conn, "/settings") %>">
+                <%= link("Settings", to: "/settings", class: "nav-link") %>
+              </li>
+              <li class="<%= nav_class(@conn, "/logout") %>">
+                <%= link("Logout", to: "/logout", class: "nav-link") %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <%= if info = get_flash(@conn, :info) do %>
+        <p class="alert alert-info" role="alert"><%= info %></p>
+      <% end %>
+      <%= if error = get_flash(@conn, :error) do %>
+        <p class="alert alert-danger" role="alert"><%= error %></p>
+      <% end %>
 
       <main role="main">
         <%= render @view_module, @view_template, assigns %>

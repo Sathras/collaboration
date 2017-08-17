@@ -7,6 +7,7 @@ defmodule Collaboration.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Collaboration.Auth, repo: Collaboration.Repo
   end
 
   pipeline :api do
@@ -17,10 +18,16 @@ defmodule Collaboration.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-  end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Collaboration do
-  #   pipe_through :api
-  # end
+    # Authentification
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
+    get "/logout", SessionController, :delete
+    get "/register", UserController, :new
+
+    # User Management
+    get "/settings", UserController, :edit
+    resources "/users", UserController, only: [:index, :show, :create, :edit, :delete]
+
+  end
 end

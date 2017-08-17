@@ -8,9 +8,18 @@ defmodule Collaboration.ErrorHelpers do
   @doc """
   Generates tag for inlined form input errors.
   """
+
+  def error_class(form, field) do
+    cond do
+      form.errors[field] -> "is-invalid"
+      form.errors[field] -> "is-valid"
+      true -> ""
+    end
+  end
+
   def error_tag(form, field) do
     if error = form.errors[field] do
-      content_tag :span, translate_error(error), class: "help-block"
+      content_tag :div, translate_error(error), class: "invalid-feedback"
     end
   end
 
