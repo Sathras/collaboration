@@ -36,6 +36,8 @@ defmodule Collaboration.Web do
 
       import Collaboration.Router.Helpers
       import Collaboration.Gettext
+
+      import Collaboration.Auth, only: [auth_user: 2, auth_admin: 2]
     end
   end
 
@@ -62,6 +64,8 @@ defmodule Collaboration.Web do
   def router do
     quote do
       use Phoenix.Router
+
+      import Collaboration.Auth, only: [auth_user: 2, auth_admin: 2]
     end
   end
 

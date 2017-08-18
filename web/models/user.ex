@@ -4,7 +4,6 @@ defmodule Collaboration.User do
   import Comeonin.Bcrypt, only: [checkpw: 2]
 
   schema "users" do
-
     field :email, :string
     field :firstname, :string
     field :lastname, :string
@@ -13,7 +12,7 @@ defmodule Collaboration.User do
     field :password_old, :string, virtual: true
     field :password_hash, :string
     field :username, :string
-
+    field :admin, :boolean, default: false
     timestamps()
   end
 
@@ -40,8 +39,8 @@ defmodule Collaboration.User do
   # changeset for editing profile
   def changeset_update(struct, params, curr_pass) do
     struct
-    |> cast(params, ~w(email firstname lastname password password_old password_confirm username))
-    |> validate_required([:firstname, :lastname, :email])
+    |> cast(params, ~w(email firstname lastname password password_old password_confirm username admin))
+    |> validate_required([:email])
     |> validate_format(:email, ~r/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
     |> validate_length(:firstname, min: 3, max: 20)
     |> validate_length(:lastname, min: 3, max: 20)
@@ -119,12 +118,10 @@ defmodule Collaboration.User do
   end
 
   defp password_needed(changeset, curr_pass) do
-
     if curr_pass, do:
       changeset
       |> validate_required([:password_old])
       |> password_match(curr_pass),
-
     else: changeset
   end
 end

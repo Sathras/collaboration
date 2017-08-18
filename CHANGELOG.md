@@ -1,5 +1,11 @@
 # Changelog
 
+
+### 0.1.0 - 08/18/2017
+  *  Admin User Level implemented
+  *  Restricted Admin area to admins
+  *  Marks the completion of the Initial User Management
+
 #### 0.0.3 - 08/18/2017
   *  Finished Login and Registration
   *  Added Admin Interface

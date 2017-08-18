@@ -24,12 +24,16 @@ defmodule Collaboration.Router do
     post "/login", SessionController, :create
     get "/logout", SessionController, :delete
 
-    # Administraton
-    get "/admin", AdminController, :index
-
     # User Management
     get "/register", UserController, :new
     get "/settings", UserController, :edit
     resources "/users", UserController, only: [:create, :edit, :new, :show, :update]
+  end
+
+  # Admin Level
+  scope "/admin", Collaboration do
+    pipe_through [:browser, :auth_admin]
+
+    resources "/", AdminController
   end
 end

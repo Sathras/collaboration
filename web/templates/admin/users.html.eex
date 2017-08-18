@@ -5,7 +5,8 @@
       <th>Firstname</th>
       <th>Lastname</th>
       <th>Email</th>
-      <th>Actions</th>
+      <th>Groups</th>
+      <th class="text-center">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -16,6 +17,9 @@
       <td><%= user.lastname %></td>
       <td><%= user.email %></td>
       <td>
+        <%= if user.admin, do: "Admin", else: "-" %>
+      </td>
+      <td class="text-center">
         <%= link "Edit", to: "/users/#{user.id}/edit", class: "btn btn-light btn-sm" %>
         <!--< %= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>-->
       </td>

@@ -40,4 +40,31 @@ defmodule Collaboration.Auth do
   def logout(conn) do
     configure_session(conn, drop: true)
   end
+
+
+  # Functions to check if user / admin
+  import Phoenix.Controller
+  alias Collaboration.Router.Helpers
+
+  def auth_user(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must be logged in to access that page")
+      |> redirect(to: Helpers.session_path(conn, :new))
+      |> halt()
+    end
+  end
+
+  def auth_admin(conn, _opts) do
+    if conn.assigns.current_user && conn.assigns.current_user.admin do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must be an administrator to access this page")
+      |> redirect(to: Helpers.page_path(conn, :index))
+      |> halt()
+    end
+  end
 end

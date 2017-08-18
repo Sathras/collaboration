@@ -3,14 +3,9 @@
     <a class="nav-link active" id="user-tab" data-toggle="tab" href="#admin-users"
     role="tab" aria-controls="admin-users" aria-expanded="true">Users</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" id="userroles-tab" data-toggle="tab" href="#admin-userroles"
-    role="tab" aria-controls="admin-userroles">User Roles</a>
-  </li>
 </ul>
-<div class="tab-content" id="myTabContent">
+<div class="tab-content">
   <div class="tab-pane fade show active" id="admin-users" role="tabpanel" aria-labelledby="user-tab">
     <%= render @view_module, "users.html", assigns %>
   </div>
-  <div class="tab-pane fade" id="admin-userroles" role="tabpanel" aria-labelledby="userroles-tab">User Roles</div>
 </div>

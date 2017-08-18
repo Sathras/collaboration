@@ -65,6 +65,17 @@
         </div>
       </div>
       <div class="form-group mb-0">
+        <%= if @current_user.admin && @conn.params["id"] do %>
+          <div class="form-check form-check-inline <%= if @user_id == to_string(@current_user.id), do: " disabled" %>">
+            <label class="form-check-label">
+              <%= checkbox(f, :admin, class: "form-check-input") %>
+              Admin
+            </label>
+          </div>
+        <% end %>
+
+
+
         <%= submit "Submit", class: "btn btn-primary" %>
       </div>
     </div>

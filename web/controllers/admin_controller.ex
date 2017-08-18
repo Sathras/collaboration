@@ -1,8 +1,6 @@
 defmodule Collaboration.AdminController do
   use Collaboration.Web, :controller
 
-  # plug :authenticate when action in [:delete, :edit]
-
   alias Collaboration.User
 
   # Admin Interface for User Management, User groups, ...

@@ -2,6 +2,8 @@ defmodule Collaboration.SessionController do
   use Collaboration.Web, :controller
   alias Collaboration.Auth
 
+  plug :auth_user when action in [:delete]
+
   def new(conn, _) do
     if conn.assigns.current_user, do:
       conn

@@ -1,7 +1,7 @@
 defmodule Collaboration.UserController do
   use Collaboration.Web, :controller
 
-  plug :authenticate when action in [:delete, :edit]
+  plug :auth_user when action in [:delete, :edit, :update]
 
   alias Collaboration.User
 
@@ -56,10 +56,12 @@ defmodule Collaboration.UserController do
     changeset = User.changeset_update(user, user_params, curr_pass)
 
     case Repo.update(changeset) do
+
       {:ok, user} ->
-        conn
-        |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :show, user))
+        conn = put_flash(conn, :info, "User updated successfully.")
+        if self, do: redirect(conn, to: user_path(conn, :show, user)),
+        else: redirect(conn, to: "/admin")
+
       {:error, changeset} ->
         conn
         |> assign(:self, self)
@@ -78,16 +80,5 @@ defmodule Collaboration.UserController do
     conn
     |> put_flash(:info, "User deleted successfully.")
     |> redirect(to: user_path(conn, :index))
-  end
-
-  defp authenticate(conn, _opts) do
-    if conn.assigns.current_user do
-      conn
-    else
-      conn
-      |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: page_path(conn, :index))
-      |> halt()
-    end
   end
 end
