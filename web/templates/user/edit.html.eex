@@ -4,25 +4,37 @@
 </h2>
 
 
-<%= form_for @changeset, user_path(@conn, :edit), [class: "novalidate"], fn f -> %>
+<%= form_for @changeset, user_path(@conn, :update, @user_id), [class: "novalidate"], fn f -> %>
+
+  <%= if @self, do: hidden_input(f, :self, value: "true") %>
+
   <div class="card bg-light text-center align-middle mx-auto" style="max-width: 40rem;">
     <div class="card-body">
       <div class="row">
         <div class="col-12 col-sm-6">
+
+          <%= if @self do %>
+          <div class="form-group has-error">
+            <label for="password_old">Current Password*</label>
+            <%= text_input(f,
+              :password_old,
+              class: "form-control text-center " <> error_class(f, :password_old),
+              type: "password",
+              placeholder: "Please enter"
+            ) %>
+            <%= error_tag f, :password_old %>
+          </div>
+          <% else %>
           <!-- Username -->
           <div class="form-group has-error">
-            <label for="user_password_old">Current Password*</label>
-            <%= text_input(f,
-              :user_password_old,
-              class: "form-control text-center " <> error_class(f, :user_password_old),
-              type: "password",
-              value: "KA7*w9^1MWey484J"
-            ) %>
-            <%= error_tag f, :user_password_old %>
+            <label for="username">Username*</label>
+            <%= text_input(f, :username, class: "form-control text-center " <> error_class(f, :username), placeholder: "Username") %>
+            <%= error_tag f, :username %>
           </div>
+          <% end %>
           <!-- First Name -->
           <div class="form-group">
-            <label for="user_firstname">Name</label>
+            <label for="user_firstname">Name*</label>
             <%= text_input(f, :firstname, class: "form-control text-center " <> error_class(f, :firstname), placeholder: "First Name") %>
             <%= error_tag f, :firstname %>
           </div>
@@ -35,7 +47,7 @@
         <div class="col-12 col-sm-6">
           <!-- Email -->
           <div class="form-group">
-            <label for="user_email">Email address</label>
+            <label for="user_email">Email address*</label>
             <%= text_input(f, :email, class: "form-control text-center " <> error_class(f, :email)) %>
             <%= error_tag f, :email %>
           </div>

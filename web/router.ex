@@ -23,11 +23,13 @@ defmodule Collaboration.Router do
     get "/login", SessionController, :new
     post "/login", SessionController, :create
     get "/logout", SessionController, :delete
-    get "/register", UserController, :new
+
+    # Administraton
+    get "/admin", AdminController, :index
 
     # User Management
+    get "/register", UserController, :new
     get "/settings", UserController, :edit
-    resources "/users", UserController, only: [:index, :show, :create, :edit, :delete]
-
+    resources "/users", UserController, only: [:create, :edit, :new, :show, :update]
   end
 end

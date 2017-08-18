@@ -1,5 +1,6 @@
 defmodule Collaboration.UserController do
   use Collaboration.Web, :controller
+
   plug :authenticate when action in [:delete, :edit]
 
   alias Collaboration.User
@@ -22,7 +23,7 @@ defmodule Collaboration.UserController do
         conn
         |> Collaboration.Auth.login(user)
         |> put_flash(:info, "Welcome to the community, #{user.firstname}")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: "/")
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -38,16 +39,21 @@ defmodule Collaboration.UserController do
     self = if params["id"], do: false, else: true
     user = Repo.get!(User, params["id"] || conn.assigns.current_user.id)
 
-    changeset = User.changeset_edit(user, params)
+    changeset = User.changeset_update(user, params, self)
 
     conn
     |> assign(:self, self)
-    |> render "edit.html", user: user, changeset: changeset
+    |> assign(:user_id, params["id"] || conn.assigns.current_user.id)
+    |> render("edit.html", user: user, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
+
+    self = if user_params["self"], do: true, else: false
+    curr_pass = if self, do: conn.assigns.current_user.password_hash, else: false
+
     user = Repo.get!(User, id)
-    changeset = User.changeset(user, user_params)
+    changeset = User.changeset_update(user, user_params, curr_pass)
 
     case Repo.update(changeset) do
       {:ok, user} ->
@@ -55,7 +61,10 @@ defmodule Collaboration.UserController do
         |> put_flash(:info, "User updated successfully.")
         |> redirect(to: user_path(conn, :show, user))
       {:error, changeset} ->
-        render(conn, "edit.html", user: user, changeset: changeset)
+        conn
+        |> assign(:self, self)
+        |> assign(:user_id, id)
+        |> render("edit.html", user: user, changeset: changeset)
     end
   end
 

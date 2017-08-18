@@ -1,5 +1,7 @@
 defmodule Collaboration.User do
+
   use Collaboration.Web, :model
+  import Comeonin.Bcrypt, only: [checkpw: 2]
 
   schema "users" do
 
@@ -18,7 +20,6 @@ defmodule Collaboration.User do
   @doc """
     password
     at least 1 number and alphapetic
-    allowed characters: a-zA-Z0-9$@$!%*?&
 
     username
     no _ or . at the beginning
@@ -32,13 +33,22 @@ defmodule Collaboration.User do
     |> cast(params, ~w(email password))
     |> validate_required([:email, :password])
     |> validate_format(:email, ~r/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-    |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*[0-9$@$!%*#?&])[A-Za-z0-9$@$!%*#?&]{8,100}$/)
+    |> validate_format(:password, ~r/^(\w*(\d+[a-zA-Z]|[a-zA-Z]+\d)\w*)+$/)
+    |> validate_length(:password, min: 8)
   end
 
-  def changeset_edit(struct, params) do
+  # changeset for editing profile
+  def changeset_update(struct, params, curr_pass) do
     struct
-    |> cast(params, ~w(email firstname lastname password password_old password_confirm))
-    |> validate_required([:password_old])
+    |> cast(params, ~w(email firstname lastname password password_old password_confirm username))
+    |> validate_required([:firstname, :lastname, :email])
+    |> validate_format(:email, ~r/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+    |> validate_length(:firstname, min: 3, max: 20)
+    |> validate_length(:lastname, min: 3, max: 20)
+    |> password_needed(curr_pass)
+    |> password_change()
+    |> username_change(self)
+    |> unique_constraint(:email)
   end
 
   def changeset_register(struct, params \\ %{}) do
@@ -62,6 +72,17 @@ defmodule Collaboration.User do
       else: changeset
   end
 
+  defp password_match(changeset, curr_pass) do
+
+    password_old = get_change(changeset, :password_old)
+    cond do
+      password_old && checkpw(password_old, curr_pass) ->
+        changeset
+      true ->
+        add_error(changeset, :password_old, "Your password is incorrect")
+    end
+  end
+
   defp put_pass_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
@@ -69,5 +90,41 @@ defmodule Collaboration.User do
       _ -> # that underscore matches the error case
         changeset
     end
+  end
+
+  defp password_change(changeset) do
+    if get_change(changeset, :password), do:
+      changeset
+      |> validate_format(:password, ~r/^(\w*(\d+[a-zA-Z]|[a-zA-Z]+\d)\w*)+$/)
+      |> validate_length(:password, min: 8)
+      |> validate_required([:password_confirm])
+      |> password_confirmed()
+      |> put_pass_hash(),
+    else: changeset
+  end
+
+  defp username_change(changeset, self) do
+    cond do
+      get_change(changeset, :username) && !self ->
+        add_error(changeset, :username, "You cannot change your username")
+
+      get_change(changeset, :username) ->
+        changeset
+        |> validate_required([:username])
+        |> validate_length(:username, min: 3, max: 20)
+        |> unique_constraint(:username)
+
+      true -> changeset
+    end
+  end
+
+  defp password_needed(changeset, curr_pass) do
+
+    if curr_pass, do:
+      changeset
+      |> validate_required([:password_old])
+      |> password_match(curr_pass),
+
+    else: changeset
   end
 end
