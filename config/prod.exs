@@ -14,7 +14,7 @@ use Mix.Config
 config :collaboration, Collaboration.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "159.203.137.57", port: 81],
-  cache_static_manifest: "priv/static/manifest.json"
+  cache_static_manifest: "priv/static/manifest.json",
   # configuration for the Distillery release
   root: ".",
   server: true,
