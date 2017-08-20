@@ -13,6 +13,8 @@ defmodule Collaboration.User do
     field :password_hash, :string
     field :username, :string
     field :admin, :boolean, default: false
+    field :faux, :boolean, default: false
+    has_many :ideas, Collaboration.Idea
     timestamps()
   end
 
@@ -39,7 +41,7 @@ defmodule Collaboration.User do
   # changeset for editing profile
   def changeset_update(struct, params, curr_pass) do
     struct
-    |> cast(params, ~w(email firstname lastname password password_old password_confirm username admin))
+    |> cast(params, ~w(email firstname lastname password password_old password_confirm username admin faux))
     |> validate_required([:email])
     |> validate_format(:email, ~r/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
     |> validate_length(:firstname, min: 3, max: 20)

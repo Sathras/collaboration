@@ -1,0 +1,85 @@
+<!-- for javascript -->
+<%= content_tag :div, id: "topic", data: [id: @topic.id] do %><% end %>
+
+<h2>
+  <%= @topic.title %>
+  <%= if @current_user && @current_user.admin, do: link "Edit", to: topic_path(@conn, :edit, @topic), class: "btn btn-dark float-right" %>
+</h2>
+<div>
+  <%= raw(@topic.longdesc) %>
+</div>
+
+<h4>
+  Ideas
+  <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
+    <button class="float-right btn btn-success" data-toggle="modal" data-target="#modal-addidea">
+      Add Idea
+    </button>
+  <% end %>
+</h4>
+<div class="clearfix mb-2"></div>
+<%= for idea <- @ideas do %>
+  <div class="card mb-1">
+    <div class="card-body">
+      <h4 class="card-title"><%= idea.title %></h4>
+      <h6 class="card-subtitle mb-2 text-muted"><%= idea.firstname <> " " <> idea.lastname %></h6>
+      <p><%= idea.description %></p>
+    </div>
+  </div>
+<% end %>
+
+<!-- Add Idea Form-->
+<%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
+  <%= form_for @addidea_changeset, idea_path(@conn, :create), [id: "submit-idea", class: "novalidate"], fn f -> %>
+  <div class="modal fade" id="modal-addidea" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Idea</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+            <%= if @addidea_changeset.action do %>
+              <div class="alert alert-danger">
+                <p>Oops, something went wrong! Please check the errors below.</p>
+              </div>
+            <% end %>
+
+            <div class="form-group">
+              <label for="title"><strong>Title*</strong></label>
+              <%= text_input(f, :title,
+                class: "form-control " <> error_class(f, :title),
+                placeholder: "Title"
+              ) %>
+              <%= error_tag f, :title %>
+            </div>
+
+            <div class="form-group">
+              <label for="value"><strong>Description*</strong></label>
+              <%= textarea(f, :description,
+                class: "form-control " <> error_class(f, :description),
+                placeholder: "Description"
+              ) %>
+              <%= error_tag f, :description %>
+            </div>
+            <%= if @current_user.admin do %>
+              <div class="form-group">
+                <label for="idea"><strong>Post as:</strong></label>
+                <%= select(f, :user_id,
+                Enum.map(@fauxusers, &{(&1.firstname || "unknown") <> " " <> (&1.lastname || "unknown"), &1.id}),
+                class: "form-control") %>
+              </div>
+            <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <%= submit "Save", class: "btn btn-success" %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+<%= end %>

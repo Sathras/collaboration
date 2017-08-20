@@ -1,0 +1,11 @@
+<%= for topic <- @conn.assigns.topics do %>
+  <%= if !topic.hidden do %>
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"><%= topic.title %></h4>
+        <%= raw(topic.shortdesc) %>
+        <%= link "Show", to: topic_path(@conn, :show, topic), class: "btn btn-primary float-right" %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -8,6 +8,7 @@ defmodule Collaboration.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Collaboration.Auth, repo: Collaboration.Repo
+    plug Collaboration.ImportData
   end
 
   pipeline :api do
@@ -28,6 +29,12 @@ defmodule Collaboration.Router do
     get "/register", UserController, :new
     get "/settings", UserController, :edit
     resources "/users", UserController, only: [:create, :edit, :new, :show, :update]
+
+    # Topics
+    resources "/topics", TopicController
+
+    # Ideas
+    resources "/ideas", IdeaController
   end
 
   # Admin Level

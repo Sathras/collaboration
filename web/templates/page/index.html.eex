@@ -1,4 +1,0 @@
-<div class="jumbotron">
-  <h2><%= gettext "Welcome to %{name}", name: "Collaboration Tool!" %></h2>
-  <p class="lead">Research Tool in Collaboration with Dr. Triparna de Vreede & Dr. Gert-Jan de Vreede</p>
-</div>

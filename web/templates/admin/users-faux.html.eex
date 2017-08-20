@@ -11,7 +11,7 @@
   </thead>
   <tbody>
 <%= for user <- @users do %>
-  <%= if !user.faux do %>
+  <%= if user.faux do %>
     <tr>
       <td><%= user.username %></td>
       <td><%= user.firstname %></td>

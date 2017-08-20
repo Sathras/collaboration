@@ -18,4 +18,24 @@ import "phoenix_html"
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-// import socket from "./socket"
+import topicChannel from "./channel_topic"
+import userChannel from "./channel_user"
+
+// Enable TinyMCE for textarea fields
+
+tinymce.init({
+  selector: 'textarea.tinyMCE',
+  height: 500,
+  branding: false,
+  height : 200,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table contextmenu paste code'
+  ],
+  toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+  // content_css: [
+  //   '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+  //   '//www.tinymce.com/css/codepen.min.css']
+});

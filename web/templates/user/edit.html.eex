@@ -72,6 +72,12 @@
               Admin
             </label>
           </div>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <%= checkbox(f, :faux, class: "form-check-input") %>
+              Faux User
+            </label>
+          </div>
         <% end %>
 
 

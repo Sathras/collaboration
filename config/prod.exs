@@ -13,49 +13,26 @@ use Mix.Config
 # which you typically run after static files are built.
 config :collaboration, Collaboration.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
+  url: [host: "159.203.137.57", port: 80],
   cache_static_manifest: "priv/static/manifest.json"
+  # configuration for the Distillery release
+  root: ".",
+  server: true,
+  version: Mix.Project.config[:version]
+
+config :my_app, MyApp.Endpoint,
+  secret_key_base: System.get_env("SECRET_KEY_BASE_COLLABOATION")
+
+config :my_app, MyApp.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: System.get_env("DB_USERNAME_COLLABOATION"),
+  password: System.get_env("DB_PASSWORD_COLLABOATION"),
+  database: System.get_env("DB_DATABASE_COLLABOATION"),
+  hostname: System.get_env("DB_HOSTNAME"),
+  pool_size: 20
+
+# This line appears further down. Do not forget to uncomment it!
+config :phoenix, :serve_endpoints, true
 
 # Do not print debug messages in production
 config :logger, level: :info
-
-# ## SSL Support
-#
-# To get SSL working, you will need to add the `https` key
-# to the previous section and set your `:url` port to 443:
-#
-#     config :collaboration, Collaboration.Endpoint,
-#       ...
-#       url: [host: "example.com", port: 443],
-#       https: [port: 443,
-#               keyfile: System.get_env("SOME_APP_SSL_KEY_PATH"),
-#               certfile: System.get_env("SOME_APP_SSL_CERT_PATH")]
-#
-# Where those two env variables return an absolute path to
-# the key and cert in disk or a relative path inside priv,
-# for example "priv/ssl/server.key".
-#
-# We also recommend setting `force_ssl`, ensuring no data is
-# ever sent via http, always redirecting to https:
-#
-#     config :collaboration, Collaboration.Endpoint,
-#       force_ssl: [hsts: true]
-#
-# Check `Plug.SSL` for all available options in `force_ssl`.
-
-# ## Using releases
-#
-# If you are doing OTP releases, you need to instruct Phoenix
-# to start the server for all endpoints:
-#
-#     config :phoenix, :serve_endpoints, true
-#
-# Alternatively, you can configure exactly which server to
-# start per endpoint:
-#
-#     config :collaboration, Collaboration.Endpoint, server: true
-#
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"

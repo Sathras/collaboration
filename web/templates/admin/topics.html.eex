@@ -1,0 +1,28 @@
+<table class="table table-sm">
+  <thead class="thead-default">
+    <tr>
+      <th>Order</th>
+      <th>Topic</th>
+      <th>Status</th>
+      <th>Menu</th>
+      <th>Ideas</th>
+      <th>Comments</th>
+      <th class="text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for topic <- @conn.assigns.topics do %>
+    <tr class="<%= if topic.hidden, do: "text-gray" %>">
+      <td><%= topic.order %></td>
+      <td><%= topic.title %></td>
+      <td><%= if topic.closed, do: "Closed", else: "Open" %></td>
+      <td><%= topic.menutitle %></td>
+      <td></td>
+      <td class="text-center">
+        <%= link "Edit", to: "/topics/#{topic.id}/edit", class: "btn btn-light btn-sm" %>
+        <%= link "Delete", to: "/topics/#{topic.id}/delete", class: "btn btn-light btn-sm disabled" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
