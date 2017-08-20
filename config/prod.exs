@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :collaboration, Collaboration.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "159.203.137.57", port: 80],
+  url: [host: "159.203.137.57", port: 81],
   cache_static_manifest: "priv/static/manifest.json"
   # configuration for the Distillery release
   root: ".",
@@ -25,8 +25,8 @@ config :my_app, MyApp.Endpoint,
 
 config :my_app, MyApp.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("DB_USERNAME_COLLABOATION"),
-  password: System.get_env("DB_PASSWORD_COLLABOATION"),
+  username: System.get_env("DB_USERNAME"),
+  password: System.get_env("DB_PASSWORD"),
   database: System.get_env("DB_DATABASE_COLLABOATION"),
   hostname: System.get_env("DB_HOSTNAME"),
   pool_size: 20
@@ -36,3 +36,5 @@ config :phoenix, :serve_endpoints, true
 
 # Do not print debug messages in production
 config :logger, level: :info
+
+
