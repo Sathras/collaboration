@@ -20,10 +20,10 @@ config :collaboration, Collaboration.Endpoint,
   server: true,
   version: Mix.Project.config[:version]
 
-config :my_app, MyApp.Endpoint,
+config :collaboration, Collaboration.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE_COLLABOATION")
 
-config :my_app, MyApp.Repo,
+config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
