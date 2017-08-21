@@ -27,7 +27,7 @@ config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
-  database: System.get_env("DB_DATABASE_COLLABOATION"),
+  database: System.get_env("DB_DATABASE_COLLABORATION"),
   hostname: System.get_env("DB_HOSTNAME"),
   pool_size: 20
 
