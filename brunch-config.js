@@ -65,7 +65,8 @@ exports.config = {
       jQuery: 'jquery',       // required by bootstrap
       Popper: 'popper.js',    // required by bootstrap
       bootstrap: 'bootstrap',
-      dt: 'datatables.net-bs4'
+      dt: 'datatables.net-bs4',
+      timeago: 'timeago'
     }
   }
 };

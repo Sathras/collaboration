@@ -4,16 +4,30 @@ defmodule Collaboration.AdminController do
   alias Collaboration.Data
   alias Collaboration.User
 
-  # Admin Interface for User Management, User groups, ...
+  plug :auth_user
+
   def index(conn, _params) do
+    redirect conn, to: admin_path(conn, :topics)
+  end
+
+  def instructions(conn, _params) do
 
     instructions = Repo.get!(Data, 1) #id 1 = instructions
     changeset = Data.changeset(instructions)
 
-    users = Repo.all(User)
-
     conn
-    |> render("index.html", users: users, instructions_changeset: changeset)
+    |> render("instructions.html", changeset: changeset)
+  end
+
+  def topics(conn, _params) do
+    conn
+    |> render("topics.html")
+  end
+
+  def users(conn, _params) do
+    users = Repo.all(User)
+    conn
+    |> render("users.html", users: users)
   end
 
   def update(conn, %{"id" => id, "data" => data_params}) do

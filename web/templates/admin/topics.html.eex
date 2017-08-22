@@ -1,3 +1,5 @@
+<%= render @view_module, "menu.html", assigns %>
+
 <table class="table table-sm datatable">
   <thead class="thead-default">
     <tr>

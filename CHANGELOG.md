@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.2.5 - 08/22/2017
+  *  Added: Normal Users can now only submit ideas to open topics
+  *  Fixed: Bug in Admin view that would display multiple tabs at once
+  *  Added: Comments
+  *  Added: Normal users can't comment on closed topics
+
 ### 0.2.4 - 08/21/2017
   *  Added: Datatables
   *  Added: In admin view you can now sort and search tables

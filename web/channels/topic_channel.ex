@@ -1,6 +1,7 @@
 defmodule Collaboration.TopicChannel do
   use Collaboration.Web, :channel
 
+  alias Collaboration.Comment
   alias Collaboration.Idea
   alias Collaboration.Topic
   alias Collaboration.User
@@ -34,6 +35,27 @@ defmodule Collaboration.TopicChannel do
         broadcast! socket, "new_idea", %{
           title: params["title"],
           description: params["description"],
+          user: user.id
+        }
+        {:reply, :ok, socket}
+
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: changeset}}, socket}
+    end
+  end
+
+  def handle_in("new_comment", params, user, socket) do
+
+    changeset = Comment.changeset(
+      %Comment{user_id: user.id, idea_id: String.to_integer(params["idea_id"])},
+      params
+    )
+
+    case Repo.insert(changeset) do
+      {:ok, comment} ->
+        broadcast! socket, "new_comment", %{
+          text: comment.text,
+          idea: comment.id,
           user: user.id
         }
         {:reply, :ok, socket}

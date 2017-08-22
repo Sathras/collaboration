@@ -15,6 +15,7 @@ defmodule Collaboration.User do
     field :admin, :boolean, default: false
     field :faux, :boolean, default: false
     has_many :ideas, Collaboration.Idea
+    has_many :comments, Collaboration.Comment
     timestamps()
   end
 

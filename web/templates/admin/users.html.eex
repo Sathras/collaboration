@@ -1,3 +1,5 @@
+<%= render @view_module, "menu.html", assigns %>
+
 <table class="table table-sm datatable">
   <thead class="thead-default">
     <tr>
@@ -11,21 +13,19 @@
   </thead>
   <tbody>
 <%= for user <- @users do %>
-  <%= if !user.faux do %>
-    <tr>
-      <td><%= user.username %></td>
-      <td><%= user.firstname %></td>
-      <td><%= user.lastname %></td>
-      <td><%= user.email %></td>
-      <td>
-        <%= if user.admin, do: "Admin", else: "-" %>
-      </td>
-      <td class="text-center">
-        <%= link "Edit", to: "/users/#{user.id}/edit", class: "btn btn-light btn-sm" %>
-        <!--< %= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>-->
-      </td>
-    </tr>
-  <% end %>
+  <tr>
+    <td><%= user.username %></td>
+    <td><%= user.firstname %></td>
+    <td><%= user.lastname %></td>
+    <td><%= user.email %></td>
+    <td>
+      <%= if user.admin, do: "Admin", else: "-" %>
+    </td>
+    <td class="text-center">
+      <%= link "Edit", to: "/users/#{user.id}/edit", class: "btn btn-light btn-sm" %>
+      <!--< %= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>-->
+    </td>
+  </tr>
 <% end %>
   </tbody>
 </table>

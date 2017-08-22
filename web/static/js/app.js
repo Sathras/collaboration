@@ -21,7 +21,16 @@ import "phoenix_html"
 import topicChannel from "./channel_topic"
 import userChannel from "./channel_user"
 
+import $ from 'jquery'
+
+// enable TimeAgos
+import timeago from 'timeago'
+$("time.timeago").timeago();
+
+
 import "./datatable"
+
+
 
 // Enable TinyMCE for textarea fields
 

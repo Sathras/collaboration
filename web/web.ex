@@ -47,6 +47,7 @@ defmodule Collaboration.Web do
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [
+        action_name: 1,
         get_csrf_token: 0,
         get_flash: 2,
         view_module: 1
@@ -64,8 +65,6 @@ defmodule Collaboration.Web do
   def router do
     quote do
       use Phoenix.Router
-
-      import Collaboration.Auth, only: [auth_user: 2, auth_admin: 2]
     end
   end
 

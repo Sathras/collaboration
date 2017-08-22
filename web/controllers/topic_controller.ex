@@ -3,6 +3,7 @@ defmodule Collaboration.TopicController do
 
   plug :auth_admin when action in [:new, :create, :edit, :update, :delete]
 
+  alias Collaboration.Comment
   alias Collaboration.Idea
   alias Collaboration.Topic
   alias Collaboration.User
@@ -32,7 +33,8 @@ defmodule Collaboration.TopicController do
 
   def show(conn, %{"id" => id}) do
 
-    changeset = Idea.changeset(%Idea{})
+    idea_changeset = Idea.changeset(%Idea{})
+    comment_changeset = Comment.changeset(%Comment{})
     topic = Repo.get!(Topic, id)
 
     fauxusers = Repo.all(
@@ -42,16 +44,32 @@ defmodule Collaboration.TopicController do
       or_where: u.faux
     )
 
+    # ideas = Repo.all(
+    #   from i in Idea,
+    #   join: u in assoc(i, :user),
+    #   select: %{id: i.id, title: i.title, description: i.description, firstname: u.firstname, lastname: u.lastname},
+    #   where: u.admin,
+    #   or_where: u.faux,
+    #   order_by: [desc: i.inserted_at]
+    # )
+
+    comments_query = from c in Comment, order_by: c.inserted_at, preload: :user
+
     ideas = Repo.all(
       from i in Idea,
-      join: u in assoc(i, :user),
-      select: %{title: i.title, description: i.description, firstname: u.firstname, lastname: u.lastname},
-      where: u.admin,
-      or_where: u.faux,
+      # where: u.admin,
+      # or_where: u.faux,
+      preload: [:user, comments: ^comments_query],
       order_by: [desc: i.inserted_at]
     )
 
-    render(conn, "show.html", topic: topic, addidea_changeset: changeset, fauxusers: fauxusers, ideas: ideas)
+    render(conn, "show.html",
+      topic: topic,
+      idea_changeset: idea_changeset,
+      comment_changeset: comment_changeset,
+      fauxusers: fauxusers,
+      ideas: ideas
+    )
   end
 
   def edit(conn, %{"id" => id}) do

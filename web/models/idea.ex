@@ -4,6 +4,7 @@ defmodule Collaboration.Idea do
   schema "ideas" do
     field :title, :string
     field :description, :string
+    has_many :comments, Collaboration.Comment
     belongs_to :topic, Collaboration.Topic
     belongs_to :user, Collaboration.User
     timestamps()
@@ -16,5 +17,7 @@ defmodule Collaboration.Idea do
     struct
     |> cast(params, ~w(title description))
     |> validate_required([:title, :description])
+    |> validate_length(:title, min: 5, max: 40)
+    |> validate_length(:description, min: 5, max: 10000)
   end
 end

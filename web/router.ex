@@ -35,12 +35,11 @@ defmodule Collaboration.Router do
 
     # Ideas
     resources "/ideas", IdeaController
-  end
 
-  # Admin Level
-  scope "/admin", Collaboration do
-    pipe_through [:browser, :auth_admin]
-
-    resources "/", AdminController
+    #admin
+    resources "/admin", AdminController, only: [:index, :update]
+    get "/admin/instructions", AdminController, :instructions
+    get "/admin/topics", AdminController, :topics
+    get "/admin/users", AdminController, :users
   end
 end

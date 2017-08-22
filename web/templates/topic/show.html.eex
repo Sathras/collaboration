@@ -18,19 +18,36 @@
   <% end %>
 </h4>
 <div class="clearfix mb-2"></div>
+
 <%= for idea <- @ideas do %>
   <div class="card mb-1">
     <div class="card-body">
       <h4 class="card-title"><%= idea.title %></h4>
-      <h6 class="card-subtitle mb-2 text-muted"><%= idea.firstname <> " " <> idea.lastname %></h6>
+      <h6 class="card-subtitle mb-2 text-muted"><%= idea.user.firstname <> " " <> idea.user.lastname %></h6>
       <p><%= idea.description %></p>
+      <ul class="list-group">
+        <%= for comment <- idea.comments do %>
+          <li class="list-group-item">
+            <strong><%= comment.user.firstname <> " " <> comment.user.lastname %>: </strong>
+            <i class='float-right'><time class="timeago" datetime="<%= comment.inserted_at %>"></time></i>
+            <%= comment.text %></li>
+        <% end %>
+      </ul>
+      <%= if !@topic.closed || @current_user.admin do %>
+        <form class="add-comment novalidate">
+          <input type="hidden" class="comment-idea" value="<%= idea.id %>"/>
+          <div class="form-group">
+            <input class="comment-text form-control" placeholder="Add a comment..."/>
+          </div>
+        </form>
+      <% end %>
     </div>
   </div>
 <% end %>
 
 <!-- Add Idea Form-->
 <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
-  <%= form_for @addidea_changeset, idea_path(@conn, :create), [id: "submit-idea", class: "novalidate"], fn f -> %>
+  <%= form_for @idea_changeset, idea_path(@conn, :create), [id: "submit-idea", class: "novalidate"], fn f -> %>
   <div class="modal fade" id="modal-addidea" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -42,7 +59,7 @@
         </div>
         <div class="modal-body">
 
-            <%= if @addidea_changeset.action do %>
+            <%= if @idea_changeset.action do %>
               <div class="alert alert-danger">
                 <p>Oops, something went wrong! Please check the errors below.</p>
               </div>

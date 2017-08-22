@@ -32,6 +32,19 @@ if(topic_id){
     $('#idea_user_id').val("")
   })
 
+  $('.add-comment').submit((e) => {
+    e.preventDefault()
+
+    let payload = {
+      text: $(e.currentTarget).find('.comment-text').val(),
+      idea_id: $(e.currentTarget).find('.comment-idea').val()
+    }
+
+    topicChannel.push("new_comment", payload)
+      .receive("error", e => console.log(e) )
+    $('.comment-text').val("")
+  })
+
   topicChannel.on("new_idea", (idea) => {
     renderIdea(idea)
   })
