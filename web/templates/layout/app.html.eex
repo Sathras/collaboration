@@ -125,6 +125,7 @@
 
     </div> <!-- /container -->
     <script>window.userToken = "<%= assigns[:user_token] %>"</script>
+    <script src="https://use.fontawesome.com/f7ab62c769.js"></script>
     <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=zdhtiwkfuljahr0sjfvhsqskjalyt5wqeikdzyzq433qlu71"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>

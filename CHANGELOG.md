@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.2.4 - 08/21/2017
+  *  Added: Datatables
+  *  Added: In admin view you can now sort and search tables
+
 ### 0.2.0 - 08/20/2017
   *  Added: Topic Management in Admin Area
   *  Added: Topics in Menubar for easy access

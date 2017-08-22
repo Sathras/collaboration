@@ -1,4 +1,4 @@
-<table class="table table-sm">
+<table class="table table-sm datatable">
   <thead class="thead-default">
     <tr>
       <th>Order</th>
@@ -17,6 +17,7 @@
       <td><%= topic.title %></td>
       <td><%= if topic.closed, do: "Closed", else: "Open" %></td>
       <td><%= topic.menutitle %></td>
+      <td></td>
       <td></td>
       <td class="text-center">
         <%= link "Edit", to: "/topics/#{topic.id}/edit", class: "btn btn-light btn-sm" %>

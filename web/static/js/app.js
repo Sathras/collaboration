@@ -21,6 +21,8 @@ import "phoenix_html"
 import topicChannel from "./channel_topic"
 import userChannel from "./channel_user"
 
+import "./datatable"
+
 // Enable TinyMCE for textarea fields
 
 tinymce.init({
