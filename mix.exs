@@ -3,7 +3,7 @@ defmodule Collaboration.Mixfile do
 
   def project do
     [app: :collaboration,
-     version: "0.2.9",
+     version: "0.2.10",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
