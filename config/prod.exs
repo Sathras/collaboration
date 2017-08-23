@@ -21,7 +21,7 @@ config :collaboration, Collaboration.Endpoint,
   version: Mix.Project.config[:version]
 
 config :collaboration, Collaboration.Endpoint,
-  secret_key_base: System.get_env("SECRET_KEY_BASE_COLLABOATION")
+  secret_key_base: System.get_env("SECRET_KEY_BASE_COLLABORATION")
 
 config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
