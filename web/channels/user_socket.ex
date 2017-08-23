@@ -2,7 +2,6 @@ defmodule Collaboration.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "user", Collaboration.UserChannel
   channel "topic:*", Collaboration.TopicChannel
 
   ## Transports
@@ -27,7 +26,7 @@ defmodule Collaboration.UserSocket do
     end
   end
 
-  def connect(_params, socket), do: :error
+  def connect(_params, _socket), do: :error
 
   def id(socket), do: "users_socket:#{socket.assigns.user_id}"
 

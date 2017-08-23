@@ -25,7 +25,27 @@ if(topic_id){
     }
 
     topicChannel.push("new_idea", payload)
-      .receive("error", e => console.log(e) )
+      .receive("ok", (idea) => {
+        window.location.reload(true);
+      })
+      .receive("error", (data) => {
+
+        $("#idea_alert").removeClass('d-none')
+
+        if(data.errors.title)
+          $('#idea_title')
+            .addClass('is-invalid')
+            .siblings('.invalid-feedback').html(data.errors.title[0])
+        else
+          $('#idea_title').addClass('is-valid')
+
+        if(data.errors.description)
+          $('#idea_description')
+            .addClass('is-invalid')
+            .siblings('.invalid-feedback').html(data.errors.description[0])
+        else
+          $('#idea_title').addClass('is-valid')
+      })
 
     $('#idea_title').val("")
     $('#idea_description').val("")

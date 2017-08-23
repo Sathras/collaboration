@@ -1,11 +1,53 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+<%= form_for @conn, idea_path(@conn, :create), [as: "idea", id: "submit-idea", class: "novalidate"], fn f -> %>
+<div class="modal fade" id="modal-addidea" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Idea</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
 
-  <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
+          <div id="idea_alert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Error!</strong> Please check the fields below.
+          </div>
+
+          <div class="form-group">
+            <label for="idea_title"><strong>Title*</strong></label>
+            <input id="idea_title" class="form-control" placeholder="Title" />
+            <div class="invalid-feedback"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="idea_description"><strong>Description*</strong></label>
+            <textarea id="idea_description" class="form-control" placeholder="Description"></textarea>
+            <div class="invalid-feedback"></div>
+          </div>
+
+          <%= if @fauxusers do %>
+            <div class="form-group">
+              <label for="idea"><strong>Post as:</strong></label>
+              <select class="comment-user form-control">
+                <%= for user <- @fauxusers do %>
+                  <option value="<%= user.id %>" <%= if user.id == @user_id, do: "selected" %>>
+                    <%= user.firstname <> " " <> user.lastname %>
+                    <%= if user.id == @user_id, do: " (me)" %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+          <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <%= submit "Save", class: "btn btn-success" %>
+      </div>
+    </div>
   </div>
+</div>
 <% end %>

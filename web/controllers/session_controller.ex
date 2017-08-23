@@ -13,12 +13,6 @@ defmodule Collaboration.SessionController do
       render conn, "new.html"
   end
 
-  def new(conn, _) do
-    conn
-    |> put_flash(:error, "Something went wrong with your input")
-    |> render("new.html")
-  end
-
   def create(conn, %{"session" => %{"email" => e, "password" => p}}) do
     case Collaboration.Auth.login_by_email_and_pass(conn, e, p, repo: Repo) do
     {:ok, conn} ->

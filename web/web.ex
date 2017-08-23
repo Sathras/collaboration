@@ -76,6 +76,7 @@ defmodule Collaboration.Web do
       import Ecto
       import Ecto.Query
       import Collaboration.Gettext
+      import Collaboration.ErrorHelpers, only: [error_socket: 1]
     end
   end
 

@@ -1,5 +1,5 @@
-<li class="list-group-item">
-  <strong><%= @comment.user.firstname <> " " <> @comment.user.lastname %>: </strong>
+<li data-id='<%= @comment.id %>' class="comment list-group-item">
+  <strong><%= @comment.user.firstname %>: </strong>
   <i class='float-right'><time class="timeago" datetime="<%= @comment.inserted_at %>"></time></i>
   <%= @comment.text %>
 </li>

@@ -1,4 +1,12 @@
 # Changelog
+If versions are ommited from the changelog they only contain deployment updates
+
+### 0.2.12 - 08/23/2017
+  *  Fixed: Several Minor Bugs
+  *  Fixed: Topics now only shows associated ideas (admin)
+  *  Fixed: Topics now only shows associated ideas that have been submitted by faux users or user himself (normal)
+  *  Added: Validation for Idea input
+  *  Changed: Comments now only include the firstname of the user instead of first and last
 
 ### 0.2.5 - 08/22/2017
   *  Added: Normal Users can now only submit ideas to open topics

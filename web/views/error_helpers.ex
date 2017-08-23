@@ -23,6 +23,15 @@ defmodule Collaboration.ErrorHelpers do
     end
   end
 
+  # For Sending Error Messages back to socket
+  def error_socket(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, ops} ->
+      Enum.reduce(ops, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
+
   @doc """
   Translates an error message using gettext.
   """

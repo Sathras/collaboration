@@ -19,77 +19,28 @@
 </h4>
 <div class="clearfix mb-2"></div>
 
-<%= for idea <- @ideas do %>
-  <div class="card mb-1">
-    <div class="card-body">
-      <h4 class="card-title"><%= idea.title %></h4>
-      <h6 class="card-subtitle mb-2 text-muted"><%= idea.user.firstname <> " " <> idea.user.lastname %></h6>
-      <p><%= idea.description %></p>
-      <ul class="list-group">
-        <%= for comment <- idea.comments do %>
-          <%= render @view_module, "comment.html", comment: comment %>
-        <% end %>
-      </ul>
+<div id="idea-container">
+  <%= for idea <- @ideas do %>
+    <div data-id="<%= idea.id %>" class="idea card mb-1">
+      <div class="card-body">
+        <h4 class="card-title"><%= idea.title %></h4>
+        <h6 class="card-subtitle mb-2 text-muted"><%= idea.user.firstname <> " " <> idea.user.lastname %></h6>
+        <p><%= idea.description %></p>
+        <ul class="comments list-group">
+          <%= for comment <- idea.comments do %>
+            <%= render @view_module, "comment.html", comment: comment %>
+          <% end %>
+        </ul>
 
-      <%= if !@topic.closed || @current_user.admin do %>
-        <%= render @view_module, "comment-form.html", idea: idea.id, user_id: @current_user.id, fauxusers: @fauxusers %>
-      <% end %>
+        <%= if @current_user && (!@topic.closed || @current_user.admin) do %>
+          <%= render @view_module, "comment-form.html", idea: idea.id, user_id: @current_user.id, fauxusers: @fauxusers %>
+        <% end %>
+      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
 
 <!-- Add Idea Form-->
 <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
-  <%= form_for @idea_changeset, idea_path(@conn, :create), [id: "submit-idea", class: "novalidate"], fn f -> %>
-  <div class="modal fade" id="modal-addidea" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Idea</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-
-            <%= if @idea_changeset.action do %>
-              <div class="alert alert-danger">
-                <p>Oops, something went wrong! Please check the errors below.</p>
-              </div>
-            <% end %>
-
-            <div class="form-group">
-              <label for="title"><strong>Title*</strong></label>
-              <%= text_input(f, :title,
-                class: "form-control " <> error_class(f, :title),
-                placeholder: "Title"
-              ) %>
-              <%= error_tag f, :title %>
-            </div>
-
-            <div class="form-group">
-              <label for="value"><strong>Description*</strong></label>
-              <%= textarea(f, :description,
-                class: "form-control " <> error_class(f, :description),
-                placeholder: "Description"
-              ) %>
-              <%= error_tag f, :description %>
-            </div>
-            <%= if @fauxusers do %>
-              <div class="form-group">
-                <label for="idea"><strong>Post as:</strong></label>
-                <%= select(f, :user_id,
-                Enum.map(@fauxusers, &{(&1.firstname || "unknown") <> " " <> (&1.lastname || "unknown"), &1.id}),
-                class: "form-control") %>
-              </div>
-            <% end %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <%= submit "Save", class: "btn btn-success" %>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% end %>
-<%= end %>
+  <%= render Collaboration.IdeaView, "form.html", conn: @conn, changeset: @idea_changeset, user_id: @current_user.id, fauxusers: @fauxusers %>
+<% end %>

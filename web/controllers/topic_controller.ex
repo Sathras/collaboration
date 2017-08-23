@@ -33,44 +33,57 @@ defmodule Collaboration.TopicController do
 
   def show(conn, %{"id" => id}) do
 
-    idea_changeset = Idea.changeset(%Idea{})
+    user = conn.assigns.current_user
     topic = Repo.get!(Topic, id)
 
-
     # if admin, provide a list of fauxusers that user can use to post idea/comment
-    fauxusers = if conn.assigns.current_user && conn.assigns.current_user.admin, do:
-      fauxusers = Repo.all(
+    fauxusers = if user && user.admin, do:
+      Repo.all(
         from u in User,
         select: %{id: u.id, firstname: u.firstname, lastname: u.lastname},
-        where: u.id == ^conn.assigns.current_user.id,
+        where: u.id == ^user.id,
         or_where: u.faux
       ),
     else: nil
 
-    # ideas = Repo.all(
-    #   from i in Idea,
-    #   join: u in assoc(i, :user),
-    #   select: %{id: i.id, title: i.title, description: i.description, firstname: u.firstname, lastname: u.lastname},
-    #   where: u.admin,
-    #   or_where: u.faux,
-    #   order_by: [desc: i.inserted_at]
-    # )
-
     comments_query = from c in Comment, order_by: c.inserted_at, preload: :user
 
-    ideas = Repo.all(
-      from i in Idea,
-      # where: u.admin,
-      # or_where: u.faux,
-      preload: [:user, comments: ^comments_query],
-      order_by: [desc: i.inserted_at]
-    )
+    ideas = cond do
+      user && user.admin ->
+        Repo.all(
+          from i in Idea,
+          where: i.topic_id == ^id,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+      user ->
+        Repo.all(
+          from i in Idea,
+          join: u in assoc(i, :user),
+          where: i.topic_id == ^id,
+          where: u.faux == true,
+          or_where: i.user_id == ^user.id,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+      true ->
+        Repo.all(
+          from i in Idea,
+          join: u in assoc(i, :user),
+          where: i.topic_id == ^id,
+          where: u.faux == true,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+    end
+
+    idea_changeset = Idea.changeset(%Idea{})
 
     render(conn, "show.html",
       topic: topic,
-      idea_changeset: idea_changeset,
       fauxusers: fauxusers,
-      ideas: ideas
+      ideas: ideas,
+      idea_changeset: idea_changeset
     )
   end
 

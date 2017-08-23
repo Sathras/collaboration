@@ -38,7 +38,7 @@ defmodule Collaboration.AdminController do
     changeset = Data.changeset(instructions, data_params)
 
     case Repo.update(changeset) do
-      {:ok, data} ->
+      {:ok, _data} ->
         conn
         |> put_flash(:info, "Data updated successfully.")
         |> redirect(to: admin_path(conn, :index))

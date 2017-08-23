@@ -3,7 +3,6 @@ defmodule Collaboration.TopicChannel do
 
   alias Collaboration.Comment
   alias Collaboration.Idea
-  alias Collaboration.Topic
   alias Collaboration.User
 
   def join("topic:" <> topic_id, _params, socket) do
@@ -32,15 +31,15 @@ defmodule Collaboration.TopicChannel do
 
     case Repo.insert(changeset) do
       {:ok, idea} ->
-        broadcast! socket, "new_idea", %{
-          title: params["title"],
-          description: params["description"],
-          user: user.id
-        }
-        {:reply, :ok, socket}
+        {:reply, {:ok, %{
+          title: idea.title,
+          description: idea.description,
+          name: user.firstname <> " " <> user.lastname
+        }}, socket}
 
       {:error, changeset} ->
-        {:reply, {:error, %{errors: changeset}}, socket}
+        errors = error_socket(changeset)
+        {:reply, {:error, %{errors: errors}}, socket}
     end
   end
 

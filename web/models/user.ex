@@ -49,7 +49,7 @@ defmodule Collaboration.User do
     |> validate_length(:lastname, min: 3, max: 20)
     |> password_needed(curr_pass)
     |> password_change()
-    |> username_change(self)
+    |> username_change(curr_pass)
     |> unique_constraint(:email)
   end
 

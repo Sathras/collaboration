@@ -19,7 +19,6 @@ import "phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 import topicChannel from "./channel_topic"
-import userChannel from "./channel_user"
 
 import $ from 'jquery'
 
