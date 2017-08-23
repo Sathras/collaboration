@@ -27,19 +27,12 @@
       <p><%= idea.description %></p>
       <ul class="list-group">
         <%= for comment <- idea.comments do %>
-          <li class="list-group-item">
-            <strong><%= comment.user.firstname <> " " <> comment.user.lastname %>: </strong>
-            <i class='float-right'><time class="timeago" datetime="<%= comment.inserted_at %>"></time></i>
-            <%= comment.text %></li>
+          <%= render @view_module, "comment.html", comment: comment %>
         <% end %>
       </ul>
+
       <%= if !@topic.closed || @current_user.admin do %>
-        <form class="add-comment novalidate">
-          <input type="hidden" class="comment-idea" value="<%= idea.id %>"/>
-          <div class="form-group">
-            <input class="comment-text form-control" placeholder="Add a comment..."/>
-          </div>
-        </form>
+        <%= render @view_module, "comment-form.html", idea: idea.id, user_id: @current_user.id, fauxusers: @fauxusers %>
       <% end %>
     </div>
   </div>
@@ -82,7 +75,7 @@
               ) %>
               <%= error_tag f, :description %>
             </div>
-            <%= if @current_user.admin do %>
+            <%= if @fauxusers do %>
               <div class="form-group">
                 <label for="idea"><strong>Post as:</strong></label>
                 <%= select(f, :user_id,

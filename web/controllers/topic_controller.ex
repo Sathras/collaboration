@@ -34,15 +34,18 @@ defmodule Collaboration.TopicController do
   def show(conn, %{"id" => id}) do
 
     idea_changeset = Idea.changeset(%Idea{})
-    comment_changeset = Comment.changeset(%Comment{})
     topic = Repo.get!(Topic, id)
 
-    fauxusers = Repo.all(
-      from u in User,
-      select: %{id: u.id, firstname: u.firstname, lastname: u.lastname},
-      where: u.admin,
-      or_where: u.faux
-    )
+
+    # if admin, provide a list of fauxusers that user can use to post idea/comment
+    fauxusers = if conn.assigns.current_user && conn.assigns.current_user.admin, do:
+      fauxusers = Repo.all(
+        from u in User,
+        select: %{id: u.id, firstname: u.firstname, lastname: u.lastname},
+        where: u.id == ^conn.assigns.current_user.id,
+        or_where: u.faux
+      ),
+    else: nil
 
     # ideas = Repo.all(
     #   from i in Idea,
@@ -66,7 +69,6 @@ defmodule Collaboration.TopicController do
     render(conn, "show.html",
       topic: topic,
       idea_changeset: idea_changeset,
-      comment_changeset: comment_changeset,
       fauxusers: fauxusers,
       ideas: ideas
     )

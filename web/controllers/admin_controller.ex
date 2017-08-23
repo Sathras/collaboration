@@ -2,6 +2,7 @@ defmodule Collaboration.AdminController do
   use Collaboration.Web, :controller
 
   alias Collaboration.Data
+  alias Collaboration.Topic
   alias Collaboration.User
 
   plug :auth_user
@@ -20,8 +21,9 @@ defmodule Collaboration.AdminController do
   end
 
   def topics(conn, _params) do
+    topics = Repo.all(Topic)
     conn
-    |> render("topics.html")
+    |> render("topics.html", topics: topics)
   end
 
   def users(conn, _params) do

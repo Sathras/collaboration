@@ -13,7 +13,7 @@
     </tr>
   </thead>
   <tbody>
-<%= for topic <- @conn.assigns.topics do %>
+<%= for topic <- @topics do %>
     <tr class="<%= if topic.hidden, do: "text-gray" %>">
       <td><%= topic.order %></td>
       <td><%= topic.title %></td>

@@ -34,12 +34,10 @@
             <li class="nav-item active">
               <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
-            <%= for topic <- @conn.assigns.topics do %>
-              <%= if !topic.hidden do %>
-                <li class="nav-item active">
-                  <%= link(topic.menutitle, to: "/topics/#{topic.id}", class: "nav-link") %>
-                </li>
-              <% end %>
+            <%= for topic <- @conn.assigns.menutopics do %>
+              <li class="nav-item active">
+                <%= link(topic.title, to: "/topics/#{topic.id}", class: "nav-link") %>
+              </li>
             <% end %>
           </ul>
           <ul class="navbar-nav">

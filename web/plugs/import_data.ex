@@ -14,6 +14,10 @@ defmodule Collaboration.ImportData do
 
     conn
     |> assign(:instructions, instructions.value)
-    |> assign(:topics, Collaboration.Repo.all(from Topic, order_by: [asc: :order]))
+    |> assign(:menutopics, Collaboration.Repo.all(from t in Topic,
+          select: %{id: t.id, title: t.menutitle},
+          where: t.hidden == false,
+          order_by: [asc: t.order]
+      ))
   end
 end

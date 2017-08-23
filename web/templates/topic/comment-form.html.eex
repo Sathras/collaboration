@@ -1,0 +1,22 @@
+<form class="add-comment novalidate form-inline">
+  <input type="hidden" class="comment-idea" value="<%= @idea %>"/>
+
+  <div class="form-group row">
+    <%= if @fauxusers do %>
+      <div class="col-4">
+        <label class="mr-1">Post as: </label>
+        <select class="comment-user form-control">
+          <%= for user <- @fauxusers do %>
+            <option value="<%= user.id %>" <%= if user.id == @user_id, do: "selected" %>>
+              <%= user.firstname <> " " <> user.lastname %>
+              <%= if user.id == @user_id, do: " (me)" %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+    <% end %>
+    <div class="col-8">
+      <input class="comment-text form-control" placeholder="Add a comment..."/>
+    </div>
+  </div>
+</form>
