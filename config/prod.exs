@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :collaboration, Collaboration.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [scheme: "http", host: "196.52.39.9", port: 80],
+  url: [scheme: "http", host: "196.52.39.9", port: 57095],
   cache_static_manifest: "priv/static/manifest.json",
   # configuration for the Distillery release
   root: ".",
