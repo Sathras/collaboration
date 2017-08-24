@@ -19,27 +19,9 @@
 </h4>
 <div class="clearfix mb-2"></div>
 
-<div id="idea-container">
-  <%= for idea <- @ideas do %>
-    <div data-id="<%= idea.id %>" class="idea card mb-1">
-      <div class="card-body">
-        <h4 class="card-title"><%= idea.title %></h4>
-        <h6 class="card-subtitle mb-2 text-muted"><%= idea.user.firstname <> " " <> idea.user.lastname %></h6>
-        <p><%= idea.description %></p>
-        <ul class="comments list-group">
-          <%= for comment <- idea.comments do %>
-            <%= render @view_module, "comment.html", comment: comment %>
-          <% end %>
-        </ul>
+<div id="idea-container"></div>
 
-        <%= if @current_user && (!@topic.closed || @current_user.admin) do %>
-          <%= render @view_module, "comment-form.html", idea: idea.id, user_id: @current_user.id, fauxusers: @fauxusers %>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-</div>
-
+<script>window.editTopic = <%= (@current_user && @current_user.admin) || (@current_user && !@topic.closed) %></script>
 <!-- Add Idea Form-->
 <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
   <%= render Collaboration.IdeaView, "form.html", conn: @conn, changeset: @idea_changeset, user_id: @current_user.id, fauxusers: @fauxusers %>

@@ -7,10 +7,42 @@ defmodule Collaboration.TopicChannel do
 
   def join("topic:" <> topic_id, _params, socket) do
 
-    if !String.to_integer(topic_id), do:
-      {:error, socket},
-    else:
-      {:ok, assign(socket, :topic_id, String.to_integer(topic_id))}
+    topic_id = String.to_integer(topic_id)
+
+    comments_query = from c in Comment, order_by: c.inserted_at, preload: :user
+
+    ideas = cond do
+      socket.assigns.admin ->
+        Repo.all(
+          from i in Idea,
+          where: i.topic_id == ^topic_id,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+      socket.user_id ->
+        Repo.all(
+          from i in Idea,
+          join: u in assoc(i, :user),
+          where: i.topic_id == ^topic_id,
+          where: u.faux == true,
+          or_where: i.user_id == ^socket.assigns.user_id,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+      true ->
+        Repo.all(
+          from i in Idea,
+          join: u in assoc(i, :user),
+          where: i.topic_id == ^topic_id,
+          where: u.faux == true,
+          preload: [:user, comments: ^comments_query],
+          order_by: [desc: i.inserted_at]
+        )
+    end
+
+    resp = %{ideas: Phoenix.View.render_many(ideas, Collaboration.IdeaView, "idea.json")}
+
+    {:ok, resp, assign(socket, :topic_id, topic_id)}
   end
 
   def handle_in(event, params, socket) do

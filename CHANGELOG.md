@@ -7,6 +7,8 @@ If versions are ommited from the changelog they only contain deployment updates
   *  Fixed: Topics now only shows associated ideas that have been submitted by faux users or user himself (normal)
   *  Added: Validation for Idea input
   *  Changed: Comments now only include the firstname of the user instead of first and last
+  *  Changed: Ideas now load via socket
+  *  Added: Client-Side dynamic Javascript Asset Management
 
 ### 0.2.5 - 08/22/2017
   *  Added: Normal Users can now only submit ideas to open topics
