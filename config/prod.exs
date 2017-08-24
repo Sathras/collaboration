@@ -13,7 +13,6 @@ use Mix.Config
 # which you typically run after static files are built.
 config :collaboration, Collaboration.Endpoint,
   http: [port: {:system, "PORT"}],
-  # http: [port: 57095],
   url: [scheme: "http", host: "192.168.30.103", port: 57095],
   cache_static_manifest: "priv/static/manifest.json",
   # configuration for the Distillery release
@@ -22,7 +21,7 @@ config :collaboration, Collaboration.Endpoint,
   version: Mix.Project.config[:version]
 
 config :collaboration, Collaboration.Endpoint,
-  secret_key_base: System.get_env("SECRET_KEY_BASE_COLLABORATION")
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
