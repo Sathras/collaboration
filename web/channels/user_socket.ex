@@ -22,12 +22,16 @@ defmodule Collaboration.UserSocket do
 
         {:ok, socket}
       {:error, _reason} ->
+        socket =
+          socket
+          |> assign(:user_id, nil)
+          |> assign(:admin, false)
         {:ok, socket}
     end
   end
 
   def connect(_params, _socket), do: :error
 
-  def id(socket), do: nil
+  def id(_socket), do: nil
 
 end

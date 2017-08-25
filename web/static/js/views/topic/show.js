@@ -1,6 +1,7 @@
 // web/static/js/views/topic/show.js
 
 import $ from 'jquery'
+import List from 'list.js'
 import socket from '../../socket'
 import MainView from '../main';
 
@@ -10,13 +11,48 @@ export default class View extends MainView {
 
     const topic_id = $('#topic').data('id')
 
+    // prepare the idea list
+    var list_options = {
+      item: 'idea-item',
+      valueNames: [
+        {data: ['id']},
+        'title',
+        'description',
+        'user'
+      ]
+    }
+
+    // create empty idea list
+    var ideaList = new List('idea-list', list_options, [])
+
     // define and join topicChannel
     let channel = socket.channel(`topic:${topic_id}`)
     channel.join()
       // on load retrieve list of ideas from server
       .receive("ok", ({ideas}) => {
-        ideas.forEach( idea => this.renderIdea(idea))
 
+        console.log(ideas)
+
+        // render a list of ideas
+        ideaList.add( ideas, (ideas) => {
+          // add comments to each item
+          ideas.forEach((i) => {
+            i.values().comments.forEach(c => {
+              $(`.idea[data-id=${c.id}]`).children('.comments').append(`
+                <li class="comment list-group-item" data-id="${c.id}">
+                  <strong>${c.user}: </strong>
+                  ${c.text}
+                  <div class='pl-2 pull-right'>
+                    <i>4 minutes ago</i>
+                    <button type="button" class="btn btn-light btn-sm">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </li>
+              `)
+            })
+          })
+        })
       })
       .receive("error", resp => { console.log("Unable to join", resp) })
 
@@ -40,7 +76,8 @@ export default class View extends MainView {
     </div>
     `)
 
-    if(window.editTopic) $(`.idea[data-id=${id}]`).append('EDIT')
+    if(window.editTopic) $(`.idea[data-id=${id}]`)
+      .append('EDIT')
     // const commentList = comments.forEach( c => this.renderComment(c))
   }
 }

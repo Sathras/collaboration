@@ -19,7 +19,65 @@
 </h4>
 <div class="clearfix mb-2"></div>
 
-<div id="idea-container"></div>
+<div id="idea-list" class=''>
+  <div class="list"></div>
+</div>
+
+<div class='d-none'>
+  <!-- A template element is needed when list is empty, TODO: needs a better solution -->
+  <div id="idea-item" class="idea card mb-4">
+    <div class="card-body bg-light">
+      <div class='pl-2 pb-2 pull-right text-right'>
+        <i>4 minutes ago</i>
+        <button type="button" class="btn btn-light btn-sm">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm">
+          <i class="fa fa-trash" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <h4 class="card-title title"></h4>
+      <h6 class="card-subtitle mb-2 text-muted user"></h6>
+      <p class="description card-title"></p>
+    </div>
+
+    <!-- Comment List -->
+    <ul class="list-group list-group-flush comments"></ul>
+
+    <!-- Comment Form -->
+    <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
+    <div class="card-footer">
+      <%= if @current_user.admin do %>
+      <form class="add-comment novalidate">
+        <div class='form-row'>
+          <div class='col-3'>
+            <select class="form-control" id="inlineFormCustomSelectPref">
+              <%= for user <- @fauxusers do %>
+                <option value="<%= user.id %>" <%= if user.id == @current_user.id, do: "selected" %>>
+                  <%= user.firstname <> " " <> user.lastname %>
+                  <%= if user.id == @current_user.id, do: " (me)" %>
+                </option>
+              <% end %>
+            </select>
+          </div>
+          <div class='col-9'>
+        <% end %>
+            <div class="input-group">
+              <input class="form-control" placeholder="Comment..."></input>
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="submit">Submit</button>
+              </span>
+            </div>
+        <%= if @current_user.admin do %>
+          </div>
+        </div>
+      </form>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+</div>
 
 <script>window.editTopic = <%= (@current_user && @current_user.admin) || (@current_user && !@topic.closed) %></script>
 <!-- Add Idea Form-->

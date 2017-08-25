@@ -19,7 +19,7 @@ defmodule Collaboration.TopicChannel do
           preload: [:user, comments: ^comments_query],
           order_by: [desc: i.inserted_at]
         )
-      socket.user_id ->
+      socket.assigns.user_id ->
         Repo.all(
           from i in Idea,
           join: u in assoc(i, :user),

@@ -5,7 +5,7 @@ defmodule Collaboration.CommentView do
     %{
       id: c.id,
       text: c.text,
-      user: render_one(c.user, Collaboration.UserView, "user-public.json")
+      user: c.user.firstname <> " " <> c.user.lastname
     }
   end
 end

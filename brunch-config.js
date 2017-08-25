@@ -66,7 +66,8 @@ exports.config = {
       Popper: 'popper.js',    // required by bootstrap
       bootstrap: 'bootstrap',
       dt: 'datatables.net-bs4',
-      timeago: 'timeago'
+      timeago: 'timeago',
+      List: 'list.js'
     }
   }
 };
