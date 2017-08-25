@@ -1,6 +1,9 @@
 # Changelog
 If versions are ommited from the changelog they only contain deployment updates
 
+### 0.2.26 - 08/25/2017
+  *  Fixed: Internal Port/Network Issues
+
 ### 0.2.20 - 08/24/2017
   *  Improved: Much more pleasing Topic/Idea/Comment List
 
