@@ -2,6 +2,7 @@ defmodule Collaboration.UserSocket do
   use Phoenix.Socket
 
   ## Channels
+  channel "admin", Collaboration.AdminChannel
   channel "topic:*", Collaboration.TopicChannel
 
   ## Transports

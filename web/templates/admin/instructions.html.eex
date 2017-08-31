@@ -1,24 +1,16 @@
-<%= render @view_module, "menu.html", assigns %>
+<form id="instructions-form" class="novalidate">
 
-<%= form_for @changeset,
-    admin_path(@conn, :update, 1),
-    [class: "novalidate"],
-    fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  <div class="alert alert-danger d-none">
+    <p>Oops, something went wrong! Please check the errors below.</p>
+  </div>
 
   <div class="form-group">
-    <label for="value"><strong>Instructions*</strong></label>
-    <%= textarea(f,
-      :value,
-      class: "form-control tinyMCE " <> error_class(f, :value),
-      placeholder: "Instructions"
-    ) %>
-    <%= error_tag f, :value %>
-
-    <%= submit "Submit", class: "btn btn-primary" %>
+    <label for="instructions-input"><strong>Instructions*</strong></label>
+    <textarea id="instructions-input" class="form-control" placeholder="Instructions">
+      <%= @instructions %>
+    </textarea>
+    <div class="invalid-feedback"></div>
   </div>
-<% end %>
+
+  <button id="instructions-button" class="btn btn-secondary disabled" type="submit">No Changes</button>
+</form>

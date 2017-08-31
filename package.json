@@ -13,7 +13,7 @@
     "list.js": "^1.5.0",
     "phoenix": "file:deps/phoenix",
     "phoenix_html": "file:deps/phoenix_html",
-    "popper.js": "^1.12.2",
+    "popper.js": "^1.12.5",
     "timeago": "^1.6.1"
   },
   "devDependencies": {

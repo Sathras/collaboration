@@ -1,12 +1,13 @@
 // web/static/js/app.js
 
 import "phoenix_html"
+import $ from 'jquery'
 import loadView from './views/loader';
 
 function handleDOMContentLoaded() {
 
   // Get the current view name
-  const viewName = document.getElementsByTagName('body')[0].dataset.jsViewName
+  const viewName = $('body').data('jsViewName')
 
   // Load view class and mount it
   const ViewClass = loadView(viewName);

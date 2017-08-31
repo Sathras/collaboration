@@ -36,9 +36,9 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "collaboration_dev",
+  username: "dev",
+  password: "dev",
+  database: "dev",
   hostname: "localhost",
   template: "template0",
   pool_size: 10

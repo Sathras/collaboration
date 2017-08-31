@@ -8,7 +8,8 @@ defmodule Collaboration.AdminController do
   plug :auth_user
 
   def index(conn, _params) do
-    redirect conn, to: admin_path(conn, :topics)
+    conn
+    |> render("index.html")
   end
 
   def instructions(conn, _params) do
@@ -18,18 +19,6 @@ defmodule Collaboration.AdminController do
 
     conn
     |> render("instructions.html", changeset: changeset)
-  end
-
-  def topics(conn, _params) do
-    topics = Repo.all(Topic)
-    conn
-    |> render("topics.html", topics: topics)
-  end
-
-  def users(conn, _params) do
-    users = Repo.all(User)
-    conn
-    |> render("users.html", users: users)
   end
 
   def update(conn, %{"id" => id, "data" => data_params}) do

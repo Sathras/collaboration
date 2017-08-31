@@ -1,14 +1,12 @@
 // web/static/js/views/loader.js
 
 import MainView    from './main';
-import AdminTopicsView from './admin/topics';
-import AdminUsersView from './admin/users';
+import AdminIndexView from './admin/index';
 import TopicShowView from './topic/show';
 
 // Collection of specific view modules
 const views = {
-  AdminTopicsView,
-  AdminUsersView,
+  AdminIndexView,
   TopicShowView,
 };
 

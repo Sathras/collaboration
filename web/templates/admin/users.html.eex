@@ -1,34 +1,57 @@
-<%= render @view_module, "menu.html", assigns %>
+<div id="usersList">
+  <div class="row justify-content-end mt-1 mb-1">
+    <div class="col-12 col-sm-7">
 
-<table id="users-table" class="table table-sm">
-  <thead class="thead-default">
-    <tr>
-      <th>Username</th>
-      <th>Firstname</th>
-      <th>Lastname</th>
-      <th>Email</th>
-      <th>Groups</th>
-      <th class="text-center">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for user <- @users do %>
-  <tr>
-    <td><%= user.username %></td>
-    <td><%= user.firstname %></td>
-    <td><%= user.lastname %></td>
-    <td><%= user.email %></td>
-    <td>
-      <%= if user.admin, do: "Admin", else: "-" %>
+    </div>
+    <div class="col-12 col-sm-5 justify-content-end form-inline">
+      <input type="text" class="form-control fuzzy-search" placeholder="search..."/>
+      <a href="/users/new" class="btn btn-dark  ml-2">
+        <i class="fa fa-plus" aria-hidden="true"></i> New User
+      </a>
+    </div>
+  </div>
+
+  <table class="table table-sm">
+    <thead class="thead-default">
+      <tr>
+        <th class="sort" data-sort="username">Username <i class='fa' aria-hidden="true"></i></th>
+        <th class="sort" data-sort="email">Email <i class='fa' aria-hidden="true"></i></th>
+        <th class="sort" data-sort="firstname">Firstname <i class='fa' aria-hidden="true"></i></th>
+        <th class="sort" data-sort="lastname">Lastname <i class='fa' aria-hidden="true"></i></th>
+        <th class="sort" data-sort="admin">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          <i class='fa' aria-hidden="true"></i>
+        </th>
+        <th class="sort" data-sort="faux">
+          <i class="fa fa-user-o" aria-hidden="true"></i>
+          <i class='fa' aria-hidden="true"></i>
+        </th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody class='list'>
+    </tbody>
+  </table>
+</div>
+
+<table class='d-none'>
+  <!-- List.js template -->
+  <tr id="usersItem" class='user'>
+    <td class="username"></td>
+    <td class="email"></td>
+    <td class="firstname"></td>
+    <td class="lastname"></td>
+    <td class="admin">
+      <i class="toggle text-secondary fa fa-user" aria-hidden="true"></i>
+      <i class="toggle text-primary fa fa-user-plus" aria-hidden="true"></i>
     </td>
-    <td class="text-center">
-      <%= link "Edit", to: "/users/#{user.id}/edit", class: "btn btn-light btn-sm" %>
-      <!--< %= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>-->
+    <td class="faux">
+      <i class="toggle text-secondary fa fa-times" aria-hidden="true"></i>
+      <i class="toggle text-primary fa fa-check" aria-hidden="true"></i>
+    </td>
+    <td class='text-center'>
+      <a class='editLink btn btn-light btn-sm'>Edit</a>
+      <a class='deleteLink btn btn-light btn-sm disabled'>Delete</a>
     </td>
   </tr>
-<% end %>
-  </tbody>
 </table>
-
-
-<!--< %= link "New user", to: user_path(@conn, :new) %>-->

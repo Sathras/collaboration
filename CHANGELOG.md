@@ -1,6 +1,11 @@
 # Changelog
 If versions are ommited from the changelog they only contain deployment updates
 
+### 0.3.0 - 08/30/2017
+  *  Added: Admin Channel & Admin Interface now utilizes sockets
+  *  Added: Option to toggle topic hidden and visible directly from admin area
+  *  Removed: Datatables (now using list.js)
+
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues
 

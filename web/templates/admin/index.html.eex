@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+    data-target="#admin-tabs" aria-controls="admin-tabs" aria-expanded="false"
+    aria-label="Manage"
+  ><span class="navbar-toggler-icon"></span></button>
+
+  <div class="collapse navbar-collapse" id="admin-tabs">
+    <ul class="nav nav-tabs mr-auto" role="tablist">
+      <li class="nav-item"><a
+          class="nav-link active"
+          id="topics-tab"
+          data-toggle="tab"
+          href="#topics-area"
+          role="tab"
+          aria-controls="Topics"
+          aria-expanded="true"
+        >Topics</a></li>
+      <li class="nav-item"><a
+          class="nav-link"
+          id="users-tab"
+          data-toggle="tab"
+          href="#users-area"
+          role="tab"
+          aria-controls="Users"
+          aria-expanded="true"
+        >Users</a></li>
+      <li class="nav-item"><a
+          class="nav-link"
+          id="instructions-tab"
+          data-toggle="tab"
+          href="#instructions-area"
+          role="tab"
+          aria-controls="Users"
+          aria-expanded="true"
+        >Instructions</a></li>
+    </ul>
+    <ul class="nav d-none">
+      <li class="nav-item">
+        <%= link "New Topic", to: topic_path(@conn, :new), class: "float-right btn btn-dark mr-1" %>
+      </li>
+      <li class="nav-item">
+        <%= link "New User", to: user_path(@conn, :new), class: "float-right btn btn-dark" %>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="tab-content" id="adminContent">
+  <div
+    class="tab-pane fade show active"
+    id="topics-area"
+    role="tabpanel"
+    aria-labelledby="topics-tab">
+    <%= render Collaboration.AdminView, "topics.html" %>
+  </div>
+  <div
+    class="tab-pane fade"
+    id="users-area"
+    role="tabpanel"
+    aria-labelledby="users-tab">
+    <%= render Collaboration.AdminView, "users.html" %>
+  </div>
+  <div
+    class="tab-pane fade"
+    id="instructions-area"
+    role="tabpanel"
+    aria-labelledby="instructions-tab">
+    <%= render Collaboration.AdminView, "instructions.html", instructions: @instructions %>
+  </div>
+</div>

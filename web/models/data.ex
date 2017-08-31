@@ -14,5 +14,6 @@ defmodule Collaboration.Data do
     struct
     |> cast(params, ~w(field value))
     |> validate_required([:value])
+    |> unique_constraint(:field)
   end
 end
