@@ -44,8 +44,7 @@ exports.config = {
       options: {
         // tell sass-brunch where to look for files to @import
         includePaths: [
-          "node_modules/bootstrap/scss",
-          "node_modules/datatables.net-bs4/css"
+          "node_modules/bootstrap/scss"
         ],
         precision: 8 // minimum precision required by bootstrap
       }
@@ -65,7 +64,6 @@ exports.config = {
       jQuery: 'jquery',       // required by bootstrap
       Popper: 'popper.js',    // required by bootstrap
       bootstrap: 'bootstrap',
-      dt: 'datatables.net-bs4',
       timeago: 'timeago',
       List: 'list.js'
     }
