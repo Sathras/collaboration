@@ -2,9 +2,9 @@
   <%= if !topic.hidden do %>
     <div class="card">
       <div class="card-body">
+        <%= link "Show", to: topic_path(@conn, :show, topic), class: "btn btn-primary ml-2 mb-2 float-right" %>
         <h4 class="card-title"><%= topic.title %></h4>
         <%= raw(topic.shortdesc) %>
-        <%= link "Show", to: topic_path(@conn, :show, topic), class: "btn btn-primary float-right" %>
       </div>
     </div>
   <% end %>

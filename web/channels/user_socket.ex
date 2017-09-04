@@ -3,6 +3,7 @@ defmodule Collaboration.UserSocket do
 
   ## Channels
   channel "admin", Collaboration.AdminChannel
+  channel "public", Collaboration.PublicChannel
   channel "topic:*", Collaboration.TopicChannel
 
   ## Transports

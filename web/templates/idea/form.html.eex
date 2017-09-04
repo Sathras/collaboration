@@ -1,6 +1,5 @@
-<%= form_for @conn, idea_path(@conn, :create), [as: "idea", id: "submit-idea", class: "novalidate"], fn f -> %>
-<div class="modal fade" id="modal-addidea" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="modal-submit-idea" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Add Idea</h5>
@@ -8,7 +7,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form id="submitIdea" class="novalidate">
       <div class="modal-body">
+
+          <input type="hidden" name="idea_id" value="" />
 
           <div id="idea_alert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,24 +32,25 @@
           </div>
 
           <%= if @fauxusers do %>
-            <div class="form-group">
-              <label for="idea"><strong>Post as:</strong></label>
-              <select class="comment-user form-control">
+            <div id="fauxuser-select" class="form-group">
+              <label for="idea_user_id"><strong>Post as:</strong></label>
+              <select id="idea_user_id" class="comment-user form-control">
                 <%= for user <- @fauxusers do %>
                   <option value="<%= user.id %>" <%= if user.id == @user_id, do: "selected" %>>
-                    <%= user.firstname <> " " <> user.lastname %>
+                    <%= user.name %>
                     <%= if user.id == @user_id, do: " (me)" %>
                   </option>
                 <% end %>
               </select>
             </div>
           <% end %>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <%= submit "Save", class: "btn btn-success" %>
       </div>
+      </form>
     </div>
   </div>
 </div>
-<% end %>

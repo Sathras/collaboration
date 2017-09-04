@@ -3,6 +3,7 @@ defmodule Collaboration.AdminChannel do
 
   # alias Collaboration.Comment
   alias Collaboration.Data
+  alias Collaboration.Endpoint
   # alias Collaboration.Idea
   alias Collaboration.Topic
   alias Collaboration.TopicView
@@ -24,19 +25,38 @@ defmodule Collaboration.AdminChannel do
     end
   end
 
-  def handle_in("toggle", %{"id" => id, "table" => table, "field" => field,
-    "value" => value }, socket) do
+  def handle_in("toggle", %{"id"=>id, "table"=>table, "field"=>field}, socket) do
 
     entry = case table do
       "topic" -> Repo.get!(Topic, id)
       "user" -> Repo.get!(User, id)
     end
 
-    entry = Ecto.Changeset.change entry, %{String.to_atom(field) => !value}
+    field = String.to_atom(field)
+    value = Map.fetch!(entry, field)
+    entry = Ecto.Changeset.change entry, %{field => !value}
 
     case Repo.update entry do
-      {:ok, _entry}       -> # Updated with success
+      {:ok, res}       -> # Updated with success
+
+        # update admin window
         broadcast! socket, "toggle", %{ id: id, table: table, field: field }
+
+        # update menulist
+        if table == "topic" && field == :hidden do
+
+          data = %{
+            id: res.id,
+            order: res.order,
+            menutitle: res.menutitle,
+          }
+
+          case res.hidden do
+            false -> Endpoint.broadcast!("public", "menutopic-show", data)
+            true ->  Endpoint.broadcast!("public", "menutopic-hide", data)
+          end
+        end
+
         {:noreply, socket}
       {:error, _changeset} -> # Something went wrong
         {:noreply, socket}

@@ -3,10 +3,13 @@ defmodule Collaboration.TopicController do
 
   plug :auth_admin when action in [:new, :create, :edit, :update, :delete]
 
+  import Collaboration.UserView, only: [displayName: 1]
+
   alias Collaboration.Comment
   alias Collaboration.Idea
   alias Collaboration.Topic
   alias Collaboration.User
+  alias Collaboration.UserView
 
   def index(conn, _params) do
     topics = Repo.all(Topic)
@@ -37,54 +40,25 @@ defmodule Collaboration.TopicController do
     topic = Repo.get!(Topic, id)
 
     # if admin, provide a list of fauxusers that user can use to post idea/comment
-    fauxusers = if user && user.admin, do:
-      Repo.all(
+    fauxusers = if user && user.admin do
+      Phoenix.View.render_many(Repo.all(
         from u in User,
-        select: %{id: u.id, firstname: u.firstname, lastname: u.lastname},
-        where: u.id == ^user.id,
-        or_where: u.faux
-      ),
-    else: nil
+          select: %{
+            id: u.id,
+            firstname: u.firstname,
+            lastname: u.lastname,
+            username: u.username
+          },
+          where: u.id == ^user.id,
+          or_where: u.faux
+        ),
+        UserView, "user-name.json"
+      )
+    else nil end
 
-    comments_query = from c in Comment, order_by: c.inserted_at, preload: :user
+    em = if (user && !topic.closed)||(user && user.admin), do: true, else: false
 
-    ideas = cond do
-      user && user.admin ->
-        Repo.all(
-          from i in Idea,
-          where: i.topic_id == ^id,
-          preload: [:user, comments: ^comments_query],
-          order_by: [desc: i.inserted_at]
-        )
-      user ->
-        Repo.all(
-          from i in Idea,
-          join: u in assoc(i, :user),
-          where: i.topic_id == ^id,
-          where: u.faux == true,
-          or_where: i.user_id == ^user.id,
-          preload: [:user, comments: ^comments_query],
-          order_by: [desc: i.inserted_at]
-        )
-      true ->
-        Repo.all(
-          from i in Idea,
-          join: u in assoc(i, :user),
-          where: i.topic_id == ^id,
-          where: u.faux == true,
-          preload: [:user, comments: ^comments_query],
-          order_by: [desc: i.inserted_at]
-        )
-    end
-
-    idea_changeset = Idea.changeset(%Idea{})
-
-    render(conn, "show.html",
-      topic: topic,
-      fauxusers: fauxusers,
-      ideas: ideas,
-      idea_changeset: idea_changeset
-    )
+    render conn, "show.html", topic: topic, fauxusers: fauxusers, editMode: em
   end
 
   def edit(conn, %{"id" => id}) do

@@ -3,7 +3,9 @@ defmodule Collaboration.TopicChannel do
 
   alias Collaboration.Comment
   alias Collaboration.Idea
+  alias Collaboration.IdeaView
   alias Collaboration.User
+  alias Phoenix.View
 
   def join("topic:" <> topic_id, _params, socket) do
 
@@ -54,24 +56,46 @@ defmodule Collaboration.TopicChannel do
     handle_in(event, params, user, socket)
   end
 
-  def handle_in("new_idea", params, user, socket) do
+  # submitting a new or updated idea
+  def handle_in("submit-idea", params, user, socket) do
 
-    changeset = Idea.changeset(
-      %Idea{user_id: user.id, topic_id: socket.assigns.topic_id},
-      params
-    )
+    # get existing post if it exists, otherwise create a new structure
+    result =
+      case params["idea_id"] do
+        nil ->  %Idea{user_id: user.id, topic_id: socket.assigns.topic_id}
+        id  ->  case Repo.get!(Idea, id) do
+                  nil  -> %Idea{user_id: user.id, topic_id: socket.assigns.topic_id}
+                  idea -> idea
+                end
+      end
+      |> Idea.changeset(params)   # validate input params
+      |> Repo.insert_or_update    # insert or update it in database
 
-    case Repo.insert(changeset) do
-      {:ok, idea} ->
-        {:reply, {:ok, %{
-          title: idea.title,
-          description: idea.description,
-          name: user.firstname <> " " <> user.lastname
-        }}, socket}
-
-      {:error, changeset} ->
+    case result do
+      {:ok, idea}       -> # Inserted or updated with success
+        # load comments and user
+        idea = Repo.preload idea, [:comments, :user]
+        {:reply, {:ok, View.render_one(idea, IdeaView, "idea.json")}, socket}
+      {:error, changeset} -> # Something went wrong
         errors = error_socket(changeset)
         {:reply, {:error, %{errors: errors}}, socket}
+    end
+  end
+
+
+  # submitting a new or updated idea
+  def handle_in("delete-idea", %{"idea" => i}, user, socket) do
+
+    if !user.admin do
+      {:reply, :error, socket}
+    else
+      idea = Repo.get!(Idea, i)
+      case Repo.delete idea do
+        {:ok, _struct}       -> # Deleted with success
+          {:reply, :ok, socket}
+        {:error, _changeset} -> # Something went wrong
+          {:reply, :error, socket}
+      end
     end
   end
 

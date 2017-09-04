@@ -22,7 +22,7 @@ defmodule Collaboration.Topic do
     |> validate_required([:title, :menutitle, :shortdesc, :longdesc, :hidden, :closed])
     |> validate_length(:title, min: 5, max: 30)
     |> validate_length(:menutitle, min: 2, max: 12)
-    |> validate_number(:order, greater_than_or_equal_to: 0)
+    |> validate_number(:order, greater_than: 0)
     |> unique_constraint(:title)
     |> unique_constraint(:menutitle)
   end

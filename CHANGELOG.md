@@ -1,10 +1,34 @@
 # Changelog
 If versions are ommited from the changelog they only contain deployment updates
 
-### 0.3.0 - 08/30/2017
+## TODO
+This is a list of open issues.
+  *  Redirect non-admin users automatically if currently visited topic gets closed
+  *  Update Instructions for all users upon change
+  *  Update Topiclist in /topics automatically upon change
+  *  Update Topic Description automatically upon change
+  *  When editing idea, allow to change user as well or remove field
+
+### 0.3.0 - 08/31/2017
   *  Added: Admin Channel & Admin Interface now utilizes sockets
   *  Added: Option to toggle topic hidden and visible directly from admin area
-  *  Removed: Datatables (now using list.js)
+  *  Added: Admin Instructions Intelligent Save Button that enables and disables on changes and save
+  *  Removed: Datatables dependency (now using list.js)
+  *  Added: Making topics visible in admin now hides/shows them for all users in menu
+  *  Added: Current Topic / Home is highlighted in the menubar
+  *  Fixed: Increased Size of Input submit form
+  *  Fixed: Made Navbar stick to the top (permanently visible)
+  *  Moved: submit idea button is now in navbar on the top
+  *  Added: Icons on several buttons
+  *  Added: Idea Description now uses a nice editor for basic styling
+  *  Added: Submitted Ideas now show up directly on screen (no page reload required)
+  *  Added: Validation for submitted ideas
+  *  Added: Canceling an idea submission now empties the form and resets validation states
+  *  Added: Admins can now edit any idea
+  *  Fixed: Normal users can now post ideas too, if the topic is open
+  *  Fixed: Instructions Button and Popup is now only visible when the user is logged in and the topic is open
+  *  Added: Admins can now delete ideas (a warning is displayed beforehand)
+
 
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues

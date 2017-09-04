@@ -11,4 +11,12 @@ defmodule Collaboration.TopicView do
       closed:     t.closed
     }
   end
+
+  def render("topic-menu.json", %{topic: t}) do
+    %{
+      id:        t.id,
+      menutitle: t.menutitle,
+      order:     t.order
+    }
+  end
 end

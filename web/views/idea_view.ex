@@ -1,5 +1,7 @@
 defmodule Collaboration.IdeaView do
+
   use Collaboration.Web, :view
+  alias Collaboration.UserView
 
   def render("idea.json", %{idea: i}) do
     comments = [
@@ -12,7 +14,7 @@ defmodule Collaboration.IdeaView do
       title: i.title,
       description: i.description,
       comments: render_many(i.comments, Collaboration.CommentView, "comment.json"),
-      user: i.user.firstname <> " " <> i.user.lastname
+      user: UserView.displayName(i.user)
     }
   end
 

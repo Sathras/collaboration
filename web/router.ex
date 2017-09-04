@@ -37,9 +37,6 @@ defmodule Collaboration.Router do
     resources "/ideas", IdeaController
 
     #admin
-    resources "/admin", AdminController, only: [:index, :update]
-    get "/admin/instructions", AdminController, :instructions
-    get "/admin/topics", AdminController, :topics
-    get "/admin/users", AdminController, :users
+    resources "/admin", AdminController, only: [:index]
   end
 end

@@ -11,36 +11,50 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
-  <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
+  <body
+    data-path="<%= @conn.request_path %>"
+    data-js-view-name="<%= js_view_name(@conn, @view_template) %>"
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-3">
+    <%= if @current_user do %>
+      data-admin="<%= @current_user.admin %>"
+      data-user_id="<%= @current_user.id %>"
+    <% else %>
+      data-admin="false"
+      data-user_id="null"
+    <% end %>
+  >
+
+    <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark mb-3">
       <div class="container">
-        <a class="navbar-brand" href="/">Idea Hub</a>
+        <a class="navbar-brand" href="/topics">Idea Hub</a>
 
         <button
           class="navbar-toggler"
           type="button"
           data-toggle="collapse"
-          data-target="#navbarText"
-          aria-controls="navbarText"
+          data-target="#menuList"
+          aria-controls="menuList"
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarText">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        <div class="collapse navbar-collapse" id="menuList">
+          <ul class="navbar-nav mr-auto list">
+            <li class="nav-item menulink" data-order="0">
+              <a class="link menutitle nav-link" href="/topics">Home</a>
             </li>
             <%= for topic <- @conn.assigns.menutopics do %>
-              <li class="nav-item active">
-                <%= link(topic.title, to: "/topics/#{topic.id}", class: "nav-link") %>
+              <li class="nav-item" data-id="<%= topic.id %>" data-order="<%= topic.order %>">
+                <%= link(topic.menutitle,
+                  to: "/topics/#{topic.id}",
+                  class: "link menutitle nav-link")
+                %>
               </li>
             <% end %>
           </ul>
-          <ul class="navbar-nav">
+          <ul id="menu-actions" class="navbar-nav">
             <!-- No current user (show login and register)-->
             <%= if !@current_user do %>
               <li class="<%= nav_class(@conn, "/login") %>">
@@ -53,10 +67,6 @@
 
             <!-- Current User (show settings and logout)-->
             <%= if @current_user do %>
-              <li class="nav-item mr-2">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
-              </li>
-
               <li class="dropdown show">
                 <a class="btn btn-light dropdown-toggle" href="#"
                   role="button" id="nav-actions" data-toggle="dropdown"
@@ -102,25 +112,6 @@
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
-
-      <%= if @current_user do %>
-      <div class="modal fade" id="modal-instructions" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Instructions</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <%= raw(@conn.assigns.instructions) %>
-            </div>
-          </div>
-        </div>
-      </div>
-      <% end %>
-
     </div> <!-- /container -->
     <script>window.userToken = "<%= assigns[:user_token] %>"</script>
     <script src="https://use.fontawesome.com/f7ab62c769.js"></script>

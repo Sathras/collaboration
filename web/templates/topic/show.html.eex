@@ -1,22 +1,20 @@
 <!-- for javascript -->
-<%= content_tag :div, id: "topic", data: [id: @topic.id] do %><% end %>
+<%= content_tag :div, id: "topic", data: [id: @topic.id, editMode: @editMode] do %>
+<% end %>
 
 <h2>
   <%= @topic.title %>
-  <%= if @current_user && @current_user.admin, do: link "Edit", to: topic_path(@conn, :edit, @topic), class: "btn btn-dark float-right" %>
+  <%= if @current_user && @current_user.admin do %>
+    <a class="btn btn-dark float-right" href="/topics/<%= @topic.id %>/edit">
+      <i class="fa fa-pencil" aria-hidden="true"></i> Edit
+    </a>
+  <% end %>
 </h2>
 <div>
   <%= raw(@topic.longdesc) %>
 </div>
 
-<h4>
-  Ideas
-  <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
-    <button class="float-right btn btn-success" data-toggle="modal" data-target="#modal-addidea">
-      Add Idea
-    </button>
-  <% end %>
-</h4>
+<h4>Ideas</h4>
 <div class="clearfix mb-2"></div>
 
 <div id="idea-list" class=''>
@@ -29,12 +27,14 @@
     <div class="card-body bg-light">
       <div class='pl-2 pb-2 pull-right text-right'>
         <i>4 minutes ago</i>
-        <button type="button" class="btn btn-light btn-sm">
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="btn btn-light btn-sm">
-          <i class="fa fa-trash" aria-hidden="true"></i>
-        </button>
+        <%= if @current_user && @current_user.admin do %>
+          <button type="button" class="btn-edit-idea btn btn-light btn-sm">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn-delete-idea btn btn-light btn-sm">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </button>
+        <% end %>
       </div>
 
       <h4 class="card-title title"></h4>
@@ -55,7 +55,7 @@
             <select class="form-control" id="inlineFormCustomSelectPref">
               <%= for user <- @fauxusers do %>
                 <option value="<%= user.id %>" <%= if user.id == @current_user.id, do: "selected" %>>
-                  <%= user.firstname <> " " <> user.lastname %>
+                  <%= user.name %>
                   <%= if user.id == @current_user.id, do: " (me)" %>
                 </option>
               <% end %>
@@ -79,8 +79,48 @@
   </div>
 </div>
 
-<script>window.editTopic = <%= (@current_user && @current_user.admin) || (@current_user && !@topic.closed) %></script>
 <!-- Add Idea Form-->
-<%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
-  <%= render Collaboration.IdeaView, "form.html", conn: @conn, changeset: @idea_changeset, user_id: @current_user.id, fauxusers: @fauxusers %>
+<%= if @editMode do %>
+
+  <!-- Submit Form Modal-->
+  <%= render Collaboration.IdeaView, "form.html",
+    conn: @conn,
+    user_id: @current_user.id,
+    fauxusers: @fauxusers
+  %>
+
+  <!--Instructions Modal -->
+  <div class="modal fade" id="modal-instructions" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Instructions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= raw(@conn.assigns.instructions) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%= if @current_user && @current_user.admin do %>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content text-center">
+          <div class="modal-body">
+             <p class="lead">Are you sure you want to delete this <span>Idea</span>?</p>
+             <p>All associated comments will also be permanently deleted!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="button" id="btn-delete-idea" class="btn btn-success">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>

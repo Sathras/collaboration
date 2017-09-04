@@ -70,11 +70,11 @@ export default class View extends MainView {
 
         // render and sort a list of topics
         topicList.add( topics )
-        topicList.sort('order', { order: "asc" });
+        topicList.sort('order', { order: "asc" })
 
         // render and sort a list of users
         userList.add( users )
-        userList.sort('username', { order: "asc" });
+        userList.sort('username', { order: "asc" })
       })
       .receive("error", res => console.log(res))
 
@@ -126,8 +126,7 @@ export default class View extends MainView {
       channel.push('toggle', {
         id :   $(e.target).parent().parent().data('id'),
         table: $(e.target).parent().parent().attr('class'),
-        field: $(e.target).parent().attr('class'),
-        value: $(e.target).parent().data('value')
+        field: $(e.target).parent().attr('class')
       })
     })
 
