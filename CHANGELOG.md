@@ -8,6 +8,8 @@ This is a list of open issues.
   *  Update Topiclist in /topics automatically upon change
   *  Update Topic Description automatically upon change
   *  When editing idea, allow to change user as well or remove field
+  *  Allow normal users to edit their own ideas
+
 
 ### 0.3.0 - 08/31/2017
   *  Added: Admin Channel & Admin Interface now utilizes sockets
@@ -28,7 +30,12 @@ This is a list of open issues.
   *  Fixed: Normal users can now post ideas too, if the topic is open
   *  Fixed: Instructions Button and Popup is now only visible when the user is logged in and the topic is open
   *  Added: Admins can now delete ideas (a warning is displayed beforehand)
-
+  *  Added: Users can now leave comments
+  *  Added: Upon successful comment, comment field is now emptied
+  *  Added: Upon unsuccessful comment, comment field is now highlighted in red (error)
+  *  Added: Admins can now delete comments (no confirmation needed)
+  *  Added: The time since ideas / comments have been posted is now displayed and updated automatically
+  *  Fixed: Dates now account for correct timezone
 
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues

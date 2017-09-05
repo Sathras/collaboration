@@ -2,6 +2,7 @@ defmodule Collaboration.TopicChannel do
   use Collaboration.Web, :channel
 
   alias Collaboration.Comment
+  alias Collaboration.CommentView
   alias Collaboration.Idea
   alias Collaboration.IdeaView
   alias Collaboration.User
@@ -59,7 +60,7 @@ defmodule Collaboration.TopicChannel do
   # submitting a new or updated idea
   def handle_in("submit-idea", params, user, socket) do
 
-    # get existing post if it exists, otherwise create a new structure
+    # get existing idea if it exists, otherwise create a new structure
     result =
       case params["idea_id"] do
         nil ->  %Idea{user_id: user.id, topic_id: socket.assigns.topic_id}
@@ -82,8 +83,7 @@ defmodule Collaboration.TopicChannel do
     end
   end
 
-
-  # submitting a new or updated idea
+  # delete idea
   def handle_in("delete-idea", %{"idea" => i}, user, socket) do
 
     if !user.admin do
@@ -99,25 +99,47 @@ defmodule Collaboration.TopicChannel do
     end
   end
 
-  def handle_in("new_comment", params, user, socket) do
+  # submitting a new or updated comment
+  def handle_in("submit-comment", params, user, socket) do
 
-    changeset = Comment.changeset(
-      %Comment{user_id: user.id, idea_id: String.to_integer(params["idea_id"])},
-      params
-    )
+    changeset = Comment.changeset( %Comment{ user_id: user.id}, params )
 
-    case Repo.insert(changeset) do
-      {:ok, comment} ->
-        broadcast! socket, "new_comment", %{
-          text: comment.text,
-          idea: comment.id,
-          user: user.id
-        }
-        {:reply, :ok, socket}
+    # get existing comment if it exists, otherwise create a new structure
+    result =
+      case params["comment_id"] do
+        nil ->  %Comment{user_id: user.id, idea_id: params["idea_id"]}
+        id  ->  case Repo.get!(Comment, id) do
+                  nil  -> %Comment{user_id: user.id, idea_id: params["idea_id"]}
+                  comment -> comment
+                end
+      end
+      |> Comment.changeset(params) # validate input params
+      |> Repo.insert_or_update     # insert or update it in database
 
-      {:error, changeset} ->
-        {:reply, {:error, %{errors: changeset}}, socket}
+    case result do
+      {:ok, comment} -> # Inserted or updated with success
+        # load comments and user
+        comment = Repo.preload comment, [:user]
+        {:reply, {:ok, View.render_one(comment, CommentView, "comment.json")}, socket}
+      {:error, changeset} -> # Something went wrong
+        errors = error_socket(changeset)
+        {:reply, {:error, %{errors: errors}}, socket}
     end
   end
 
+  # delete comment
+  def handle_in("delete-comment", %{"comment_id" => id}, user, socket) do
+
+    if !user.admin do
+      {:reply, :error, socket}
+    else
+      comment = Repo.get!(Comment, id)
+      case Repo.delete comment do
+        {:ok, _struct}       -> # Deleted with success
+          {:reply, :ok, socket}
+        {:error, _changeset} -> # Something went wrong
+          {:reply, :error, socket}
+      end
+    end
+  end
 end

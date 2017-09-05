@@ -3,6 +3,7 @@
 /* global tinymce, tinyMCE */
 
 import $ from 'jquery'
+import _ from 'lodash'
 import List from 'list.js'
 import socket from '../../socket'
 import MainView from '../main';
@@ -17,20 +18,30 @@ export default class View extends MainView {
   }
 
   appendComments(idea){
+
+    // empty all comments before redrawing
+    const commentList = $(`#idea-list .idea[data-id=${idea._values.id}] .comments`)
+    commentList.html('')
+
+    const admin_functions = (this.admin)
+      ? ` <button type="button" class="delete-comment btn btn-light btn-sm">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </button>`
+      : ``
+
     idea._values.comments.forEach(c => {
-      $(`.idea[data-id=${idea._values.id}]`).children('.comments').append(`
+      commentList.append(`
         <li class="comment list-group-item" data-id="${c.id}">
-          <strong>${c.user}: </strong>
-          ${c.text}
+          <strong>${c.user} </strong>${c.text}
           <div class='pl-2 pull-right'>
-            <i>4 minutes ago</i>
-            <button type="button" class="btn btn-light btn-sm">
-              <i class="fa fa-trash" aria-hidden="true"></i>
-            </button>
+            <i><time datetime="${c.inserted_at}"></time></i>
+            ${admin_functions}
           </div>
         </li>
       `)
     })
+
+    $('time').timeago()
   }
 
   mount() {
@@ -43,6 +54,7 @@ export default class View extends MainView {
       item: 'idea-item',
       valueNames: [
         {data: ['id']},
+        {name: 'inserted_at', attr: 'datetime'},
         'title',
         'description',
         'user'
@@ -56,14 +68,7 @@ export default class View extends MainView {
     let channel = socket.channel(`topic:${this.topic_id}`)
     channel.join()
       // on load retrieve list of ideas from server
-      .receive("ok", ({ideas}) => {
-
-        // render a list of ideas
-        ideaList.add( ideas, (ideas) => {
-          // add comments to each item
-          ideas.forEach((idea) => this.appendComments(idea))
-        })
-      })
+      .receive("ok", ({ideas}) => ideaList.add(ideas))
       .receive("error", resp => { console.log("Unable to join", resp) })
 
     //###################### EDIT FUNCTIONALIY ONLY ############################
@@ -163,7 +168,6 @@ export default class View extends MainView {
         $('#modal-submit-idea').modal('show').find('.modal-title').html('Add Idea')
       })
 
-
       // reset form when modal is being hidden
       $('#modal-submit-idea').on('hidden.bs.modal', function (e) {
 
@@ -175,6 +179,47 @@ export default class View extends MainView {
           .siblings('.invalid-feedback').html('')
         tinymce.get('idea_description').setContent('');
       }.bind(this))
+
+      // COMMENTS
+
+      // add comments to list entries once list has been updated
+      ideaList.on('updated', ()=>{
+        ideaList.items.forEach((idea) => this.appendComments(idea))
+      })
+
+      // submit idea form (add or update)
+      $('#idea-list').on('submit', '.submitComment', (e, admin=this.admin) => {
+        e.preventDefault()
+
+        // read form data
+        const idea_id = $(e.target).closest('.idea').data('id')
+        let formData = {
+          idea_id: idea_id,
+          text : $(e.target).find('input').val()
+        }
+        if(admin) formData.user_id = $(e.target).find('select').val()
+
+        channel.push("submit-comment", formData)
+          .receive("ok", c => {
+            // add comment to list object
+            let idea = ideaList.get("id", idea_id)[0]
+            let comments = idea._values.comments
+            comments.push(c)
+            idea.values({comments: comments})
+            ideaList.update()
+            $(e.target).find('input').val('').removeClass('is-invalid')
+          })
+
+          // validation on error
+          .receive("error", ({errors}) => {
+            if (errors.text)
+              $(e.target).find('input').addClass('is-invalid')
+          })
+      })
+
+      // enable comments
+      $('.submitComment').find('input, button, select').removeAttr('disabled')
+
     }
 
     //###################### ADMIN FUNCTIONALIY ONLY ###########################
@@ -214,6 +259,21 @@ export default class View extends MainView {
       // reset selected idea upon closing delete confirm window
       $('#modal-delete')
         .on('hidden.bs.modal', function (e) { this.selectedIdea = null }.bind(this))
+
+      // delete comment
+      $('#idea-list').on('click', '.delete-comment', (e) => {
+        const idea_id = $(e.target).closest('.idea').data('id')
+        const comment_id = $(e.target).closest('.comment').data('id')
+        channel.push("delete-comment", {comment_id})
+          .receive("ok", () => {
+            // if deletion was successful, remove from list as well
+            let idea = ideaList.get("id", idea_id)[0]
+            idea.values({comments: _.remove(idea._values.comments, (c) => {
+              return c.id == comment_id;
+            })})
+            ideaList.update()
+          })
+      })
     }
   }
 
@@ -240,85 +300,3 @@ export default class View extends MainView {
     // const commentList = comments.forEach( c => this.renderComment(c))
   }
 }
-
-
-
-
-//   $('#submit-idea').submit(e => {
-//     e.preventDefault()
-
-//     let payload = {
-//       title: $('#idea_title').val(),
-//       description: $('#idea_description').val(),
-//       user_id: $('#idea_user_id').val()
-//     }
-
-//     topicChannel.push("new_idea", payload)
-//       .receive("ok", (idea) => {
-//         window.location.reload(true);
-//       })
-//       .receive("error", (data) => {
-
-//         $("#idea_alert").removeClass('d-none')
-
-//         if(data.errors.title)
-//           $('#idea_title')
-//             .addClass('is-invalid')
-//             .siblings('.invalid-feedback').html(data.errors.title[0])
-//         else
-//           $('#idea_title').addClass('is-valid')
-
-//         if(data.errors.description)
-//           $('#idea_description')
-//             .addClass('is-invalid')
-//             .siblings('.invalid-feedback').html(data.errors.description[0])
-//         else
-//           $('#idea_title').addClass('is-valid')
-//       })
-
-//     $('#idea_title').val("")
-//     $('#idea_description').val("")
-//     $('#idea_user_id').val("")
-//   })
-
-//   $('.add-comment').submit((e) => {
-//     e.preventDefault()
-
-//     let payload = {
-//       text: $(e.currentTarget).find('.comment-text').val(),
-//       idea_id: $(e.currentTarget).find('.comment-idea').val()
-//     }
-
-//     topicChannel.push("new_comment", payload)
-//       .receive("error", e => console.log(e) )
-//     $('.comment-text').val("")
-//   })
-
-//   topicChannel.on("new_idea", (idea) => {
-//     renderIdea(idea)
-//   })
-
-
-// }
-
-// function esc(str){
-//   let div = document.createElement("div")
-//   div.appendChild(document.createTextNode(str))
-//   return div.innerHTML
-// }
-
-// function renderIdea(idea){
-//   // TODO append annotation to msgContainer
-//   console.log(idea)
-
-//   // let template = document.createElement("div")
-
-//   // template.innerHTML = `
-//   // <a href="#" data-seek="${this.esc(at)}">
-//   //   <b>${this.esc(user.username)}</b>: ${this.esc(body)}
-//   // </a>
-//   // `
-//   // msgContainer.appendChild(template)
-//   // msgContainer.scrollTop = msgContainer.scrollHeight
-
-// }

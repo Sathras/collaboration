@@ -26,7 +26,7 @@
   <div id="idea-item" class="idea card mb-4">
     <div class="card-body bg-light">
       <div class='pl-2 pb-2 pull-right text-right'>
-        <i>4 minutes ago</i>
+        <i><time class='inserted_at'></time></i>
         <%= if @current_user && @current_user.admin do %>
           <button type="button" class="btn-edit-idea btn btn-light btn-sm">
             <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -46,34 +46,34 @@
     <ul class="list-group list-group-flush comments"></ul>
 
     <!-- Comment Form -->
-    <%= if @current_user && @current_user.admin || (@current_user && !@topic.closed) do %>
+    <%= if @editMode do %>
     <div class="card-footer">
-      <%= if @current_user.admin do %>
-      <form class="add-comment novalidate">
-        <div class='form-row'>
-          <div class='col-3'>
-            <select class="form-control" id="inlineFormCustomSelectPref">
-              <%= for user <- @fauxusers do %>
-                <option value="<%= user.id %>" <%= if user.id == @current_user.id, do: "selected" %>>
-                  <%= user.name %>
-                  <%= if user.id == @current_user.id, do: " (me)" %>
-                </option>
-              <% end %>
-            </select>
-          </div>
-          <div class='col-9'>
-        <% end %>
-            <div class="input-group">
-              <input class="form-control" placeholder="Comment..."></input>
-              <span class="input-group-btn">
-                <button class="btn btn-secondary" type="submit">Submit</button>
-              </span>
-            </div>
+      <form class="submitComment novalidate">
         <%= if @current_user.admin do %>
+          <div class='form-row'>
+            <div class='col-3'>
+              <select class="form-control" id="inlineFormCustomSelectPref" disabled>
+                <%= for user <- @fauxusers do %>
+                  <option value="<%= user.id %>" <%= if user.id == @current_user.id, do: "selected" %>>
+                    <%= user.name %>
+                    <%= if user.id == @current_user.id, do: " (me)" %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+            <div class='col-9'>
+          <% end %>
+              <div class="input-group">
+                <input class="form-control" disabled placeholder="Comment..."></input>
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" disabled type="submit">Submit</button>
+                </span>
+              </div>
+          <%= if @current_user.admin do %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </form>
-      <% end %>
     </div>
     <% end %>
   </div>

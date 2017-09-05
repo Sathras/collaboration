@@ -1,6 +1,8 @@
 defmodule Collaboration.Comment do
   use Collaboration.Web, :model
 
+  @timestamps_opts [type: :utc_datetime, usec: false]
+
   schema "comments" do
     field :text, :string
     belongs_to :idea, Collaboration.Idea

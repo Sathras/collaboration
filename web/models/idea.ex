@@ -1,6 +1,8 @@
 defmodule Collaboration.Idea do
   use Collaboration.Web, :model
 
+  @timestamps_opts [type: :utc_datetime, usec: false]
+
   schema "ideas" do
     field :title, :string
     field :description, :string

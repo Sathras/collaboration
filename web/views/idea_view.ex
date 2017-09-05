@@ -11,6 +11,7 @@ defmodule Collaboration.IdeaView do
 
     %{
       id: i.id,
+      inserted_at: i.inserted_at,
       title: i.title,
       description: i.description,
       comments: render_many(i.comments, Collaboration.CommentView, "comment.json"),
