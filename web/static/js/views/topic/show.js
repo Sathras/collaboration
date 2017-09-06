@@ -24,15 +24,34 @@ export default class View extends MainView {
     commentList.html('')
 
     const admin_functions = (this.admin)
-      ? ` <button type="button" class="delete-comment btn btn-light btn-sm">
+      ? ` <button type="button" class="delete-comment btn btn-outline-dark btn-sm">
             <i class="fa fa-trash" aria-hidden="true"></i>
           </button>`
       : ``
 
     idea._values.comments.forEach(c => {
+
+      const like_button = (this.editMode)
+        ? ` <button type="button" class="btn-like btn btn-sm btn-outline-primary">
+              ${(c.likes.indexOf(this.user_id) != -1) ? "Unlike" :  "Like"}
+            </button>`
+        : ``
+
+      const likes = (c.likes.length)
+        ? ` <span class="likes text-primary">
+              <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+              <strong>${c.likes.length}</strong>
+            </span>`
+        : ``
+
       commentList.append(`
         <li class="comment list-group-item" data-id="${c.id}">
-          <strong>${c.user} </strong>${c.text}
+          <strong>${c.user} </strong>
+          ${c.text}
+          <span class="ml-2">
+            ${likes}
+            ${like_button}
+          </span>
           <div class='pl-2 pull-right'>
             <i><time datetime="${c.inserted_at}"></time></i>
             ${admin_functions}
@@ -42,6 +61,15 @@ export default class View extends MainView {
     })
 
     $('time').timeago()
+  }
+
+  updateComment (comments, newComment, id = null) {
+    var match = _.find(comments, ['id', id])
+    if(match){
+      var index = _.indexOf(comments, _.find(comments, ['id', id]))
+      comments.splice(index, 1, newComment)
+    }
+    else comments.push(newComment);
   }
 
   mount() {
@@ -214,6 +242,32 @@ export default class View extends MainView {
           .receive("error", ({errors}) => {
             if (errors.text)
               $(e.target).find('input').addClass('is-invalid')
+          })
+      })
+
+      // like-button (toggles like for user)
+      $('#idea-list').on('click', '.btn-like', (e, user_id=this.user_id) => {
+
+        const idea_id = $(e.target).closest('.idea').data('id')
+        const comment_id = $(e.target).closest('.comment').data('id')
+
+        channel.push("toggle-like", {comment_id})
+          .receive("ok", (c) => {
+
+            let idea = ideaList.get("id", idea_id)[0]
+
+            // find correct comment and update it
+            let comments = _.assign(idea._values.comments)
+
+            const i = _.findIndex(comments, (c) => { return c.id == comment_id })
+            const j = comments[i].likes.indexOf(user_id)
+
+            // add or remove like
+            if (j == -1) comments[i].likes.push(user_id)
+            else _.pullAt(comments[i].likes, [j])
+
+            idea.values({comments: comments})
+            ideaList.update()
           })
       })
 

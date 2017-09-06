@@ -10,8 +10,7 @@ This is a list of open issues.
   *  When editing idea, allow to change user as well or remove field
   *  Allow normal users to edit their own ideas
 
-
-### 0.3.0 - 08/31/2017
+### 0.3.0 - 09/05/2017
   *  Added: Admin Channel & Admin Interface now utilizes sockets
   *  Added: Option to toggle topic hidden and visible directly from admin area
   *  Added: Admin Instructions Intelligent Save Button that enables and disables on changes and save
@@ -36,6 +35,7 @@ This is a list of open issues.
   *  Added: Admins can now delete comments (no confirmation needed)
   *  Added: The time since ideas / comments have been posted is now displayed and updated automatically
   *  Fixed: Dates now account for correct timezone
+  *  Added: Users can now like and unlike comments
 
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues

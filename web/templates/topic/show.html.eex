@@ -5,7 +5,7 @@
 <h2>
   <%= @topic.title %>
   <%= if @current_user && @current_user.admin do %>
-    <a class="btn btn-dark float-right" href="/topics/<%= @topic.id %>/edit">
+    <a class="btn btn-outline-dark float-right" href="/topics/<%= @topic.id %>/edit">
       <i class="fa fa-pencil" aria-hidden="true"></i> Edit
     </a>
   <% end %>
@@ -28,10 +28,10 @@
       <div class='pl-2 pb-2 pull-right text-right'>
         <i><time class='inserted_at'></time></i>
         <%= if @current_user && @current_user.admin do %>
-          <button type="button" class="btn-edit-idea btn btn-light btn-sm">
+          <button type="button" class="btn-edit-idea btn btn-outline-dark btn-sm">
             <i class="fa fa-pencil" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn-delete-idea btn btn-light btn-sm">
+          <button type="button" class="btn-delete-idea btn btn-outline-dark btn-sm">
             <i class="fa fa-trash" aria-hidden="true"></i>
           </button>
         <% end %>

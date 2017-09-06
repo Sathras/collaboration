@@ -1,13 +1,12 @@
-defmodule Collaboration.Comment do
+defmodule Collaboration.Reaction do
   use Collaboration.Web, :model
 
   @timestamps_opts [type: :utc_datetime, usec: false]
 
-  schema "comments" do
-    field :text, :string
-    belongs_to :idea, Collaboration.Idea
+  schema "reactions" do
+    field :type, :integer
+    belongs_to :comment, Collaboration.Comment
     belongs_to :user, Collaboration.User
-    has_many :reactions, Collaboration.Reaction
     timestamps()
   end
 
@@ -16,8 +15,7 @@ defmodule Collaboration.Comment do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, ~w(text))
-    |> validate_required([:text])
-    |> validate_length(:text, min: 2, max: 500)
+    |> cast(params, ~w(type))
+    |> validate_required([:type])
   end
 end

@@ -5,6 +5,7 @@ defmodule Collaboration.TopicChannel do
   alias Collaboration.CommentView
   alias Collaboration.Idea
   alias Collaboration.IdeaView
+  alias Collaboration.Reaction
   alias Collaboration.User
   alias Phoenix.View
 
@@ -12,7 +13,10 @@ defmodule Collaboration.TopicChannel do
 
     topic_id = String.to_integer(topic_id)
 
-    comments_query = from c in Comment, order_by: c.inserted_at, preload: :user
+    comments_query =
+      from c in Comment,
+      order_by: c.inserted_at,
+      preload: [:user, :reactions]
 
     ideas = cond do
       socket.assigns.admin ->
@@ -43,7 +47,7 @@ defmodule Collaboration.TopicChannel do
         )
     end
 
-    resp = %{ideas: Phoenix.View.render_many(ideas, Collaboration.IdeaView, "idea.json")}
+    resp = %{ideas: Phoenix.View.render_many(ideas, IdeaView, "idea.json")}
 
     {:ok, resp, assign(socket, :topic_id, topic_id)}
   end
@@ -140,6 +144,29 @@ defmodule Collaboration.TopicChannel do
         {:error, _changeset} -> # Something went wrong
           {:reply, :error, socket}
       end
+    end
+  end
+
+  # toggle like
+  def handle_in("toggle-like", %{"comment_id" => id}, user, socket) do
+    case Repo.get_by(Reaction, [comment_id: id, user_id: user.id, type: 0]) do
+
+      nil -> # not existent, add like
+        %Reaction{user_id: user.id, comment_id: id}
+        |> Reaction.changeset(%{type: 0})
+        |> Repo.insert
+        {:reply, :ok, socket}
+
+      reaction -> # does exist, remove like
+        case Repo.delete reaction do
+          {:ok, _struct}       -> # Deleted with success
+            {:reply, :ok, socket}
+          {:error, _changeset} -> # Something went wrong
+            {:reply, :error, socket}
+        end
+
+      _ ->   # something went wrong, do nothing
+        {:reply, :error, socket}
     end
   end
 end
