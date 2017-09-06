@@ -13,6 +13,9 @@ This is a list of open issues.
   *  add ratings for ideas
   *  Allow to search, sort and filter idea list by date, comments, and rating
 
+### 0.3.1 - 09/06/2017
+  *  Added: Deployment Script that allows to make the first user a admin
+
 ### 0.3.0 - 09/05/2017
   *  Added: Admin Channel & Admin Interface now utilizes sockets
   *  Added: Option to toggle topic hidden and visible directly from admin area
@@ -44,7 +47,6 @@ This is a list of open issues.
   *  Fixed: Deleting topics now deletes all ideas, comments, and reactions to it
   *  Added: Sort/Filter/Search Bar for ideas that sticks to the top when scrolling down
   *  Added: Searching Ideas is now possible (applies a filter)
-  *
 
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues
