@@ -14,10 +14,18 @@
   <%= raw(@topic.longdesc) %>
 </div>
 
-<h4>Ideas</h4>
-<div class="clearfix mb-2"></div>
 
-<div id="idea-list" class=''>
+
+<div id="idea-list">
+  <nav class="navbar sticky-top navbar-light bg-light justify-content-between">
+    <a class="navbar-brand">Ideas</a>
+
+    <form class="form-inline" novalidate>
+      <input type="text" class="form-control search" placeholder="Search..." aria-label="Search"/>
+    </form>
+  </nav>
+  <div class="clearfix mb-2"></div>
+
   <div class="list"></div>
 </div>
 

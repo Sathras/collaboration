@@ -77,6 +77,9 @@ export default class View extends MainView {
 
     //######################### AlWAYS TO BE DONE ##############################
 
+    // never submit idea controls form
+    $('#navIdeas form').submit((e) => { e.preventDefault() })
+
     // prepare the idea list
     var list_options = {
       item: 'idea-item',
@@ -322,8 +325,8 @@ export default class View extends MainView {
           .receive("ok", () => {
             // if deletion was successful, remove from list as well
             let idea = ideaList.get("id", idea_id)[0]
-            idea.values({comments: _.remove(idea._values.comments, (c) => {
-              return c.id == comment_id;
+            idea.values({comments: _.filter(idea._values.comments, (c) => {
+              return c.id != comment_id;
             })})
             ideaList.update()
           })

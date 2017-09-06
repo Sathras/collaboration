@@ -9,6 +9,9 @@ This is a list of open issues.
   *  Update Topic Description automatically upon change
   *  When editing idea, allow to change user as well or remove field
   *  Allow normal users to edit their own ideas
+  *  Add fake likes
+  *  add ratings for ideas
+  *  Allow to search, sort and filter idea list by date, comments, and rating
 
 ### 0.3.0 - 09/05/2017
   *  Added: Admin Channel & Admin Interface now utilizes sockets
@@ -36,6 +39,12 @@ This is a list of open issues.
   *  Added: The time since ideas / comments have been posted is now displayed and updated automatically
   *  Fixed: Dates now account for correct timezone
   *  Added: Users can now like and unlike comments
+  *  Fixed: Deleting comments now deletes all reactions to it
+  *  Fixed: Deleting ideas now deletes all comments and reactions to it
+  *  Fixed: Deleting topics now deletes all ideas, comments, and reactions to it
+  *  Added: Sort/Filter/Search Bar for ideas that sticks to the top when scrolling down
+  *  Added: Searching Ideas is now possible (applies a filter)
+  *
 
 ### 0.2.26 - 08/25/2017
   *  Fixed: Internal Port/Network Issues

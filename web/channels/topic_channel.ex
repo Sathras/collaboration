@@ -79,7 +79,7 @@ defmodule Collaboration.TopicChannel do
     case result do
       {:ok, idea}       -> # Inserted or updated with success
         # load comments and user
-        idea = Repo.preload idea, [:comments, :user]
+        idea = Repo.preload idea, [:user, comments: [:reactions, :user]]
         {:reply, {:ok, View.render_one(idea, IdeaView, "idea.json")}, socket}
       {:error, changeset} -> # Something went wrong
         errors = error_socket(changeset)
@@ -123,7 +123,7 @@ defmodule Collaboration.TopicChannel do
     case result do
       {:ok, comment} -> # Inserted or updated with success
         # load comments and user
-        comment = Repo.preload comment, [:user]
+        comment = Repo.preload comment, [:user, :reactions]
         {:reply, {:ok, View.render_one(comment, CommentView, "comment.json")}, socket}
       {:error, changeset} -> # Something went wrong
         errors = error_socket(changeset)
