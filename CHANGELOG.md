@@ -10,8 +10,12 @@ This is a list of open issues.
   *  When editing idea, allow to change user as well or remove field
   *  Allow normal users to edit their own ideas
   *  Add fake likes
-  *  add ratings for ideas
-  *  Allow to search, sort and filter idea list by date, comments, and rating
+  *  add rating mechanism for ideas
+
+### 0.3.2 - 09/07/2017
+  *  Fixed: When not logged in comments and likes are still shown
+  *  Added: users can now sort idea list by date, rating and comments
+  *  Added: Fake Ratings (placeholder)
 
 ### 0.3.1 - 09/06/2017
   *  Added: Deployment Script that allows to make the first user a admin

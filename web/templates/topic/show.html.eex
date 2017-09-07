@@ -20,8 +20,13 @@
   <nav class="navbar sticky-top navbar-light bg-light justify-content-between">
     <a class="navbar-brand">Ideas</a>
 
-    <form class="form-inline" novalidate>
-      <input type="text" class="form-control search" placeholder="Search..." aria-label="Search"/>
+    <form id="idea_list_options" class="form-inline" novalidate>
+      Sort by:
+      <button class="btn sort btn-outline-dark ml-2" data-sort="inserted_at">Date</button>
+      <button class="btn sort btn-outline-dark ml-2" data-sort="rating">Rating</button>
+      <button class="btn sort btn-outline-dark ml-2" data-sort="comment_count">Comments</button>
+
+      <input type="text" class="form-control search ml-2" placeholder="Search..." aria-label="Search"/>
     </form>
   </nav>
   <div class="clearfix mb-2"></div>
@@ -33,20 +38,38 @@
   <!-- A template element is needed when list is empty, TODO: needs a better solution -->
   <div id="idea-item" class="idea card mb-4">
     <div class="card-body bg-light">
-      <div class='pl-2 pb-2 pull-right text-right'>
-        <i><time class='inserted_at'></time></i>
-        <%= if @current_user && @current_user.admin do %>
-          <button type="button" class="btn-edit-idea btn btn-outline-dark btn-sm">
-            <i class="fa fa-pencil" aria-hidden="true"></i>
-          </button>
-          <button type="button" class="btn-delete-idea btn btn-outline-dark btn-sm">
-            <i class="fa fa-trash" aria-hidden="true"></i>
-          </button>
-        <% end %>
+
+      <div class="clearfix mb-2">
+        <!-- Date & Admin Options -->
+        <div class='pl-2 pb-2 float-right text-right'>
+          <i><time class='inserted_at'></time></i>
+          <%= if @editMode do %>
+            <button type="button" class="btn-rate btn btn-sm btn-outline-dark">
+              <i class="fa fa-star" aria-hidden="true"></i>
+            </button>
+          <% end %>
+          <%= if @current_user && @current_user.admin do %>
+            <button type="button" class="btn-edit-idea btn btn-outline-dark btn-sm">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn-delete-idea btn btn-outline-dark btn-sm">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          <% end %>
+        </div>
+
+        <!-- Rating -->
+        <div class="rating-area float-left mr-2 mb-2">
+          <i class="fa fa-star pull-left mr-1" aria-hidden="true"></i>
+          <p><strong class="rating"></strong>/10</p>
+          <p><span class="rusers"></span> Users</p>
+        </div>
+
+        <!-- Title, User & Description -->
+        <h4 class="card-title title float-left"></h4>
       </div>
 
-      <h4 class="card-title title"></h4>
-      <h6 class="card-subtitle mb-2 text-muted user"></h6>
+      <h6 class="card-subtitle mb-2 text-muted user "></h6>
       <p class="description card-title"></p>
     </div>
 

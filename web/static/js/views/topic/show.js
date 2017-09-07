@@ -78,7 +78,7 @@ export default class View extends MainView {
     //######################### AlWAYS TO BE DONE ##############################
 
     // never submit idea controls form
-    $('#navIdeas form').submit((e) => { e.preventDefault() })
+    $('#idea_list_options').submit((e) => { e.preventDefault() })
 
     // prepare the idea list
     var list_options = {
@@ -88,6 +88,9 @@ export default class View extends MainView {
         {name: 'inserted_at', attr: 'datetime'},
         'title',
         'description',
+        'comment_count',
+        'rating',
+        'rusers',
         'user'
       ]
     }
@@ -95,11 +98,20 @@ export default class View extends MainView {
     // create empty idea list
     var ideaList = new List('idea-list', list_options, [])
 
+    // add comments to list entries once list has been updated
+    ideaList.on('updated', ()=>{
+      ideaList.items.forEach((idea) => this.appendComments(idea))
+    })
+
+
     // define and join topicChannel
     let channel = socket.channel(`topic:${this.topic_id}`)
     channel.join()
       // on load retrieve list of ideas from server
-      .receive("ok", ({ideas}) => ideaList.add(ideas))
+      .receive("ok", ({ideas}) => {
+        ideaList.add(ideas)
+        ideaList.update()
+      })
       .receive("error", resp => { console.log("Unable to join", resp) })
 
     //###################### EDIT FUNCTIONALIY ONLY ############################
@@ -212,11 +224,6 @@ export default class View extends MainView {
       }.bind(this))
 
       // COMMENTS
-
-      // add comments to list entries once list has been updated
-      ideaList.on('updated', ()=>{
-        ideaList.items.forEach((idea) => this.appendComments(idea))
-      })
 
       // submit idea form (add or update)
       $('#idea-list').on('submit', '.submitComment', (e, admin=this.admin) => {

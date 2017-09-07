@@ -14,6 +14,9 @@ defmodule Collaboration.IdeaView do
       inserted_at: i.inserted_at,
       title: i.title,
       description: i.description,
+      rating: 8.4,
+      rusers: 58,
+      comment_count: Enum.count(i.comments),
       comments: render_many(i.comments, Collaboration.CommentView, "comment.json"),
       user: UserView.displayName(i.user)
     }
