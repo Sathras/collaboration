@@ -12,6 +12,9 @@ This is a list of open issues.
   *  Add fake likes
   *  add rating mechanism for ideas
 
+### 0.3.3 - 09/07/2017
+  *  Fixed: Ideas and Topic Descriptions can now contain very long text
+
 ### 0.3.2 - 09/07/2017
   *  Fixed: When not logged in comments and likes are still shown
   *  Added: users can now sort idea list by date, rating and comments

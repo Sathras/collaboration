@@ -20,6 +20,6 @@ defmodule Collaboration.Idea do
     |> cast(params, ~w(title description))
     |> validate_required([:title, :description])
     |> validate_length(:title, min: 5, max: 40)
-    |> validate_length(:description, min: 5, max: 10000)
+    |> validate_length(:description, min: 5, max: 100000)
   end
 end
