@@ -20,5 +20,5 @@ npm-debug.log
 
 /releases
 
-mix-lock.exs
+mix.lock
 package-lock.json
