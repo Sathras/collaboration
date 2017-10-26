@@ -39,7 +39,9 @@ defmodule Collaboration.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.0"},
-     {:distillery, "~> 1.1"}]
+     {:distillery, "~> 1.3"},
+     {:bootleg, "~> 0.5.0"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
