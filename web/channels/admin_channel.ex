@@ -78,7 +78,6 @@ defmodule Collaboration.AdminChannel do
         {:noreply, socket}
     end
 
-    IO.inspect changeset
     {:noreply, socket}
   end
 end
