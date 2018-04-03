@@ -2,16 +2,14 @@
 #
 #     mix run priv/repo/seeds.exs
 #
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Collaboration.Repo.insert!(%Collaboration.SomeModel{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
 
+Collaboration.Repo.delete_all Collaboration.Coherence.User
 
-Collaboration.Repo.insert!(%Collaboration.Data{
-  field: "instructions",
-  value: "Test Value"
+Collaboration.Coherence.User.changeset(%Collaboration.Coherence.User{}, %{
+  name: "Alexander Fuchsberger",
+  email: "alex@fuchsberger.us",
+  password: "password",
+  password_confirmation: "password"
 })
+|> Collaboration.Repo.insert!
+|> Coherence.ConfirmableService.confirm!
