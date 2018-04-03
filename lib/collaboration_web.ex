@@ -39,6 +39,7 @@ defmodule CollaborationWeb do
 
       import CollaborationWeb.Router.Helpers
       import CollaborationWeb.ErrorHelpers
+      import CollaborationWeb.ViewHelpers
       import CollaborationWeb.Gettext
     end
   end

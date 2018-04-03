@@ -3,16 +3,13 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   Helper functions for Coherence Views.
   """
   use Phoenix.HTML
-  alias Coherence.Config
   import CollaborationWeb.Gettext
-
-  import CollaborationWeb.Gettext
+  import CollaborationWeb.ViewHelpers
   import Phoenix.Controller, only: [current_path: 2]
 
   @type conn :: Plug.Conn.t
   @type schema :: Ecto.Schema.t
 
-  @seperator {:safe, "&nbsp; | &nbsp;"}
   @helpers CollaborationWeb.Router.Helpers
 
   @recover_link  dgettext("coherence", "Forgot your password?")
@@ -21,7 +18,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   @invite_link   dgettext("coherence", "Invite Someone")
   @confirm_link  dgettext("coherence", "Resend confirmation email")
   @signin_link   dgettext("coherence", "Sign In")
-  @signout_link  dgettext("coherence", "Sign Out")
+  @settings_link dgettext("coherence", "Settings")
 
   @doc """
   Create coherence template links.
@@ -31,92 +28,33 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
 
   * create links for the new session page `:new_session`
   * create links for your layout template `:layout`
-
-
-  Defaults are provided based on the options configured for Coherence.
-  However, the defaults can be overridden by passing the following options.
-
-  ## Customize the links
-
-  ### :new_session Options
-
-  * :recover - customize the recover link (#{@recover_link})
-  * :unlock - customize the unlock link (#{@unlock_link})
-  * :register - customize the register link (#{@register_link})
-  * :confirm - customize the confirm link (#{@confirm_link})
-
-  ### :layout Options
-
-  * :list_tag - customize the list tag (:li)
-  * :signout_class - customize the class on the signout link ("navbar-form")
-  * :signin - customize the signin link text (#{@signin_link})
-  * :signout - customize the signout link text (#{@signout_link})
-  * :register - customize the register link text (#{@register_link})
-
-  ### Disable links
-
-  If you set an option to false, the link will not be shown. For example, to
-  disable the register link on the layout, use the following in your layout template:
-
-      coherence_links(conn, :layout, register: false)
-
-  ## Examples
-
-      coherence_links(conn, :new_session)
-      Generates: #{@recover_link}  #{@unlock_link} #{@register_link} #{@confirm_link}
-
-      coherence_links(conn, :new_session, recover: "Password reset", register: false
-      Generates: Password reset  #{@unlock_link}
-
-      coherence_links(conn, :layout)             # when logged in
-      Generates: User's Name  #{@signout_link}
-
-      coherence_links(conn, :layout)             # when not logged in
-      Generates: #{@register_link}  #{@signin_link}
   """
-  @spec coherence_links(conn, atom, Keyword.t) :: tuple
-  def coherence_links(conn, which, opts \\ [])
-  def coherence_links(conn, :new_session, opts) do
-    recover_link  = Keyword.get opts, :recover, @recover_link
-    unlock_link   = Keyword.get opts, :unlock, @unlock_link
-    register_link = Keyword.get opts, :register, @register_link
-    confirm_link  = Keyword.get opts, :confirm, @confirm_link
-
-    user_schema = Coherence.Config.user_schema
-    [
-      recover_link(conn, user_schema, recover_link),
-      unlock_link(conn, user_schema, unlock_link),
-      register_link(conn, user_schema, register_link),
-      confirmation_link(conn, user_schema, confirm_link)
-    ]
-    |> List.flatten
-    |> concat([])
-  end
-
-  def coherence_links(conn, :layout, opts) do
-    list_class    = Keyword.get opts, :list_class, "nav-item"
-    list_tag      = Keyword.get opts, :list_tag, :li
-    signout_class = Keyword.get opts, :signout_class, "navbar-form"
-    signin        = Keyword.get opts, :signin, @signin_link
-    signout       = Keyword.get opts, :signout, @signout_link
-    register      = Keyword.get opts, :register, @register_link
-
+  @spec coherence_links(conn, atom) :: tuple
+  def coherence_links(conn, :layout) do
     if Coherence.logged_in?(conn) do
       current_user = Coherence.current_user(conn)
+      user_schema = Coherence.Config.user_schema
       [
-        content_tag(list_tag, profile_link(current_user, conn), class: list_class),
-        content_tag(list_tag, signout_link(conn, signout, signout_class), class: list_class)
-      ]
+        nav_item( conn, current_user.name,
+          coherence_path(@helpers, :registration_path, conn, :show), [
+            tooltip: "Profile", show: user_schema.registerable?
+          ]
+        ),
+        nav_item( conn, "",
+          coherence_path(@helpers, :registration_path, conn, :edit), [
+            icon: "fas fa-cog", tooltip: "Settings",
+            show: user_schema.registerable?
+          ]
+        ),
+        nav_item( conn, "",
+          coherence_path(@helpers, :session_path, conn, :delete),
+          [active: false, method: :delete, icon: "fas fa-power-off", tooltip: "Sign Out"]
+        )
+      ] |> List.flatten
     else
-      signin_link = nav_item conn, signin, coherence_path(@helpers, :session_path, conn, :new), "fas fa-power-off"
-      if Config.has_option(:registerable) && register do
-        [
-          nav_item(conn, register, coherence_path(@helpers, :registration_path, conn, :new), "fas fa-user-plus"),
-          signin_link
-        ]
-      else
-        signin_link
-      end
+      nav_item conn, @signin_link,
+        coherence_path(@helpers, :session_path, conn, :new),
+        icon: "fas fa-sign-in-alt mr-1"
     end
   end
 
@@ -131,19 +69,25 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
     apply(module, route_name, [conn, action, opts])
   end
 
-  defp concat([], acc), do: Enum.reverse(acc)
-  defp concat([h|t], []), do: concat(t, [h])
-  defp concat([h|t], acc), do: concat(t, [h, @seperator | acc])
+  @spec nav_item(conn, String.t, String.t, Keyword.t) :: [any] | []
+  def nav_item(conn, text, to, opts) do
+    if Keyword.get(opts, :show, true) do
+      active      = Keyword.get(opts, :active, true)
+      method      = Keyword.get(opts, :method, :get)
+      icon        = Keyword.get(opts, :icon, false)
+      tooltip     = Keyword.get(opts, :tooltip, false)
+      tooltipPos  = Keyword.get(opts, :tooltipPos, "bottom")
 
-  @spec nav_item(conn, String.t, String.t, String.t | nil) :: [any] | []
-  def nav_item(conn, text, to, icon \\ nil) do
-    item_class = if current_path(conn, %{}) === to,
-      do: "nav-item active", else: "nav-item"
-    text = if icon, do: raw("<i class=\"#{icon}\"></i> #{text}"), else: text
-    content_tag(:li,
-      link(text, to: to, class: "nav-link"),
-      class: item_class
-    )
+      item_class = if active and current_path(conn, %{}) === to,
+        do: "nav-item active", else: "nav-item"
+      text = if icon, do: [icon(icon), text], else: text
+      link = if tooltip, do: link(text, to: to, class: "nav-link", method: method,
+          data_toggle: "tooltip", data_placement: tooltipPos, title: tooltip),
+        else: link(text, to: to, class: "nav-link", method: method)
+      [content_tag(:li, link, class: item_class)]
+    else
+      []
+    end
   end
 
   @spec recover_link(conn, module, false | String.t) :: [any] | []
@@ -181,9 +125,16 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
     link text, to: coherence_path(@helpers, :invitation_path, conn, :new)
   end
 
-  @spec signout_link(conn, String.t, String.t) :: tuple
-  def signout_link(conn, text \\ @signout_link, signout_class \\ "") do
-    link(text, to: coherence_path(@helpers, :session_path, conn, :delete), method: :delete, class: signout_class)
+  @spec settings_link(conn, module, false | String.t) :: [any] | []
+  def settings_link(_conn, _user_schema, false), do: []
+  def settings_link(conn, user_schema, text) do
+    if user_schema.registerable?, do: [settings_link(conn, text)], else: []
+  end
+
+  @spec settings_link(conn, false | String.t) :: tuple
+  def settings_link(conn, text \\ @settings_link) do
+    to = coherence_path(@helpers, :registration_path, conn, :edit)
+    if text, do: link(text, to: to), else: link(icon("fas fa-cog"), to: to)
   end
 
   @spec confirmation_link(conn, module, false | String.t) :: [any] | []
@@ -215,15 +166,6 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   @spec logged_in?(conn) :: boolean
   def logged_in?(conn) do
     Coherence.logged_in?(conn)
-  end
-
-
-  defp profile_link(current_user, conn) do
-    if Config.user_schema.registerable? do
-      link current_user.name, to: coherence_path(@helpers, :registration_path, conn, :show)
-    else
-      current_user.name
-    end
   end
 
   @doc """

@@ -11,6 +11,7 @@
 //
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
+/* global $ */
 import "phoenix_html"
 import Turbolinks from "turbolinks"
 
@@ -21,4 +22,11 @@ import Turbolinks from "turbolinks"
 
 // import socket from "./socket"
 
+
+document.addEventListener("turbolinks:load", () => {
+  // enable tooltips
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+// initialize TurboLinks
 Turbolinks.start()

@@ -14,6 +14,7 @@ defmodule CollaborationWeb.Coherence do
       import CollaborationWeb.Router.Helpers
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.Gettext
+      import CollaborationWeb.ViewHelpers
       import CollaborationWeb.Coherence.ViewHelpers
     end
   end

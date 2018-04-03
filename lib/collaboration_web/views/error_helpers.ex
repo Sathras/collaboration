@@ -5,14 +5,27 @@ defmodule CollaborationWeb.ErrorHelpers do
 
   use Phoenix.HTML
 
+  def error_class(form, field) do
+    if form.source.valid? do
+      ""
+    else
+      if has_error?(form, field), do: " is-invalid", else: " is-valid"
+    end
+  end
+
   @doc """
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn (error) ->
-      content_tag :span, translate_error(error), class: "help-block"
+      content_tag :div, translate_error(error), class: "invalid-feedback"
     end)
   end
+
+  @doc """
+  Checks whether field has an error in changeset.
+  """
+  def has_error?(form, field), do: Keyword.has_key?(form.errors, field)
 
   @doc """
   Translates an error message using gettext.
