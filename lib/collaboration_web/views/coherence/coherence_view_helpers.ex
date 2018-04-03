@@ -17,7 +17,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
 
   @recover_link  dgettext("coherence", "Forgot your password?")
   @unlock_link   dgettext("coherence", "Send an unlock email")
-  @register_link dgettext("coherence", "Register")
+  @register_link dgettext("coherence", "Join Us")
   @invite_link   dgettext("coherence", "Invite Someone")
   @confirm_link  dgettext("coherence", "Resend confirmation email")
   @signin_link   dgettext("coherence", "Sign In")

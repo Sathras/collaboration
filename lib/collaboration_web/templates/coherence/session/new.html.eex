@@ -1,35 +1,67 @@
-<br \>
-
-<%= form_for @conn, session_path(@conn, :create), [as: :session], fn f  -> %>
-
-  <% login_field = Coherence.Config.login_field %>
-  <div class="form-group">
-    <%= required_label f, login_field, class: "control-label" %>
-    <%= text_input f, login_field, class: "form-control", required: "" %>
-    <%= error_tag f, login_field %>
-  </div>
-
-  <div class="form-group">
-    <%= required_label f, dgettext("coherence", "Password"), class: "control-label" %>
-    <%= password_input f, :password, class: "form-control", required: "" %>
-    <%= error_tag f, :password %>
-  </div>
-
-  <%= if @remember do %>
-    <div class="form-group">
-      <input type="checkbox"  name="remember" id="remember">
-      <label for="remember"><%= dgettext "coherence", "Remember Me?" %></label>
+<center>
+  <div class="card bg-light text-center" style="max-width: 320px;">
+    <div class="card-body">
+      <h3 class="card-title">Sign In</h3>
+      <h6 class="card-subtitle mb-2 text-muted">via</h6>
+      <div class="social-buttons">
+        <a href="#" class="btn btn-fb disabled"><i class="fab fa-facebook-f"></i> Facebook</a>
+        <a href="#" class="btn btn-tw disabled"><i class="fab fa-twitter"></i> Twitter</a>
+      </div>
+      or
+      <%= form_for @conn, session_path(@conn, :create), [as: :session], fn f  -> %>
+        <% login_field = Coherence.Config.login_field %>
+        <div class="form-group">
+          <%= required_label f, login_field, class: "sr-only" %>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend" style="width: 40px;">
+              <div class="input-group-text">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <%= text_input f, login_field,
+              autocomplete: "off",
+              class: "form-control",
+              required: "",
+              placeholder: login_field,
+              type: "email"
+            %>
+            <%= error_tag f, login_field %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= required_label f, dgettext("coherence", "Password"), class: "sr-only" %>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend" style="width: 40px;">
+              <div class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </div>
+            </div>
+            <%= password_input f, :password,
+              class: "form-control",
+              required: "",
+              placeholder: "Password"
+            %>
+            <%= error_tag f, :password %>
+          </div>
+          <small class="text-right">
+            <%= CollaborationWeb.Coherence.ViewHelpers.recover_link(@conn) %>
+          </small>
+        </div>
+        <%= if @remember do %>
+          <div class="form-group mb-1">
+            <input type="checkbox"  name="remember" id="remember">
+            <label for="remember"><%= dgettext "coherence", "Remember Me?" %></label>
+          </div>
+        <% end %>
+        <div class="form-group">
+          <%= submit dgettext("coherence", "Sign In"), class: "btn btn-primary" %>
+          <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
+        </div>
+        <hr>
+        <p class="mb-0">New here?
+          <b><%= CollaborationWeb.Coherence.ViewHelpers.register_link(@conn) %></b>
+        </p>
+      <% end %>
     </div>
-    <br />
-  <% end %>
-
-  <div class="form-group">
-    <%= submit dgettext("coherence", "Sign In"), class: "btn btn-primary" %>
-    <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
   </div>
-
-  <div class="form-group">
-    <%= coherence_links(@conn, :new_session) %>
-  </div>
-
-<% end %>
+</center>
