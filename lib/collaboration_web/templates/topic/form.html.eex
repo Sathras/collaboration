@@ -1,47 +1,71 @@
 <%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+<%= hidden_input f, :slug, value: Map.get(f, :slug, "") %>
+<%= if @changeset.action do %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong><%= raw gettext "Error" %></strong>
+    <%= gettext "Invalid Form Data. Please check the errors below:" %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
+<div class="row">
+  <div class="col-md-5">
+    <div class="form-group">
+      <%= label f, :title, class: "control-label" %>
+      <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
+      <%= error_tag f, :title %>
     </div>
-  <% end %>
-
-  <div class="form-group">
-    <%= label f, :title, class: "control-label" %>
-    <%= text_input f, :title, class: "form-control" %>
-    <%= error_tag f, :title %>
+    <div class="form-group">
+      <%= label f, :short_title, class: "control-label" %>
+      <%= text_input f, :short_title, class: "form-control #{error_class f, :short_title}" %>
+      <%= error_tag f, :short_title %>
+      <small class="form-text text-muted">
+        <%= gettext "This is the title of the topic as it appears in the navigation." %><br>
+        <%= gettext "The topic can be accessed via " %><code>/topics/<span id="slug"></span></code>
+      </small>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <div class="form-group">
+          <%= checkbox f, :published, class: "checkbox" %>
+          <%= label f, :published, class: "control-label" %>
+          <%= error_tag f, :published %>
+        </div>
+      </div>
+      <div class="col text-center">
+        <div class="form-group">
+          <%= checkbox f, :open, class: "checkbox" %>
+          <%= label f, :open, class: "control-label" %>
+          <%= error_tag f, :open %>
+        </div>
+      </div>
+      <div class="col text-center">
+        <div class="form-group">
+          <%= checkbox f, :featured, class: "checkbox" %>
+          <%= label f, :featured, class: "control-label" %>
+          <%= error_tag f, :featured %>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="form-group">
-    <%= label f, :short_title, class: "control-label" %>
-    <%= text_input f, :short_title, class: "form-control" %>
-    <%= error_tag f, :short_title %>
+  <div class="col-md-7">
+    <div class="form-group">
+      <%= label f, :short_desc, class: "control-label" %>
+      <%= textarea f, :short_desc, class: "form-control #{error_class f, :short_desc}" %>
+      <%= error_tag f, :short_desc %>
+    </div>
   </div>
+</div>
 
   <div class="form-group">
     <%= label f, :desc, class: "control-label" %>
-    <%= text_input f, :desc, class: "form-control" %>
+    <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
     <%= error_tag f, :desc %>
   </div>
 
-  <div class="form-group">
-    <%= label f, :published, class: "control-label" %>
-    <%= checkbox f, :published, class: "checkbox" %>
-    <%= error_tag f, :published %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :open, class: "control-label" %>
-    <%= checkbox f, :open, class: "checkbox" %>
-    <%= error_tag f, :open %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :short_desc, class: "control-label" %>
-    <%= text_input f, :short_desc, class: "form-control" %>
-    <%= error_tag f, :short_desc %>
-  </div>
-
-  <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
-  </div>
+  <p class="text-center">
+    <%= link "Back", to: topic_path(@conn, :index) %>
+    <%= submit "Submit", class: " ml-2 btn btn-primary" %>
+  </p>
 <% end %>

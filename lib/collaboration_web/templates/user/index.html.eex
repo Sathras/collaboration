@@ -20,5 +20,3 @@
 <% end %>
   </tbody>
 </table>
-
-<span><%= link "New User", to: registration_path(@conn, :new) %></span>

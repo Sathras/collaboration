@@ -1,10 +1,14 @@
 // web/static/js/views/loader.js
 import MainView    from './main';
+import TopicNewView from './topic/new';
+import TopicEditView from './topic/edit';
 import UserIndexView from './user/index';
 
 // Collection of specific view modules
 const views = {
-  UserIndexView,
+  TopicNewView,
+  TopicEditView,
+  UserIndexView
 };
 
 export default function loadView(viewName) {

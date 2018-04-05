@@ -9,10 +9,6 @@ defmodule CollaborationWeb.ErrorView do
   def render("500.html", _assigns), do: render "500.html"
 
   # By default, Phoenix returns the status message from
-  # the template name. For example, "404.html" becomes
-  # "Not Found".
-  def template_not_found(_template, _assigns) do
-    # Phoenix.Controller.status_message_from_template(template)
-    render "500.html"
-  end
+  # the template name. For example, "404.html" becomes "Not Found".
+  def template_not_found(_template, _assigns), do: render "500.html"
 end

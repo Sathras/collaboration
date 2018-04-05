@@ -34,6 +34,7 @@
             id="navbarSupportedContent"
           >
             <ul class="navbar-nav mr-auto">
+              <%= nav_item @conn, "Topics", topic_path(@conn, :index), [icon: "far fa-lightbulb mr-1"] %>
               <%= if Coherence.current_user(@conn) do %>
                 <%= nav_item @conn, "Users", user_path(@conn, :index), [icon: "fas fa-users mr-1"] %>
               <% end %>
