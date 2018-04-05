@@ -43,9 +43,9 @@ defmodule CollaborationWeb.TopicController do
       {:ok, topic} ->
         conn
         |> put_flash(:info, "Topic updated successfully.")
-        |> redirect(to: topic_path(conn, :show, topic))
+        |> redirect(to: topic_path(conn, :show, topic.slug))
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", topic: topic, changeset: changeset)
+        render(conn, "edit.html", topic: topic.slug, changeset: changeset)
     end
   end
 

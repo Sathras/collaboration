@@ -1,5 +1,6 @@
 <%= render "form.html",
   action: registration_path(@conn, :update),
+  conn: @conn,
   changeset: @changeset,
   heading: dgettext("coherence", "Edit Account"),
   label: dgettext("coherence", "Update"),

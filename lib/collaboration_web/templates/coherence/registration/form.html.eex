@@ -116,8 +116,6 @@
           <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
         </div>
       <% end %>
-      <% IO.inspect @action %>
-
       <%= if is_nil(@changeset.data.id) do %>
         <p class="mb-0"><%= dgettext "coherence", "or sign in via:" %></p>
         <div class="social-buttons" data-toggle="tooltip" data-placement="bottom"
@@ -129,6 +127,14 @@
             <i class="fab fa-twitter"></i> Twitter
           </a>
         </div>
+      <% else %>
+        <small>
+          <%= link to: registration_path(@conn, :delete), method: :delete,
+            data: [confirm: dgettext("coherence", "Are you sure?")], class: "text-danger" do
+              [icon("fas fa-trash mr-1"), dgettext("coherence", "Delete my Account")]
+            end
+          %>
+        </small>
       <% end %>
     </div>
   </div>

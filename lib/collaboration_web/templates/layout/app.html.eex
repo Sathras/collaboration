@@ -17,7 +17,7 @@
     <header class="header">
       <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-          <a class="navbar-brand" href="/">Idea Nexus</a>
+          <a class="navbar-brand" href="/"><i class="far fa-lightbulb mr-1"></i>Idea Nexus</a>
           <button
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
@@ -34,7 +34,10 @@
             id="navbarSupportedContent"
           >
             <ul class="navbar-nav mr-auto">
-              <%= nav_item @conn, "Topics", topic_path(@conn, :index), [icon: "far fa-lightbulb mr-1"] %>
+              <% topics = Collaboration.Contributions.get_menu_links!() %>
+              <%= for t <- topics do %>
+                <%= nav_item @conn, t.short_title, topic_path(@conn, :show, t.slug) %>
+              <% end %>
               <%= if Coherence.current_user(@conn) do %>
                 <%= nav_item @conn, "Users", user_path(@conn, :index), [icon: "fas fa-users mr-1"] %>
               <% end %>

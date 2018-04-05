@@ -34,7 +34,7 @@ defmodule CollaborationWeb.Router do
     pipe_through :browser
 
     # add public resources below
-    get "/", PageController, :index
+    get "/", TopicController, :index
     resources "/topics", TopicController
   end
 

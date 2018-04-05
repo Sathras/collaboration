@@ -11,6 +11,13 @@ defmodule CollaborationWeb.ViewHelpers do
   def icon(class), do: content_tag(:i, "", class: class)
 
   @spec nav_item(conn, String.t, String.t, Keyword.t) :: [any] | []
+
+  def nav_text(text, icon \\ false) do
+    text = if icon, do: [icon(icon), text], else: text
+    text = content_tag(:span, text, class: "navbar-text")
+    [content_tag(:li, text, class: "nav-item")]
+  end
+
   def nav_item(conn, text, to, opts \\ []) do
     if Keyword.get(opts, :show, true) do
       active      = Keyword.get(opts, :active, true)

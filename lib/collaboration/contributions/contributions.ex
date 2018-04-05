@@ -11,6 +11,8 @@ defmodule Collaboration.Contributions do
   def list_topics, do: Repo.all(Topic)
   def get_topic!(id), do: Repo.get!(Topic, id)
   def get_topic_via_slug!(slug), do: Repo.get_by(Topic, slug: slug)
+  def get_menu_links!(), do: Repo.all from t in Topic,
+    select: %{slug: t.slug, short_title: t.short_title}, where: t.featured
 
   def create_topic(attrs \\ %{}) do
     %Topic{}

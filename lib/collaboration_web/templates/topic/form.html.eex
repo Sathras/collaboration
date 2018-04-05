@@ -1,5 +1,5 @@
 <%= form_for @changeset, @action, fn f -> %>
-<%= hidden_input f, :slug, value: Map.get(f, :slug, "") %>
+<%= hidden_input f, :slug, value: f.data.slug || "" %>
 <%= if @changeset.action do %>
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <strong><%= raw gettext "Error" %></strong>
@@ -22,7 +22,8 @@
       <%= error_tag f, :short_title %>
       <small class="form-text text-muted">
         <%= gettext "This is the title of the topic as it appears in the navigation." %><br>
-        <%= gettext "The topic can be accessed via " %><code>/topics/<span id="slug"></span></code>
+        <%= gettext "The topic can be accessed via " %>
+        <code>/topics/<span id="slug"><%= f.data.slug || "" %></span></code>
       </small>
     </div>
     <div class="row">
