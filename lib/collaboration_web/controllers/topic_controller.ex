@@ -26,12 +26,12 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def show(conn, %{"id" => id}) do
-    topic = Contributions.get_topic!(id)
+    topic = Contributions.get_topic_via_slug!(id)
     render(conn, "show.html", topic: topic)
   end
 
   def edit(conn, %{"id" => id}) do
-    topic = Contributions.get_topic!(id)
+    topic = Contributions.get_topic_via_slug!(id)
     changeset = Contributions.change_topic(topic)
     render(conn, "edit.html", topic: topic, changeset: changeset)
   end

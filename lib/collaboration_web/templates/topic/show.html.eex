@@ -34,5 +34,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: topic_path(@conn, :edit, @topic) %></span>
+<span><%= link "Edit", to: topic_path(@conn, :edit, @topic.slug) %></span>
 <span><%= link "Back", to: topic_path(@conn, :index) %></span>
