@@ -13,7 +13,7 @@
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
 
-  <body>
+  <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <header class="header">
       <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
@@ -34,11 +34,9 @@
             id="navbarSupportedContent"
           >
             <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">
-                  Home <span class="sr-only">(current)</span>
-                </a>
-              </li>
+              <%= if Coherence.current_user(@conn) do %>
+                <%= nav_item @conn, "Users", user_path(@conn, :index), [icon: "fas fa-users mr-1"] %>
+              <% end %>
             </ul>
             <ul class="navbar-nav">
               <%= CollaborationWeb.Coherence.ViewHelpers.coherence_links(@conn, :layout) %>

@@ -5,18 +5,17 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   use Phoenix.HTML
   import CollaborationWeb.Gettext
   import CollaborationWeb.ViewHelpers
-  import Phoenix.Controller, only: [current_path: 2]
 
   @type conn :: Plug.Conn.t
   @type schema :: Ecto.Schema.t
 
   @helpers CollaborationWeb.Router.Helpers
 
-  @recover_link  dgettext("coherence", "Forgot your password?")
+  @recover_link  dgettext("coherence", "Forgot password?")
   @unlock_link   dgettext("coherence", "Send an unlock email")
   @register_link dgettext("coherence", "Join Us")
   @invite_link   dgettext("coherence", "Invite Someone")
-  @confirm_link  dgettext("coherence", "Resend confirmation email")
+  @confirm_link  dgettext("coherence", "Confirm Account")
   @signin_link   dgettext("coherence", "Sign In")
   @settings_link dgettext("coherence", "Settings")
 
@@ -67,27 +66,6 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   end
   def coherence_path(module, route_name, conn, action, opts) do
     apply(module, route_name, [conn, action, opts])
-  end
-
-  @spec nav_item(conn, String.t, String.t, Keyword.t) :: [any] | []
-  def nav_item(conn, text, to, opts) do
-    if Keyword.get(opts, :show, true) do
-      active      = Keyword.get(opts, :active, true)
-      method      = Keyword.get(opts, :method, :get)
-      icon        = Keyword.get(opts, :icon, false)
-      tooltip     = Keyword.get(opts, :tooltip, false)
-      tooltipPos  = Keyword.get(opts, :tooltipPos, "bottom")
-
-      item_class = if active and current_path(conn, %{}) === to,
-        do: "nav-item active", else: "nav-item"
-      text = if icon, do: [icon(icon), text], else: text
-      link = if tooltip, do: link(text, to: to, class: "nav-link", method: method,
-          data_toggle: "tooltip", data_placement: tooltipPos, title: tooltip),
-        else: link(text, to: to, class: "nav-link", method: method)
-      [content_tag(:li, link, class: item_class)]
-    else
-      []
-    end
   end
 
   @spec recover_link(conn, module, false | String.t) :: [any] | []

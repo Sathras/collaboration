@@ -1,32 +1,29 @@
-// Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
-
 // Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
 /* global $ */
 import "phoenix_html"
 import Turbolinks from "turbolinks"
 
 // Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
+import loadView from './views/loader';
 
-// import socket from "./socket"
+function handleDOMContentLoaded() {
+  // Get the current view name
+  const viewName = $('body').data('js-view-name');
 
+  // Load view class and mount it
+  const ViewClass = loadView(viewName);
+  const view = new ViewClass();
+  view.mount();
 
-document.addEventListener("turbolinks:load", () => {
-  // enable tooltips
-  $('[data-toggle="tooltip"]').tooltip()
-})
+  window.currentView = view;
+}
+
+function handleDocumentUnload() {
+  window.currentView.unmount();
+}
+
+document.addEventListener("turbolinks:load", handleDOMContentLoaded)
+document.addEventListener("turbolinks:before-visit", handleDocumentUnload)
 
 // initialize TurboLinks
 Turbolinks.start()

@@ -37,11 +37,13 @@ config :coherence,
   messages_backend: CollaborationWeb.Coherence.Messages,
   logged_out_url: "/",
   user_active_field: true,
-  email_from_name: "Your Name",
-  email_from_email: "yourname@example.com",
-  opts: [:confirmable, :rememberable, :registerable, :invitable, :authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token]
+  email_from_name: "fuchsberger.us",
+  email_from_email: "noreply@fuchsberger.us",
+  opts: [:confirmable, :rememberable, :registerable, :invitable,
+  :authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token]
 
 config :coherence, CollaborationWeb.Coherence.Mailer,
-  adapter: Swoosh.Adapters.Sendgrid,
-  api_key: "your api key here"
+  adapter: Swoosh.Adapters.Mailgun,
+  api_key: {:system, "APP_MAILGUN_APIKEY"},
+  domain:  "fuchsberger.us"
 # %% End Coherence Configuration %%

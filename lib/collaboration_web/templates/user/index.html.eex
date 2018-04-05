@@ -1,0 +1,24 @@
+<h2>Listing Users</h2>
+
+<table id="users" class="table table-sm">
+  <thead>
+    <tr>
+      <th><i class="fas fa-user" data-toggle="tooltip" title="User Status"></i></th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for u <- @users do %>
+    <tr>
+      <td data-order="<%= u.admin %>"><%= user_icon u.admin %></td>
+      <td><%= u.name %></td>
+      <td><%= u.email %></td>
+      <td><%= toggle_admin @conn, u %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New User", to: registration_path(@conn, :new) %></span>

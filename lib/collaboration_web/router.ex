@@ -33,13 +33,16 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
     # add public resources below
+    get "/", PageController, :index
+    resources "/topics", TopicController
   end
 
   scope "/", CollaborationWeb do
     pipe_through :protected
 
     # add protected resources below
+    get "/users", UserController, :index
+    put "/users/:id", UserController, :toggle_admin
   end
 end

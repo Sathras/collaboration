@@ -1,11 +1,16 @@
 <center>
   <div class="card bg-light text-center" style="max-width: 320px;">
     <div class="card-body">
-      <h3 class="card-title">Sign In</h3>
-      <h6 class="card-subtitle mb-2 text-muted">via</h6>
-      <div class="social-buttons">
-        <a href="#" class="btn btn-fb disabled"><i class="fab fa-facebook-f"></i> Facebook</a>
-        <a href="#" class="btn btn-tw disabled"><i class="fab fa-twitter"></i> Twitter</a>
+      <h3 class="card-title"><%= dgettext "coherence", "Sign In" %></h3>
+      <p class="mb-0"><%= dgettext "coherence", "using" %></p>
+      <div class="social-buttons" data-toggle="tooltip" data-placement="bottom"
+        title="<%= gettext "coming soon..." %>">
+        <a href="#" class="btn btn-fb disabled">
+          <i class="fab fa-facebook-f"></i> Facebook
+        </a>
+        <a href="#" class="btn btn-tw disabled">
+          <i class="fab fa-twitter"></i> Twitter
+        </a>
       </div>
       or
       <%= form_for @conn, session_path(@conn, :create), [as: :session], fn f  -> %>
@@ -28,9 +33,9 @@
             <%= error_tag f, login_field %>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-1">
           <%= required_label f, dgettext("coherence", "Password"), class: "sr-only" %>
-          <div class="input-group mb-1">
+          <div class="input-group">
             <div class="input-group-prepend" style="width: 40px;">
               <div class="input-group-text">
                 <i class="fas fa-lock"></i>
@@ -43,10 +48,11 @@
             %>
             <%= error_tag f, :password %>
           </div>
-          <small class="text-right">
-            <%= CollaborationWeb.Coherence.ViewHelpers.recover_link(@conn) %>
-          </small>
         </div>
+        <p class="small d-inline-flex justify-content-between w-100 mb-2">
+          <%= CollaborationWeb.Coherence.ViewHelpers.recover_link(@conn) %>
+          <%= CollaborationWeb.Coherence.ViewHelpers.confirmation_link(@conn) %>
+        </p>
         <%= if @remember do %>
           <div class="form-group mb-1">
             <input type="checkbox"  name="remember" id="remember">

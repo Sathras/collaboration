@@ -1,0 +1,38 @@
+<h2>Show Topic</h2>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @topic.title %>
+  </li>
+
+  <li>
+    <strong>Short title:</strong>
+    <%= @topic.short_title %>
+  </li>
+
+  <li>
+    <strong>Desc:</strong>
+    <%= @topic.desc %>
+  </li>
+
+  <li>
+    <strong>Published:</strong>
+    <%= @topic.published %>
+  </li>
+
+  <li>
+    <strong>Open:</strong>
+    <%= @topic.open %>
+  </li>
+
+  <li>
+    <strong>Short desc:</strong>
+    <%= @topic.short_desc %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: topic_path(@conn, :edit, @topic) %></span>
+<span><%= link "Back", to: topic_path(@conn, :index) %></span>

@@ -69,10 +69,8 @@ defmodule CollaborationWeb.Coherence.Messages do
   def you_must_confirm_your_account, do: dgettext(@domain, "You must confirm your account before you can login.")
   def your_account_has_been_unlocked, do: dgettext(@domain, "Your account has been unlocked")
   def your_account_is_not_locked, do: dgettext(@domain, "Your account is not locked.")
-  def verify_user_token(opts),
-    do: dgettext(@domain, "Invalid %{user_token} error: %{error}", opts)
-  def you_are_using_an_invalid_security_token,
-    do: dgettext(@domain, "You are using an invalid security token for this site! This security\nviolation has been logged.\n")
+  def verify_user_token(opts), do: dgettext(@domain, "Invalid %{user_token} error: %{error}", opts)
+  def you_are_using_an_invalid_security_token, do: dgettext(@domain, "You are using an invalid security token for this site! This security violation has been logged.")
   def mailer_required, do: dgettext(@domain, "Mailer configuration required!")
   def account_is_inactive(), do: dgettext(@domain, "Account is inactive!")
 end

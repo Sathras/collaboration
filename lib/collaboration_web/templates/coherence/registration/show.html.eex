@@ -1,25 +1,70 @@
-<h2><%= dgettext "coherence", "Show account" %></h2>
-<ul>
-  <li>
-    <strong><%= dgettext "coherence", "Name:" %></strong>
-    <%= @user.name %>
-  </li>
-  <%= unless (login_field = Coherence.Config.login_field) == :email do %>
-    <li>
-      <strong><%= humanize login_field %></strong>
-      <%= Map.get(@user, login_field) %>
-    </li>
-  <% end %>
+<center>
+  <div class="card bg-light text-center" style="max-width: 320px;">
+    <div class="card-body">
+      <h3 class="card-title"><%= dgettext "coherence", "Profile" %></h3>
+      <p><%= dgettext "coherence", "We will send you a link to reset your password to the following address:" %></p>
 
-  <li>
-    <strong><%= dgettext "coherence", "Email:" %></strong>
-    <%= @user.email %>
-  </li>
-
-</ul>
-
-<%= link dgettext("coherence", "Edit"), to: registration_path(@conn, :edit) %> |
-<%= link dgettext("coherence", "Delete"),
-        to: registration_path(@conn, :delete),
-        method: :delete,
-        data: [confirm: dgettext("coherence", "Are you sure?")] %>
+        <div class="form-group">
+          <label class="sr-only"><%= dgettext("coherence", "Name") %></label>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <input
+              class="form-control"
+              readonly
+              type="text"
+              value="<%= @user.name %>"
+            />
+          </div>
+        </div>
+        <%= unless (login_field = Coherence.Config.login_field) == :email do %>
+          <div class="form-group">
+            <label class="sr-only"><%= humanize login_field %></label>
+            <div class="input-group mb-1">
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="fas fa-user"></i>
+                </div>
+              </div>
+              <input
+                class="form-control"
+                readonly
+                type="text"
+                value="<%= Map.get(@user, login_field) %>"
+              />
+            </div>
+          </div>
+        <% end %>
+        <div class="form-group">
+          <label class="sr-only"><%= dgettext("coherence", "Email") %></label>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </div>
+            </div>
+            <input
+              class="form-control"
+              readonly
+              type="text"
+              value="<%= @user.email %>"
+            />
+          </div>
+        </div>
+        <p>
+          <%= link to: registration_path(@conn, :edit), class: "btn btn-outline-dark" do
+            [icon("fas fa-pencil-alt mr-1"), dgettext("coherence", "Edit")]
+          end %>
+          <%= link to: registration_path(@conn, :delete), method: :delete,
+            data: [confirm: dgettext("coherence", "Are you sure?")],
+            class: "btn btn-outline-dark" do
+              [icon("fas fa-trash mr-1"), dgettext("coherence", "Delete")]
+            end
+          %>
+        </p>
+    </div>
+  </div>
+</center>

@@ -3,16 +3,16 @@ defmodule Collaboration.Coherence.User do
   use Ecto.Schema
   use Coherence.Schema
 
-  
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  
+
 
   schema "users" do
+    field :admin, :boolean, default: false
     field :name, :string
     field :email, :string
     coherence_schema()
-
     timestamps()
   end
 
@@ -23,6 +23,11 @@ defmodule Collaboration.Coherence.User do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> validate_coherence(params)
+  end
+
+  def changeset(model, params, :toggle) do
+    model
+    |> cast(params, ~w(admin))
   end
 
   def changeset(model, params, :password) do

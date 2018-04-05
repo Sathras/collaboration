@@ -11,6 +11,19 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.all @user_schema
   end
 
+  def list_user(page_size, page_number, search_term) do
+    query = from u in @user_schema, select: struct(u, [:name, :email ])
+    query = add_filter(query, search_term)
+    Collaboration.Repo.paginate(query, page: page_number, page_size: page_size)
+  end
+
+  defp add_filter(query, search_term) when search_term == nil or search_term == "", do: query
+  defp add_filter(query, original_search_term) do
+    search_term = "#{original_search_term}%"
+    from u in query,
+    where: like(u.email, ^search_term) or like(u.name, ^search_term)
+  end
+
   def list_by_user(opts) do
     @repo.all query_by(@user_schema, opts)
   end
@@ -31,6 +44,10 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.get_by @user_schema, email: email
   end
 
+  def change_user(struct, params, changeset_variation) do
+    @user_schema.changeset struct, params, changeset_variation
+  end
+
   def change_user(struct, params) do
     @user_schema.changeset struct, params
   end
@@ -49,6 +66,10 @@ defmodule Collaboration.Coherence.Schemas do
 
   def create_user!(params) do
     @repo.insert! change_user(params)
+  end
+
+  def toggle(user, params) do
+    @repo.update change_user(user, params, :toggle)
   end
 
   def update_user(user, params) do
@@ -123,7 +144,7 @@ defmodule Collaboration.Coherence.Schemas do
       @repo.delete struct
     end
   end
-  
+
   def query_by(schema, opts) do
     Enum.reduce opts, schema, fn {k, v}, query ->
       where(query, [b], field(b, ^k) == ^v)

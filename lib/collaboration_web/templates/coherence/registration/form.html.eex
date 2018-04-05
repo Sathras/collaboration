@@ -65,6 +65,7 @@
         </div>
 
         <%= if Coherence.Config.require_current_password and not is_nil(@changeset.data.id) do %>
+          <p class="small"><%= dgettext "coherence", "If you do not want to change your password, leave the following fields empty:" %></p>
           <div class="form-group">
             <%= required_label f, :current_password, class: "sr-only" %>
             <div class="input-group">
@@ -75,7 +76,7 @@
               </div>
               <%= password_input f, :current_password, [
                 class: "form-control" <> error_class(f, :current_password),
-                placeholder: "Current Password"] ++ @required
+                placeholder: dgettext("coherence", "Current Password")] ++ @required
               %>
               <%= error_tag f, :current_password %>
             </div>
@@ -91,13 +92,13 @@
               </div>
             </div>
             <%= password_input f, :password, [
-              class: "form-control", placeholder: "Password"] ++ @required %>
+              class: "form-control", placeholder: dgettext("coherence", "Password")] ++ @required %>
             <%= error_tag f, :password %>
           </div>
         </div>
 
         <div class="form-group">
-          <%= required_label f, dgettext("coherence", "Password Confirmation"), class: "sr-only" %>
+          <%= required_label f, dgettext("coherence", "Confirm Password"), class: "sr-only" %>
           <div class="input-group">
             <div class="input-group-prepend" style="width: 40px;">
               <div class="input-group-text">
@@ -105,7 +106,7 @@
               </div>
             </div>
             <%= password_input f, :password_confirmation, [
-              class: "form-control", placeholder: "Confirm Password"] ++ @required %>
+              class: "form-control", placeholder: dgettext("coherence", "Confirm Password")] ++ @required %>
             <%= error_tag f, :password_confirmation %>
           </div>
         </div>
@@ -113,6 +114,20 @@
         <div class="form-group">
           <%= submit @label, class: "btn btn-primary" %>
           <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
+        </div>
+      <% end %>
+      <% IO.inspect @action %>
+
+      <%= if is_nil(@changeset.data.id) do %>
+        <p class="mb-0"><%= dgettext "coherence", "or sign in via:" %></p>
+        <div class="social-buttons" data-toggle="tooltip" data-placement="bottom"
+          title="<%= gettext "coming soon..." %>">
+          <a href="#" class="btn btn-fb disabled">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </a>
+          <a href="#" class="btn btn-tw disabled">
+            <i class="fab fa-twitter"></i> Twitter
+          </a>
         </div>
       <% end %>
     </div>
