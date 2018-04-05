@@ -1,6 +1,5 @@
 defmodule CollaborationWeb.UserView do
   use CollaborationWeb, :view
-  alias Collaboration.Coherence.Schemas
 
   def user_icon(admin) do
     color = if admin, do: "text-primary", else: "text-muted"

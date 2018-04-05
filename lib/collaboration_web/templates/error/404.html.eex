@@ -1,0 +1,7 @@
+<center>
+  <h2><small class="text-muted">Error 404<br></small>Not Found</h2>
+  <p class="lead">
+     <%= {:save, "The given url #{Phoenix.Controller.current_path(@conn)} is invalid."} %>
+  </p>
+  <p>Likely you have followed an external link or altered the url manually.</p>
+</center>

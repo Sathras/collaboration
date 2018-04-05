@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.UserController do
   use CollaborationWeb, :controller
 
+  plug CollaborationWeb.Plug.IsAdmin
+
   alias Collaboration.Coherence.Schemas
 
   def index(conn, _params) do

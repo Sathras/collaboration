@@ -1,0 +1,7 @@
+<center>
+  <h2><small class="text-muted">Error 500<br></small>Internal Server Error</h2>
+  <p class="lead">
+     The server failed to complete the request.
+  </p>
+  <p>This could have a variety of reasons. Please contact the administrator if the issue persists.</p>
+</center>

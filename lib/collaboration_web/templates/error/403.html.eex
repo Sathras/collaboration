@@ -1,0 +1,8 @@
+<center>
+  <h2><small class="text-muted">Error 403<br></small>Forbidden</h2>
+  <p class="lead">
+     <%= @msg || "This web resource exists but it seems that you lack
+     the necessary permissions to access it." %>
+  </p>
+</center>
+

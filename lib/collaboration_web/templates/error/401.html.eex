@@ -1,0 +1,7 @@
+<center>
+  <h2><small class="text-muted">Error 401<br></small>Unauthorized</h2>
+  <p class="lead">
+    You need to sign in before you can access this page.
+  </p>
+</center>
+
