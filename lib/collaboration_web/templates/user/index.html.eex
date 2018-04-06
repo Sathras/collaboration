@@ -3,10 +3,10 @@
 <table id="users" class="table table-sm">
   <thead>
     <tr>
-      <th><i class="fas fa-user" data-toggle="tooltip" title="User Status"></i></th>
+      <th data-searchable="false"><i class="fas fa-user" data-toggle="tooltip" title="User Status"></i></th>
       <th>Name</th>
       <th>Email</th>
-      <th>Actions</th>
+      <th data-orderable="false" data-searchable="false">Actions</th>
     </tr>
   </thead>
   <tbody>

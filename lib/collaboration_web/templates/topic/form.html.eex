@@ -53,6 +53,9 @@
   <div class="col-md-7">
     <div class="form-group">
       <%= label f, :short_desc, class: "control-label" %>
+      <small class="form-text text-muted mb-1">
+        <%= gettext "This is the short description, as it appears in the topic list." %><br>
+      </small>
       <%= textarea f, :short_desc, class: "form-control #{error_class f, :short_desc}" %>
       <%= error_tag f, :short_desc %>
     </div>

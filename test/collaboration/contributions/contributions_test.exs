@@ -72,4 +72,66 @@ defmodule Collaboration.ContributionsTest do
       assert %Ecto.Changeset{} = Contributions.change_topic(topic)
     end
   end
+
+  describe "ideas" do
+    alias Collaboration.Contributions.Idea
+
+    @valid_attrs %{desc: "some desc", title: "some title"}
+    @update_attrs %{desc: "some updated desc", title: "some updated title"}
+    @invalid_attrs %{desc: nil, title: nil}
+
+    def idea_fixture(attrs \\ %{}) do
+      {:ok, idea} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Contributions.create_idea()
+
+      idea
+    end
+
+    test "list_ideas/0 returns all ideas" do
+      idea = idea_fixture()
+      assert Contributions.list_ideas() == [idea]
+    end
+
+    test "get_idea!/1 returns the idea with given id" do
+      idea = idea_fixture()
+      assert Contributions.get_idea!(idea.id) == idea
+    end
+
+    test "create_idea/1 with valid data creates a idea" do
+      assert {:ok, %Idea{} = idea} = Contributions.create_idea(@valid_attrs)
+      assert idea.desc == "some desc"
+      assert idea.title == "some title"
+    end
+
+    test "create_idea/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Contributions.create_idea(@invalid_attrs)
+    end
+
+    test "update_idea/2 with valid data updates the idea" do
+      idea = idea_fixture()
+      assert {:ok, idea} = Contributions.update_idea(idea, @update_attrs)
+      assert %Idea{} = idea
+      assert idea.desc == "some updated desc"
+      assert idea.title == "some updated title"
+    end
+
+    test "update_idea/2 with invalid data returns error changeset" do
+      idea = idea_fixture()
+      assert {:error, %Ecto.Changeset{}} = Contributions.update_idea(idea, @invalid_attrs)
+      assert idea == Contributions.get_idea!(idea.id)
+    end
+
+    test "delete_idea/1 deletes the idea" do
+      idea = idea_fixture()
+      assert {:ok, %Idea{}} = Contributions.delete_idea(idea)
+      assert_raise Ecto.NoResultsError, fn -> Contributions.get_idea!(idea.id) end
+    end
+
+    test "change_idea/1 returns a idea changeset" do
+      idea = idea_fixture()
+      assert %Ecto.Changeset{} = Contributions.change_idea(idea)
+    end
+  end
 end

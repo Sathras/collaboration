@@ -1,0 +1,18 @@
+<h2>Show Idea</h2>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @idea.title %>
+  </li>
+
+  <li>
+    <strong>Desc:</strong>
+    <%= @idea.desc %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: idea_path(@conn, :edit, @idea) %></span>
+<span><%= link "Back", to: idea_path(@conn, :index) %></span>

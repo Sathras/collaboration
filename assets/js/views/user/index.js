@@ -6,7 +6,7 @@ require( 'datatables.net-bs4' )();
 export default class View extends MainView {
   mount() {
     super.mount();
-    $('#users').DataTable();
+    $('#users').DataTable({stateSave: true});
   }
 
   unmount() {

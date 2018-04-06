@@ -36,6 +36,7 @@ defmodule CollaborationWeb.Router do
     # add public resources below
     get "/", TopicController, :index
     resources "/topics", TopicController
+    resources "/ideas", IdeaController
   end
 
   scope "/", CollaborationWeb do

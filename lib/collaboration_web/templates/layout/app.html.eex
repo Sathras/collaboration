@@ -10,6 +10,7 @@
     <title>Idea Nexus</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
 
@@ -37,9 +38,6 @@
               <% topics = Collaboration.Contributions.get_menu_links!() %>
               <%= for t <- topics do %>
                 <%= nav_item @conn, t.short_title, topic_path(@conn, :show, t.slug) %>
-              <% end %>
-              <%= if Coherence.current_user(@conn) do %>
-                <%= nav_item @conn, "Users", user_path(@conn, :index), [icon: "fas fa-users mr-1"] %>
               <% end %>
             </ul>
             <ul class="navbar-nav">

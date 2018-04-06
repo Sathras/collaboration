@@ -42,7 +42,8 @@ defmodule Collaboration.Mixfile do
       {:scrivener_ecto, "~> 1.3"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:coherence, github: "smpallen99/coherence"}
+      {:coherence, github: "smpallen99/coherence"},
+      {:html_sanitize_ex, "~> 1.3.0-rc3"}
     ]
   end
 
