@@ -3,9 +3,7 @@
 import MainView from '../main';
 require( 'datatables.net-bs4' )();
 
-
 function renderDetails (row) {
-  console.log(row)
   return row
 }
 

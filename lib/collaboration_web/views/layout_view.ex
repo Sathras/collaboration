@@ -1,8 +1,6 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
-  import Collaboration.Contributions, only: [get_menu_links!: 0]
-
   @doc """
   Generates name for the JavaScript view we want to use
   in this combination of view/template.

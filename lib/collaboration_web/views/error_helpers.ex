@@ -6,7 +6,7 @@ defmodule CollaborationWeb.ErrorHelpers do
   use Phoenix.HTML
 
   def error_class(form, field) do
-    if form.source.valid? do
+    if !form.source.action do
       ""
     else
       if has_error?(form, field), do: " is-invalid", else: " is-valid"

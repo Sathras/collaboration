@@ -2,6 +2,7 @@ defmodule Collaboration.Contributions do
   @moduledoc """
   The Contributions context.
   """
+  import Ecto.Changeset, only: [put_assoc: 3]
   import Ecto.Query, warn: false
   alias Collaboration.Repo
   alias Collaboration.Contributions.Topic
@@ -30,9 +31,11 @@ defmodule Collaboration.Contributions do
   def list_ideas, do: Repo.all(Idea)
   def get_idea!(id), do: Repo.get!(Idea, id)
 
-  def create_idea(attrs \\ %{}) do
+  def create_idea(user, topic, attrs \\ %{}) do
     %Idea{}
     |> Idea.changeset(attrs)
+    |> put_assoc(:user, user)
+    |> put_assoc(:topic, topic)
     |> Repo.insert()
   end
 

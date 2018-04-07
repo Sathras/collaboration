@@ -2,6 +2,7 @@ defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
   alias Collaboration.Contributions
+  alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Topic
 
   def index(conn, _params) do
@@ -25,9 +26,11 @@ defmodule CollaborationWeb.TopicController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
+    IO.inspect params
     topic = Contributions.get_topic_via_slug!(id)
-    render(conn, "show.html", topic: topic)
+    idea_changeset = Contributions.change_idea(%Idea{})
+    render(conn, "show.html", topic: topic, idea_changeset: idea_changeset)
   end
 
   def edit(conn, %{"id" => id}) do
@@ -56,5 +59,18 @@ defmodule CollaborationWeb.TopicController do
     conn
     |> put_flash(:info, "Topic deleted successfully.")
     |> redirect(to: topic_path(conn, :index))
+  end
+
+  def add_idea(conn, %{"slug" => slug, "idea" => idea_params}) do
+    topic = Contributions.get_topic_via_slug! slug
+    user = conn.assigns[:current_user]
+    case Contributions.create_idea(user, topic, idea_params) do
+      {:ok, _idea} ->
+        conn
+        |> put_flash(:info, "Idea created successfully.")
+        |> redirect(to: topic_path(conn, :show, slug))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render conn, "show.html", topic: topic, idea_changeset: changeset
+    end
   end
 end

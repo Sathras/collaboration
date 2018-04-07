@@ -9,7 +9,7 @@ defmodule Collaboration.Contributions.Idea do
     field :desc, :string
     field :title, :string
     timestamps()
-    belongs_to :topic, Collaboration.Topic
+    belongs_to :topic, Collaboration.Contributions.Topic
     belongs_to :user, Collaboration.Coherence.User
   end
 
@@ -18,5 +18,8 @@ defmodule Collaboration.Contributions.Idea do
     idea
     |> cast(attrs, [:title, :desc])
     |> validate_required([:title, :desc])
+    |> validate_required([:title, :desc])
+    |> validate_length(:title, min: 5, max: 80)
+    |> validate_length(:desc, min: 15, max: 3000)
   end
 end

@@ -19,14 +19,12 @@ defmodule Collaboration.Contributions.Topic do
 
   @doc false
   def changeset(topic, attrs) do
-    changeset = topic
+    topic
     |> cast(attrs, [:slug, :title, :short_title, :desc, :featured, :published, :open, :short_desc])
     |> validate_required([:slug, :title, :short_title, :desc, :featured, :published, :open, :short_desc])
     |> sanitize(:short_desc)
     |> sanitize(:desc)
     |> unique_constraint(:slug)
-    IO.inspect changeset
-    changeset
   end
 
   defp sanitize(changeset, field) do
