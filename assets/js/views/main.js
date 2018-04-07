@@ -1,11 +1,15 @@
 // web/static/js/views/main.js
 /* global $, tinymce */
+import "timeago"
+
 export default class MainView {
   mount() {
     // This will be executed when the document loads...
 
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip()
+
+    $("time").timeago();
 
     // enable base tinyMCE instance
     tinymce.init({

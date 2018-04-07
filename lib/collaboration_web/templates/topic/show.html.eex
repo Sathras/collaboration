@@ -1,27 +1,114 @@
 <div class="d-flex justify-content-between">
   <h2><%= @topic.title %></h2>
   <div>
-    <button class="btn btn-success" data-toggle="modal" data-target="#submitIdeaModal">Submit Idea</button>
-    <%= link "Edit", to: topic_path(@conn, :edit, @topic.slug), class: "btn btn-outline-dark" %>
+    <%= link raw("<i class=\"fas fa-pencil-alt mr-2\"></i> Edit"),
+      to: topic_path(@conn, :edit, @topic.slug),
+      class: "btn btn-outline-dark"
+    %>
   </div>
 </div>
 <%= raw @topic.desc %>
 <hr>
-<h3 class="text-center">Ideas</h3>
 
-<!-- Modal -->
+<div class="row">
+  <div class="col-md">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <h3><%= gettext "Ideas" %></h3>
+        <div>
+          <button class="btn btn-success" data-toggle="modal" data-target="#submitIdeaModal">
+            <i class="fas fa-plus mr-2"></i><%= gettext "Submit Idea" %>
+          </button>
+        </div>
+      </div>
+      <div class="card-body pl-0 pr-0">
+        <table id="ideas" class="mr-0 table table-sm table-striped table-hover" cellspacing="0" cellpadding="0">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+        <%= for idea <- @ideas do %>
+            <tr data-path="/topics/<%= @topic.slug %>/<%= idea.id %>" class="pointer">
+              <td><%= idea.title %></td>
+              <td class="text-right" data="<%= idea.created %>">
+                <small>
+                  <time datetime="<%= NaiveDateTime.to_iso8601(idea.created) %>Z"></time>
+                </small>
+              </td>
+            </tr>
+        <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <%= if !@idea do %>
+    <div class="col-md">
+      <div class="card">
+        <div class="card-header">
+          <h3><%= gettext "Comments" %></h3>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            <%= gettext "Please select an idea from the list on the left to show comments and further details." %>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="col-md">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <h4><%= @idea.title %></h4>
+          <div>
+            <button class="btn btn-outline-dark" data-toggle="modal" data-target="#editIdeaModal">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <!--<button class="btn btn-outline-dark">-->
+            <!--  <i class="far fa-eye-slash"></i>-->
+            <!--</button>-->
+            <%= link raw("<i class=\"far fa-trash-alt\"></i>"),
+              to: topic_path(@conn, :delete_idea, @topic.slug, @idea.id),
+              method: :delete,
+              data: [confirm: "Are you sure?"],
+              class: "btn btn-outline-danger"
+            %>
+          </div>
+        </div>
+        <div class="card-body"><%= @idea.desc %></div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Comment 1</li>
+          <li class="list-group-item">Comment 2</li>
+        </ul>
+        <div class="card-footer">
+          <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>
+
+
+<!-- Add Idea Modal -->
 <div
   id="submitIdeaModal"
   class="modal fade"  tabindex="-1" role="dialog"
   aria-labelledby="exampleModalLabel" aria-hidden="true"
   data-show="<%= !!@idea_changeset.action %>"
 >
+
   <%= form_for @idea_changeset, topic_path(@conn, :add_idea, @topic.slug), fn f -> %>
-  <% IO.inspect f %>
+
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Submit Idea</h5>
+        <h5 class="modal-title" id="exampleModalLabel">
+          <%= gettext "Add Idea" %>
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -55,3 +142,54 @@
   </div>
   <% end %>
 </div>
+
+<!-- Edit Idea Modal -->
+<%= if @idea do %>
+<div
+  id="editIdeaModal"
+  class="modal fade"  tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel" aria-hidden="true"
+  data-show="<%= !!@edit_idea_changeset.action %>"
+>
+  <%= form_for @edit_idea_changeset, topic_path(@conn, :update_idea, @topic.slug, @idea.id), fn f -> %>
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          <%= gettext "Edit Idea" %>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= if !!@edit_idea_changeset.action do %>
+          <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Error:</strong> Invalid/Incomplete form data
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <% end %>
+        <div class="form-group">
+          <%= label f, :title, class: "control-label" %>
+          <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
+          <%= error_tag f, :title %>
+        </div>
+
+        <div class="form-group">
+          <%= label f, :desc, class: "control-label" %>
+          <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
+          <%= error_tag f, :desc %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <%= submit "Submit", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>
+<% end %>

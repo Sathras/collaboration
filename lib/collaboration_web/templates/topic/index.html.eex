@@ -7,6 +7,7 @@
     <tr>
       <th data-width="15px"></th>
       <th>Title</th>
+      <th>Ideas</th>
       <th>Published</th>
       <th>Open</th>
       <th class="text-center" data-orderable="false" data-width="150px">Actions</th>
@@ -17,6 +18,7 @@
     <tr class="pointer" data-short-desc="<%= topic.short_desc %>">
       <td class='text-center'>1</td>
       <td><%= topic.title %></td>
+      <td><%= topic.idea_count %></td>
       <td><%= topic.published %></td>
       <td><%= topic.open %></td>
       <td class="text-right">

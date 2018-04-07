@@ -8,7 +8,15 @@ defmodule Collaboration.Contributions do
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
 
-  def list_topics, do: Repo.all(Topic)
+  def list_topics do
+    topics = Repo.all(
+      from t in Topic,
+        left_join: i in assoc(t, :ideas),
+        group_by: t.id,
+        select: {t, count(i.id)}
+    )
+    topics = Enum.map(topics, fn({t, i}) -> Map.put t, :idea_count, i end)
+  end
   def get_topic!(id), do: Repo.get!(Topic, id)
   def get_topic_via_slug!(slug), do: Repo.get_by(Topic, slug: slug)
   def get_menu_links!(), do: Repo.all from t in Topic,
@@ -29,6 +37,11 @@ defmodule Collaboration.Contributions do
   def delete_topic(%Topic{} = topic), do: Repo.delete(topic)
   def change_topic(%Topic{} = topic), do: Topic.changeset(topic, %{})
   def list_ideas, do: Repo.all(Idea)
+  def list_ideas(topic_id), do: Repo.all(from i in Idea,
+    select: %{id: i.id, title: i.title, created: i.inserted_at},
+    where: i.topic_id == ^topic_id
+  )
+
   def get_idea!(id), do: Repo.get!(Idea, id)
 
   def create_idea(user, topic, attrs \\ %{}) do

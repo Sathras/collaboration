@@ -7,6 +7,7 @@ defmodule CollaborationWeb.TopicController do
 
   def index(conn, _params) do
     topics = Contributions.list_topics()
+    IO.inspect topics
     render(conn, "index.html", topics: topics)
   end
 
@@ -26,11 +27,21 @@ defmodule CollaborationWeb.TopicController do
     end
   end
 
-  def show(conn, %{"id" => id} = params) do
-    IO.inspect params
-    topic = Contributions.get_topic_via_slug!(id)
-    idea_changeset = Contributions.change_idea(%Idea{})
-    render(conn, "show.html", topic: topic, idea_changeset: idea_changeset)
+  def show(conn, %{"slug" => slug} = params) do
+
+    idea = if Map.has_key?(params, "idea_id"),
+      do: Contributions.get_idea!(params["idea_id"]),
+      else: nil
+    edit_idea_changeset = Contributions.change_idea(idea || %Idea{})
+
+    topic = Contributions.get_topic_via_slug!(slug)
+
+    render conn, "show.html",
+      topic: topic,
+      ideas: Contributions.list_ideas(topic.id),
+      idea: idea,
+      idea_changeset: Contributions.change_idea(%Idea{}),
+      edit_idea_changeset: edit_idea_changeset
   end
 
   def edit(conn, %{"id" => id}) do
@@ -61,7 +72,7 @@ defmodule CollaborationWeb.TopicController do
     |> redirect(to: topic_path(conn, :index))
   end
 
-  def add_idea(conn, %{"slug" => slug, "idea" => idea_params}) do
+  def add_idea(conn, %{"slug" => slug, "idea" => idea_params} = params) do
     topic = Contributions.get_topic_via_slug! slug
     user = conn.assigns[:current_user]
     case Contributions.create_idea(user, topic, idea_params) do
@@ -70,7 +81,38 @@ defmodule CollaborationWeb.TopicController do
         |> put_flash(:info, "Idea created successfully.")
         |> redirect(to: topic_path(conn, :show, slug))
       {:error, %Ecto.Changeset{} = changeset} ->
-        render conn, "show.html", topic: topic, idea_changeset: changeset
+        render conn, "show.html",
+          topic: topic, idea_changeset: changeset,
+          ideas: Contributions.list_ideas(topic.id),
+          idea: nil,
+          idea_changeset: changeset,
+          edit_idea_changeset: Contributions.change_idea(%Idea{})
     end
+  end
+
+  def update_idea(conn, %{"slug" => slug, "idea_id" => id, "idea" => idea_params}) do
+    idea = Contributions.get_idea!(id)
+    case Contributions.update_idea(idea, idea_params) do
+      {:ok, idea} ->
+        conn
+        |> put_flash(:info, "Idea updated successfully.")
+        |> redirect(to: topic_path(conn, :show, slug, idea: idea.id))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        topic = Contributions.get_topic_via_slug! slug
+        render conn, "show.html",
+          topic: topic,
+          ideas: Contributions.list_ideas(topic.id),
+          idea: idea,
+          idea_changeset: Contributions.change_idea(%Idea{}),
+          edit_idea_changeset: changeset
+    end
+  end
+
+  def delete_idea(conn, %{"slug" => slug, "idea_id" => id}) do
+    idea = Contributions.get_idea!(id)
+    {:ok, _idea} = Contributions.delete_idea(idea)
+    conn
+    |> put_flash(:info, "Idea deleted successfully.")
+    |> redirect(to: topic_path(conn, :show, slug))
   end
 end
