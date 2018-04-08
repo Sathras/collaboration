@@ -1,4 +1,4 @@
-// web/static/js/views/topic/show.js
+// web/static/js/views/idea/index.js
 /* global $, Turbolinks */
 import MainView from '../main';
 
@@ -7,8 +7,7 @@ export default class View extends MainView {
     super.mount();
 
     $('#ideas').DataTable({
-      "order": [[ 1, 'desc' ]],
-      stateSave: true
+      "order": [[ 1, 'desc' ]]
     });
     $('#ideas').on('click', 'tbody tr', e =>
       Turbolinks.visit($(e.currentTarget).data('path')))
@@ -23,5 +22,6 @@ export default class View extends MainView {
 
   unmount() {
     super.unmount();
+    $('#ideas').DataTable().destroy()
   }
 }

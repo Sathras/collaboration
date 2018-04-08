@@ -11,6 +11,6 @@ export default class View extends MainView {
 
   unmount() {
     super.unmount();
-
+    $('#users').DataTable().destroy()
   }
 }

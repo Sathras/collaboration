@@ -9,6 +9,7 @@ defmodule CollaborationWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session
+    plug CollaborationWeb.Plug.LoadTopics
   end
 
   pipeline :protected do
@@ -17,7 +18,8 @@ defmodule CollaborationWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Coherence.Authentication.Session, protected: true
+    plug Coherence.Authentication.Session, protected: true, login: true
+    plug CollaborationWeb.Plug.LoadTopics
   end
 
   scope "/" do
@@ -34,19 +36,19 @@ defmodule CollaborationWeb.Router do
     pipe_through :browser
 
     # add public resources below
-    get "/", TopicController, :index
-    resources "/topics", TopicController, only: [:index, :edit, :new, :create, :update, :delete]
-    get "/topics/:slug", TopicController, :show
-    get "/topics/:slug/:idea_id", TopicController, :show
+    get "/", PageController, :index
+    resources "/topics", TopicController, only: [:index], param: "slug" do
+      resources "/ideas", IdeaController, only: [:index, :show]
+    end
   end
 
   scope "/", CollaborationWeb do
     pipe_through :protected
 
     # add protected resources below
-    post    "/topics/:slug",          TopicController, :add_idea
-    put     "/topics/:slug/:idea_id", TopicController, :update_idea
-    delete  "/topics/:slug/:idea_id", TopicController, :delete_idea
+    resources "/topics", TopicController, except: [:index, :show], param: "slug" do
+      resources "/ideas", IdeaController, except: [:index, :show, :new, :edit]
+    end
     get     "/users",                 UserController, :index
     put     "/users/:id",             UserController, :toggle_admin
   end

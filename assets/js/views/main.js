@@ -8,6 +8,7 @@ export default class MainView {
 
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="popover"]').popover()
 
     $("time").timeago();
 
@@ -20,10 +21,12 @@ export default class MainView {
       toolbar: `styleselect forecolor | indent outdent | hr | bullist numlist | link unlink | image table | preview fullscreen`,
       plugins: `hr link lists image fullscreen preview textcolor table`
     });
+
+    $("#spinner-wrapper").addClass("invisible")
   }
 
   unmount() {
     // This will be executed when the document unloads...
-
+    $("#spinner-wrapper").removeClass("invisible")
   }
 }

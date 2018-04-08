@@ -1,17 +1,17 @@
 // web/static/js/views/loader.js
 import MainView    from './main';
+import IdeaIndexView from './idea/index';
 import TopicEditView from './topic/edit';
 import TopicIndexView from './topic/index';
 import TopicNewView from './topic/new';
-import TopicShowView from './topic/show';
 import UserIndexView from './user/index';
 
 // Collection of specific view modules
 const views = {
+  IdeaIndexView,
   TopicEditView,
   TopicIndexView,
   TopicNewView,
-  TopicShowView,
   UserIndexView
 };
 
