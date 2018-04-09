@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="A collaboration tool">
     <meta name="author" content="Alexander Fuchsberger">
+    <%= tag :meta, name: "token", content: Map.get @conn.assigns, :user_token, "" %>
 
     <title>Idea Nexus</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
@@ -14,8 +15,11 @@
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
-
-  <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
+  <body
+    data-admin="<%= admin?(@conn) %>"
+    data-js-view-name="<%= js_view_name(@conn, @view_template) %>"
+    <%= path_params_to_data_attributes(@conn) %>
+  >
     <header class="header">
       <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
@@ -39,7 +43,7 @@
               <%= for t <- @conn.assigns.topics do %>
                 <%= if t.featured && t.published, do:
                   nav_item @conn, t.short_title,
-                    topic_idea_path(@conn, :index, t.slug),
+                    topic_idea_path(@conn, :index, t.id),
                     badge: t.idea_count,
                     popover: t.short_desc
                 %>

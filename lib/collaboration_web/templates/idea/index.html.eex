@@ -1,11 +1,11 @@
 <%= if admin?(@conn) do %>
   <div class="float-right">
     <%= link raw("<i class=\"fas fa-pencil-alt mr-2\"></i>Edit"),
-      to: topic_path(@conn, :edit, @topic.slug),
+      to: topic_path(@conn, :edit, @topic),
       class: "btn btn-outline-dark"
     %>
     <%= link raw("<i class=\"far fa-trash-alt mr-2\"></i>Delete"),
-      to: topic_path(@conn, :delete, @topic.slug),
+      to: topic_path(@conn, :delete, @topic),
       method: :delete,
       data: [confirm: "Are you sure?"],
       class: "btn btn-outline-danger"
@@ -40,7 +40,7 @@
           </thead>
           <tbody>
         <%= for idea <- @ideas do %>
-            <tr data-path="<%= topic_idea_path @conn, :show, @topic.slug, idea.id %>" class="pointer">
+            <tr data-path="<%= topic_idea_path @conn, :show, @topic.id, idea.id %>" class="pointer">
               <td><%= idea.title %></td>
               <td class="text-right" data-order="<%= idea.created %>">
                 <small>
@@ -57,11 +57,8 @@
   <%= if !@idea do %>
     <div class="col-md">
       <div class="card">
-        <div class="card-header">
-          <h3><%= gettext "Comments" %></h3>
-        </div>
         <div class="card-body">
-          <p class="card-text">
+          <p class="card-text font-italic">
             <%= gettext "Please select an idea from the list on the left to show comments and further details." %>
           </p>
         </div>
@@ -70,37 +67,58 @@
   <% else %>
     <div class="col-md">
       <div class="card">
-        <div class="card-header d-flex justify-content-between">
+        <div class="card-header">
+          <%= if admin?(@conn) do %>
+            <div class="float-right">
+              <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#editIdeaModal">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <%= link raw("<i class=\"far fa-trash-alt\"></i>"),
+                to: topic_idea_path(@conn, :delete, @topic, @idea),
+                method: :delete,
+                data: [confirm: "Are you sure?"],
+                class: "btn btn-sm btn-outline-danger"
+              %>
+            </div>
+          <% end %>
           <h4><%= @idea.title %></h4>
-          <div>
-            <button class="btn btn-outline-dark" data-toggle="modal" data-target="#editIdeaModal">
-              <i class="fas fa-pencil-alt"></i>
-            </button>
-            <!--<button class="btn btn-outline-dark">-->
-            <!--  <i class="far fa-eye-slash"></i>-->
-            <!--</button>-->
-            <%= link raw("<i class=\"far fa-trash-alt\"></i>"),
-              to: topic_idea_path(@conn, :delete, @topic.slug, @idea.id),
-              method: :delete,
-              data: [confirm: "Are you sure?"],
-              class: "btn btn-outline-danger"
-            %>
+        </div>
+        <%= if @idea.desc do %>
+          <div class="card-body"><%= @idea.desc %></div>
+        <% end %>
+
+          <ul id="comments" class="list-group list-group-flush">
+            <%= if Enum.count(@idea.comments) > 0 do %>
+              <%= for comment <- @idea.comments do %>
+                <li class="list-group-item px-2 py-1" data-id="<%= comment.id %>">
+                  <small class="ml-1 float-right font-italic text-muted">
+                    <time datetime="<%= comment.inserted_at %>Z"></time>
+                    <%= if admin?(@conn) do %>
+                      <a class="delete-comment pointer">
+                        <i class="text-danger fas fa-trash-alt"></i>
+                      </a>
+                    <% end %>
+                  </small>
+                  <strong><%= comment.user.name %></strong>
+                  <%= comment.text %>
+                </li>
+              <% end %>
+            <% else %>
+              <li id="no_feedback" class="list-group-item px-2 py-1 font-italic text-center">
+                no feedback yet...
+              </li>
+            <% end %>
+          </ul>
+        <%= if admin?(@conn) || ( user?(@conn) && @topic.open )do %>
+          <div class="card-footer">
+            <input id="feedback" class="form-control form-control-sm"
+              placeholder="Leave feedback..." />
           </div>
-        </div>
-        <div class="card-body"><%= @idea.desc %></div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Comment 1</li>
-          <li class="list-group-item">Comment 2</li>
-        </ul>
-        <div class="card-footer">
-          <small class="text-muted">Last updated 3 mins ago</small>
-        </div>
+        <% end %>
       </div>
     </div>
   <% end %>
-
 </div>
-
 
 <!-- Add Idea Modal -->
 <%= if admin?(@conn) || ( user?(@conn) && @topic.open ) do %>
@@ -111,7 +129,7 @@
   data-show="<%= !!@idea_changeset.action %>"
 >
 
-  <%= form_for @idea_changeset, topic_idea_path(@conn, :create, @topic.slug), fn f -> %>
+  <%= form_for @idea_changeset, topic_idea_path(@conn, :create, @topic), fn f -> %>
 
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -162,7 +180,7 @@
   aria-labelledby="exampleModalLabel" aria-hidden="true"
   data-show="<%= !!@edit_idea_changeset.action %>"
 >
-  <%= form_for @edit_idea_changeset, topic_idea_path(@conn, :update, @topic.slug, @idea.id), fn f -> %>
+  <%= form_for @edit_idea_changeset, topic_idea_path(@conn, :update, @topic, @idea), fn f -> %>
 
   <div class="modal-dialog" role="document">
     <div class="modal-content">

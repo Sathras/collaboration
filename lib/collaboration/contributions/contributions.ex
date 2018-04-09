@@ -4,25 +4,26 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset, only: [put_assoc: 3]
   import Ecto.Query, warn: false
+
   alias Collaboration.Repo
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
+  alias Collaboration.Contributions.Comment
 
   def list_topics(admin \\ false) do
     query = from t in Topic,
       left_join: i in assoc(t, :ideas),
       group_by: t.id,
       select: %{
-        title: t.title, short_title: t.short_title, short_desc: t.short_desc,
-        slug: t.slug, open: t.open, featured: t.featured, published: t.published,
-        idea_count: count(i.id)
+        id: t.id, title: t.title, short_title: t.short_title,
+        short_desc: t.short_desc, open: t.open, featured: t.featured,
+        published: t.published, idea_count: count(i.id)
       }
     query = if admin, do: query, else: from [t, i] in query, where: t.published
     Repo.all(query)
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)
-  def get_topic_via_slug!(slug), do: Repo.get_by(Topic, slug: slug)
 
   def create_topic(attrs \\ %{}) do
     %Topic{}
@@ -47,6 +48,8 @@ defmodule Collaboration.Contributions do
   )
 
   def get_idea!(id), do: Repo.get!(Idea, id)
+  def get_idea!(id, :preload_comments), do:
+    from(i in Idea, preload: [comments: [:user]]) |> Repo.get!(id)
 
   def create_idea(user, topic, attrs \\ %{}) do
     %Idea{}
@@ -64,4 +67,25 @@ defmodule Collaboration.Contributions do
 
   def delete_idea(%Idea{} = idea), do: Repo.delete(idea)
   def change_idea(idea \\ %Idea{}), do:  Idea.changeset(idea, %{})
+
+  def list_comments, do: Repo.all(Comment)
+
+  def get_comment!(id), do: Repo.get!(Comment, id)
+
+  def create_comment(user, idea, attrs \\ %{}) do
+    %Comment{}
+    |> Comment.changeset(attrs)
+    |> put_assoc(:user, user)
+    |> put_assoc(:idea, idea)
+    |> Repo.insert()
+  end
+
+  def update_comment(%Comment{} = comment, attrs) do
+    comment
+    |> Comment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_comment(%Comment{} = comment), do: Repo.delete(comment)
+  def change_comment(%Comment{} = comment), do: Comment.changeset(comment, %{})
 end

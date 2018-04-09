@@ -4,8 +4,8 @@ defmodule CollaborationWeb.IdeaController do
   import Collaboration.Contributions
   alias Collaboration.Contributions.Idea
 
-  def index(conn, %{"topic_slug" => s}) do
-    topic = get_topic_via_slug!(s)
+  def index(conn, %{"topic_id" => id}) do
+    topic = get_topic!(id)
     render conn, "index.html",
       topic: topic,
       ideas: list_ideas(topic.id),
@@ -13,9 +13,9 @@ defmodule CollaborationWeb.IdeaController do
       idea_changeset: change_idea()
   end
 
-  def show(conn, %{"topic_slug" => s, "id" => id}) do
-    topic = get_topic_via_slug!(s)
-    idea =  get_idea!(id)
+  def show(conn, %{"topic_id" => topic_id, "id" => id}) do
+    topic = get_topic!(topic_id)
+    idea =  get_idea!(id, :preload_comments)
     render conn, "index.html",
       topic: topic,
       ideas: list_ideas(topic.id),
@@ -24,13 +24,13 @@ defmodule CollaborationWeb.IdeaController do
       edit_idea_changeset: change_idea(idea)
   end
 
-  def create(conn, %{"topic_slug" => s, "idea" => params}) do
-    topic = get_topic_via_slug! s
+  def create(conn, %{"topic_id" => topic_id, "idea" => params}) do
+    topic = get_topic! topic_id
     case create_idea(conn.assigns[:current_user], topic, params) do
       {:ok, idea} ->
         conn
         |> put_flash(:info, "Idea created successfully.")
-        |> redirect(to: topic_idea_path(conn, :show, s, idea.id))
+        |> redirect(to: topic_idea_path(conn, :show, topic, idea))
       {:error, changeset} ->
         render conn, "index.html",
           topic: topic,
@@ -41,15 +41,15 @@ defmodule CollaborationWeb.IdeaController do
     end
   end
 
-  def update(conn, %{"topic_slug" => s, "id" => id, "idea" => params}) do
+  def update(conn, %{"topic_id" => topic_id, "id" => id, "idea" => params}) do
     idea = get_idea!(id)
     case update_idea(idea, params) do
       {:ok, idea} ->
         conn
         |> put_flash(:info, "Idea updated successfully.")
-        |> redirect(to: topic_idea_path(conn, :show, s, idea))
+        |> redirect(to: topic_idea_path(conn, :show, topic_id, idea))
       {:error, changeset} ->
-        topic = get_topic_via_slug! s
+        topic = get_topic! topic_id
         render conn, "index.html",
           topic: topic,
           ideas: list_ideas(topic.id),
@@ -59,10 +59,10 @@ defmodule CollaborationWeb.IdeaController do
     end
   end
 
-  def delete(conn, %{"topic_slug" => s, "id" => id}) do
+  def delete(conn, %{"topic_id" => topic_id, "id" => id}) do
     get_idea!(id) |> delete_idea
     conn
     |> put_flash(:info, "Idea deleted successfully.")
-    |> redirect(to: topic_idea_path(conn, :index, s))
+    |> redirect(to: topic_idea_path(conn, :index, topic_id))
   end
 end

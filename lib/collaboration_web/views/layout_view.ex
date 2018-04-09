@@ -14,6 +14,9 @@ defmodule CollaborationWeb.LayoutView do
     |> Enum.join("")
   end
 
+  def path_params_to_data_attributes(conn), do:
+    Enum.map(conn.path_params, fn({p, v}) -> " data-#{p}=#{v}" end) |> Enum.join
+
   # Takes the resource name of the view module and removes the
   # the ending *_view* string.
   defp view_name(conn) do

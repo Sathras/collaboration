@@ -14,7 +14,8 @@ defmodule Collaboration.Coherence.User do
     field :email, :string
     coherence_schema()
     timestamps()
-    has_many :ideas, Collaboration.Contributions.Idea
+    has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
+    has_many :ideas, Collaboration.Contributions.Idea, on_delete: :delete_all
   end
 
   def changeset(model, params \\ %{}) do

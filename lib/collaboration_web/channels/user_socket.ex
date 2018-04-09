@@ -2,7 +2,7 @@ defmodule CollaborationWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", CollaborationWeb.RoomChannel
+  channel "idea:*", CollaborationWeb.IdeaChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -19,8 +19,13 @@ defmodule CollaborationWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Coherence.verify_user_token(socket, token, &assign/3) do
+      {:error, _} -> {:ok, socket}
+      {:ok, socket} ->
+        user = Collaboration.Coherence.Schemas.get_user!(socket.assigns.user_id)
+        {:ok, assign(socket, :user, user)}
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

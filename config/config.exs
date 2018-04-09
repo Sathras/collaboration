@@ -39,6 +39,7 @@ config :coherence,
   user_active_field: true,
   email_from_name: "fuchsberger.us",
   email_from_email: "noreply@fuchsberger.us",
+  user_token: true,
   opts: [:confirmable, :rememberable, :registerable, :invitable,
   :authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token]
 

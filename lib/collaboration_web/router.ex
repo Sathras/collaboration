@@ -19,6 +19,7 @@ defmodule CollaborationWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session, protected: true, login: true
+    plug Coherence.Authentication.Token, source: :params, param: "auth_token"
     plug CollaborationWeb.Plug.LoadTopics
   end
 
@@ -37,7 +38,7 @@ defmodule CollaborationWeb.Router do
 
     # add public resources below
     get "/", PageController, :index
-    resources "/topics", TopicController, only: [:index], param: "slug" do
+    resources "/topics", TopicController, only: [:index] do
       resources "/ideas", IdeaController, only: [:index, :show]
     end
   end
@@ -46,9 +47,10 @@ defmodule CollaborationWeb.Router do
     pipe_through :protected
 
     # add protected resources below
-    resources "/topics", TopicController, except: [:index, :show], param: "slug" do
+    resources "/topics", TopicController, except: [:index, :show] do
       resources "/ideas", IdeaController, except: [:index, :show, :new, :edit]
     end
+
     get     "/users",                 UserController, :index
     put     "/users/:id",             UserController, :toggle_admin
   end
