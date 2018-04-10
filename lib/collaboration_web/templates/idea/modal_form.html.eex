@@ -1,0 +1,73 @@
+<div
+  id="<%= if @edit, do: "editIdeaModal", else: "submitIdeaModal" %>"
+  class="modal fade"  tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel" aria-hidden="true"
+  data-show="<%= !!@changeset.action %>"
+>
+  <%= form_for @changeset, @action, fn f -> %>
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          <%= if @edit, do: "Edit Idea", else: "Add Idea" %>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= if !!@changeset.action do %>
+          <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Error:</strong> Invalid/Incomplete form data
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <% end %>
+        <div class="form-group">
+          <%= label f, :title, class: "control-label" %>
+          <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
+          <%= error_tag f, :title %>
+        </div>
+
+        <div class="form-group">
+          <%= label f, :desc, class: "control-label" %>
+          <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
+          <%= error_tag f, :desc %>
+        </div>
+        <p class="text-center text-muted">
+        <small>You may add a fake rating that biases the actual rating.<br>
+        To disable, just set the fake raters count to 0</small>
+        </p>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <%= label f, :fake_rating, class: "control-label" %>
+              <%= text_input f, :fake_rating,
+                class: "form-control #{error_class f, :fake_rating}",
+                placeholder: "Fake Rating"
+              %>
+              <%= error_tag f, :fake_rating %>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <%= label f, :fake_raters, class: "control-label" %>
+              <%= text_input f, :fake_raters,
+                class: "form-control #{error_class f, :fake_raters}",
+                placeholder: "Fake Rating"
+              %>
+              <%= error_tag f, :fake_raters %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <%= submit "Submit", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>

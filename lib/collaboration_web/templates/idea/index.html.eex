@@ -44,15 +44,7 @@
         <%= for idea <- @ideas do %>
             <tr data-path="<%= topic_idea_path @conn, :show, @topic.id, idea.id %>" class="pointer">
               <td><%= idea.title %></td>
-              <td class="text-center">
-                <%= if idea.rating_avg do
-                  Decimal.round(idea.rating_avg, 2)
-                  else
-                    raw "<i class='fas fa-ellipsis-h'></i>"
-                  end
-                %>
-              </td>
-
+              <td class="text-center"><%= rating(idea) %></td>
               <td class="text-center"><%= idea.comment_count %></td>
               <td class="text-right" data-order="<%= idea.created %>">
                 <small>
@@ -104,10 +96,6 @@
                 <input type="radio" id="star1" name="rating" value="1" <%= if @rating.user == 1 , do: "checked"%>/>
                 <label for="star1"><i class="fas fa-star"></i></label>
               </div>
-
-              <!--<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#editIdeaModal">-->
-              <!--  <i class="fas fa-star"></i>-->
-              <!--</button>-->
             <% end %>
             <%= if admin?(@conn) do %>
               <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#editIdeaModal">
@@ -143,10 +131,10 @@
                   <strong><%= comment.user.name %></strong>
                   <%= comment.text %>
                   <span class="text-primary">
-                    <i class="far fa-thumbs-up"></i>
                     <div class="likes badge badge-primary
                       <%= if Enum.count(comment.likes) === 0, do: " d-none" %>"
                     ><%= Enum.count(comment.likes) %></div>
+                    <i class="far fa-thumbs-up"></i>
                     <a class="like pointer"><%= like_label(@conn, comment) %></a>
                   </span>
                 </li>
@@ -168,105 +156,16 @@
   <% end %>
 </div>
 
-<!-- Add Idea Modal -->
-<%= if admin?(@conn) || ( user?(@conn) && @topic.open ) do %>
-<div
-  id="submitIdeaModal"
-  class="modal fade"  tabindex="-1" role="dialog"
-  aria-labelledby="exampleModalLabel" aria-hidden="true"
-  data-show="<%= !!@idea_changeset.action %>"
->
+<!-- Modals -->
+<%= render CollaborationWeb.IdeaView, "modal_form.html",
+  edit: false,
+  action: topic_idea_path(@conn, :create, @topic),
+  changeset: @idea_changeset
+%>
 
-  <%= form_for @idea_changeset, topic_idea_path(@conn, :create, @topic), fn f -> %>
-
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">
-          <%= gettext "Add Idea" %>
-        </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%= if !!@idea_changeset.action do %>
-          <div class="alert alert-danger alert-dismissible fade show">
-            <strong>Error:</strong> Invalid/Incomplete form data
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <% end %>
-        <div class="form-group">
-          <%= label f, :title, class: "control-label" %>
-          <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
-          <%= error_tag f, :title %>
-        </div>
-
-        <div class="form-group">
-          <%= label f, :desc, class: "control-label" %>
-          <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
-          <%= error_tag f, :desc %>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <%= submit "Submit", class: "btn btn-primary" %>
-      </div>
-    </div>
-  </div>
-  <% end %>
-</div>
-<% end %>
-
-<!-- Edit Idea Modal -->
-<%= if user?(@conn) && @topic.open && @idea do %>
-<div
-  id="editIdeaModal"
-  class="modal fade"  tabindex="-1" role="dialog"
-  aria-labelledby="exampleModalLabel" aria-hidden="true"
-  data-show="<%= !!@edit_idea_changeset.action %>"
->
-  <%= form_for @edit_idea_changeset, topic_idea_path(@conn, :update, @topic, @idea), fn f -> %>
-
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">
-          <%= gettext "Edit Idea" %>
-        </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%= if !!@edit_idea_changeset.action do %>
-          <div class="alert alert-danger alert-dismissible fade show">
-            <strong>Error:</strong> Invalid/Incomplete form data
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <% end %>
-        <div class="form-group">
-          <%= label f, :title, class: "control-label" %>
-          <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
-          <%= error_tag f, :title %>
-        </div>
-
-        <div class="form-group">
-          <%= label f, :desc, class: "control-label" %>
-          <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
-          <%= error_tag f, :desc %>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <%= submit "Submit", class: "btn btn-primary" %>
-      </div>
-    </div>
-  </div>
-  <% end %>
-</div>
-<% end %>
+<%= if @idea && (admin?(@conn) || (user?(@conn) && @topic.open)), do:
+  render CollaborationWeb.IdeaView, "modal_form.html",
+    edit: true,
+    action: topic_idea_path(@conn, :update, @topic, @idea),
+    changeset: @edit_idea_changeset
+%>

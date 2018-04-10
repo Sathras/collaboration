@@ -47,8 +47,15 @@ defmodule Collaboration.Contributions do
     left_join: c in assoc(i, :comments),
     left_join: r in assoc(i, :ratings),
     group_by: i.id,
-    select: %{id: i.id, title: i.title, created: i.inserted_at, comment_count: count(c.id),
-      rating_avg: avg(r.rating)
+    select: %{
+      id: i.id,
+      title: i.title,
+      created: i.inserted_at,
+      comment_count: count(c.id),
+      real_rating: avg(r.rating),
+      real_raters: count(r.id),
+      fake_rating: i.fake_rating,
+      fake_raters: i.fake_raters
     },
     where: i.topic_id == ^topic_id
   )

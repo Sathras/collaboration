@@ -50,6 +50,7 @@ defmodule CollaborationWeb.IdeaController do
     idea = get_idea!(id)
     case update_idea(idea, params) do
       {:ok, idea} ->
+        IO.inspect idea
         conn
         |> put_flash(:info, "Idea updated successfully.")
         |> redirect(to: topic_idea_path(conn, :show, topic_id, idea))

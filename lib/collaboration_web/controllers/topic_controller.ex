@@ -7,8 +7,10 @@ defmodule CollaborationWeb.TopicController do
 
   def new(conn, _), do: render conn, "new.html", changeset: change_topic()
 
-  def edit(conn, %{"id" => id}), do:
-    render conn, "edit.html", changeset: get_topic!(id) |> change_topic
+  def edit(conn, %{"id" => id}) do
+    topic = get_topic!(id)
+    render conn, "edit.html", changeset: change_topic(topic), topic: topic
+  end
 
   def create(conn, %{"topic" => params}) do
     case create_topic(params) do
