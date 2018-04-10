@@ -46,6 +46,15 @@ defmodule CollaborationWeb.IdeaChannel do
     end
   end
 
+  def handle_in("rate", %{"rating" => rating}, socket) do
+    if authenticated?(socket) do
+      rate_idea!(socket.assigns[:user], socket.assigns[:idea], %{rating: rating})
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{ reason: dgettext("coherence", "You are not authorized.")}}, socket}
+    end
+  end
+
   defp authenticated?(socket), do: Map.has_key? socket.assigns, :user
   defp admin?(socket), do: authenticated?(socket) && socket.assigns.user.admin
 end

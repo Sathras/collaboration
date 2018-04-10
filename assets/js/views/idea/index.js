@@ -7,13 +7,15 @@ export default class View extends MainView {
   mount() {
     super.mount();
 
+    this.admin = $('body').data('admin')
+
     // join channel
     // const topic_id = $('body').data('topic_id')
     const idea = $('body').data('id') || null
     if(idea) this.config_idea_channel(idea)
 
     // order ideas by date
-    $('#ideas').DataTable({"order": [[ 1, 'desc' ]]});
+    $('#ideas').DataTable({"order": [[ 3, 'desc' ]]});
 
     // clicking on idea should open page with comments
     $('#ideas').on('click', 'tbody tr', e =>
@@ -25,11 +27,13 @@ export default class View extends MainView {
     show = $('#editIdeaModal').data('show') ? 'show' : 'hide'
     $('#editIdeaModal').modal(show)
 
+
+
   }
 
   config_idea_channel(id){
 
-    this.admin     = $('body').data('admin')
+
     this.messages  = $("#comments")
     this.feedback  = $("#feedback")
 
@@ -58,10 +62,14 @@ export default class View extends MainView {
     if(this.admin){
       $('#comments').on('click', 'a.delete-comment', e => {
         this.ideaChannel.push("delete:feedback", {
-          id: $(e.currentTarget).closest('li').data('id')}
-        )
+          id: $(e.currentTarget).closest('li').data('id')})
       })
     }
+
+    // clicking on rating icon should trigger rating
+    $('#rate').on('change', 'input', e =>{
+      this.ideaChannel.push("rate", { rating : e.target.value })
+    })
   }
 
   sanitize(html){ return $("<div/>").text(html).html() }

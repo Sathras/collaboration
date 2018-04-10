@@ -3,10 +3,8 @@ defmodule Collaboration.Coherence.User do
   use Ecto.Schema
   use Coherence.Schema
 
-
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-
 
   schema "users" do
     field :admin, :boolean, default: false
@@ -16,6 +14,7 @@ defmodule Collaboration.Coherence.User do
     timestamps()
     has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
     has_many :ideas, Collaboration.Contributions.Idea, on_delete: :delete_all
+    has_many :ratings, Collaboration.Contributions.Rating, on_delete: :delete_all
   end
 
   def changeset(model, params \\ %{}) do

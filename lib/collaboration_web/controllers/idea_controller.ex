@@ -16,12 +16,19 @@ defmodule CollaborationWeb.IdeaController do
   def show(conn, %{"topic_id" => topic_id, "id" => id}) do
     topic = get_topic!(topic_id)
     idea =  get_idea!(id, :preload_comments)
+    user_rating = if Coherence.current_user(conn),
+      do: get_user_rating!(conn.assigns.current_user, idea),
+      else: nil
+
+    IO.inspect get_ratings!(idea)
+
     render conn, "index.html",
       topic: topic,
       ideas: list_ideas(topic.id),
       idea: idea,
       idea_changeset: change_idea(),
-      edit_idea_changeset: change_idea(idea)
+      edit_idea_changeset: change_idea(idea),
+      rating: Map.put(get_ratings!(idea), :user, user_rating)
   end
 
   def create(conn, %{"topic_id" => topic_id, "idea" => params}) do

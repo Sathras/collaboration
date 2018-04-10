@@ -9,6 +9,7 @@ defmodule Collaboration.Contributions do
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Comment
+  alias Collaboration.Contributions.Rating
 
   def list_topics(admin \\ false) do
     query = from t in Topic,
@@ -43,7 +44,12 @@ defmodule Collaboration.Contributions do
   def list_ideas, do: Repo.all(Idea)
 
   def list_ideas(topic_id), do: Repo.all(from i in Idea,
-    select: %{id: i.id, title: i.title, created: i.inserted_at},
+    left_join: c in assoc(i, :comments),
+    left_join: r in assoc(i, :ratings),
+    group_by: i.id,
+    select: %{id: i.id, title: i.title, created: i.inserted_at, comment_count: count(c.id),
+      rating_avg: avg(r.rating)
+    },
     where: i.topic_id == ^topic_id
   )
 
@@ -63,6 +69,33 @@ defmodule Collaboration.Contributions do
     idea
     |> Idea.changeset(attrs)
     |> Repo.update()
+  end
+
+  def get_user_rating!(user, idea), do:
+    from( r in Rating,
+      select: r.rating,
+      where: r.user_id == ^user.id and r.idea_id == ^idea.id
+    ) |> Repo.one()
+
+  def get_ratings!(idea), do:
+    from( r in Rating,
+      select: %{ avg: avg(r.rating), count: count(r.rating)},
+      where: r.idea_id == ^idea.id
+    ) |> Repo.one!()
+
+  def rate_idea!(user, idea, params) do
+    case Repo.get_by(Rating, [user_id: user.id, idea_id: idea.id]) do
+      nil ->
+        %Rating{}  # rating not found, we build one
+        |> Rating.changeset(params)
+        |> put_assoc(:user, user)
+        |> put_assoc(:idea, idea)
+        |> Repo.insert!()
+      rating  ->
+        rating     # rating exists, let's use it
+        |> Rating.changeset(params)
+        |> Repo.update!()
+    end
   end
 
   def delete_idea(%Idea{} = idea), do: Repo.delete(idea)

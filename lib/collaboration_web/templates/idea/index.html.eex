@@ -35,13 +35,25 @@
           <thead>
             <tr>
               <th>Title</th>
-              <th></th>
+              <th class="text-center"><i class="fas fa-star"></i></th>
+              <th class="text-center"><i class="far fa-comments"></i></th>
+              <th class="text-right"><i class="far fa-clock mr-2"></i></th>
             </tr>
           </thead>
           <tbody>
         <%= for idea <- @ideas do %>
             <tr data-path="<%= topic_idea_path @conn, :show, @topic.id, idea.id %>" class="pointer">
               <td><%= idea.title %></td>
+              <td class="text-center">
+                <%= if idea.rating_avg do
+                  Decimal.round(idea.rating_avg, 2)
+                  else
+                    raw "<i class='fas fa-ellipsis-h'></i>"
+                  end
+                %>
+              </td>
+
+              <td class="text-center"><%= idea.comment_count %></td>
               <td class="text-right" data-order="<%= idea.created %>">
                 <small>
                   <time datetime="<%= NaiveDateTime.to_iso8601(idea.created) %>Z"></time>
@@ -68,8 +80,36 @@
     <div class="col-md">
       <div class="card">
         <div class="card-header">
-          <%= if admin?(@conn) do %>
-            <div class="float-right">
+
+          <div class="float-right ml-3">
+            <%= if @rating.avg do %>
+              <div id="rating" class="d-inline-block">
+                <span class="lead">
+                  <i class="fas fa-star"></i>
+                  <strong><%= Decimal.round @rating.avg, 2 %></strong>
+                </span>
+                <small class="text-muted mr-2"> / <%= @rating.count %> Ratings</small>
+              </div>
+            <% end %>
+            <%= if admin?(@conn) || (user?(@conn) && @topic.open) do %>
+              <div id="rate" class="btn btn-light pointer btn-sm starrating risingstar d-inline-flex justify-content-center flex-row-reverse">
+                <input type="radio" id="star5" name="rating" value="5" <%= if @rating.user == 5 , do: "checked"%>/>
+                <label for="star5"><i class="fas fa-star"></i></label>
+                <input type="radio" id="star4" name="rating" value="4" <%= if @rating.user == 4 , do: "checked"%>/>
+                <label for="star4"><i class="fas fa-star"></i></label>
+                <input type="radio" id="star3" name="rating" value="3" <%= if @rating.user == 3 , do: "checked"%>/>
+                <label for="star3"><i class="fas fa-star"></i></label>
+                <input type="radio" id="star2" name="rating" value="2" <%= if @rating.user == 2 , do: "checked"%>/>
+                <label for="star2"><i class="fas fa-star"></i></label>
+                <input type="radio" id="star1" name="rating" value="1" <%= if @rating.user == 1 , do: "checked"%>/>
+                <label for="star1"><i class="fas fa-star"></i></label>
+              </div>
+
+              <!--<button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#editIdeaModal">-->
+              <!--  <i class="fas fa-star"></i>-->
+              <!--</button>-->
+            <% end %>
+            <%= if admin?(@conn) do %>
               <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#editIdeaModal">
                 <i class="fas fa-pencil-alt"></i>
               </button>
@@ -79,8 +119,9 @@
                 data: [confirm: "Are you sure?"],
                 class: "btn btn-sm btn-outline-danger"
               %>
-            </div>
-          <% end %>
+            <% end %>
+          </div>
+
           <h4><%= @idea.title %></h4>
         </div>
         <%= if @idea.desc do %>
