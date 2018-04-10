@@ -51,7 +51,25 @@ defmodule CollaborationWeb.IdeaChannel do
       rate_idea!(socket.assigns[:user], socket.assigns[:idea], %{rating: rating})
       {:noreply, socket}
     else
-      {:reply, {:error, %{ reason: dgettext("coherence", "You are not authorized.")}}, socket}
+      {:reply, {:error, %{}}, socket}
+    end
+  end
+
+  def handle_in("like:feedback", %{"comment" => id}, socket) do
+    if authenticated?(socket) do
+      like_comment(socket.assigns[:user], id)
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:error, %{}}, socket}
+    end
+  end
+
+  def handle_in("unlike:feedback", %{"comment" => id}, socket) do
+    if authenticated?(socket) do
+      unlike_comment(socket.assigns[:user], id)
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:error, %{}}, socket}
     end
   end
 

@@ -15,6 +15,7 @@ defmodule Collaboration.Coherence.User do
     has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
     has_many :ideas, Collaboration.Contributions.Idea, on_delete: :delete_all
     has_many :ratings, Collaboration.Contributions.Rating, on_delete: :delete_all
+    many_to_many :likes, Collaboration.Contributions.Comment, join_through: "likes"
   end
 
   def changeset(model, params \\ %{}) do

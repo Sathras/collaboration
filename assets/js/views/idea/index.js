@@ -66,8 +66,31 @@ export default class View extends MainView {
       })
     }
 
+    $('#comments').on('click', 'a.like', e => {
+      const elm = $(e.target)
+      const comment = elm.closest('li').data('id')
+      let likes = parseInt(elm.siblings('.likes').html(), 10)
+
+      if( elm.html() === "Like" ) {
+        this.ideaChannel.push("like:feedback", { comment })
+        .receive('ok', () => {
+          likes++
+          elm.html('Unlike')
+          elm.siblings('.likes').removeClass('d-none').html(likes)
+        })
+      } else {
+        this.ideaChannel.push("unlike:feedback", { comment })
+        .receive('ok', () => {
+          likes--
+          elm.html('Like')
+          elm.siblings('.likes').html(likes)
+          if(!likes) elm.siblings('.likes').addClass('d-none')
+        })
+      }
+    })
+
     // clicking on rating icon should trigger rating
-    $('#rate').on('change', 'input', e =>{
+    $('#rate').on('change', 'input', e => {
       this.ideaChannel.push("rate", { rating : e.target.value })
     })
   }

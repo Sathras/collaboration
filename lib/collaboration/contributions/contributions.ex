@@ -2,7 +2,7 @@ defmodule Collaboration.Contributions do
   @moduledoc """
   The Contributions context.
   """
-  import Ecto.Changeset, only: [put_assoc: 3]
+  import Ecto.Changeset
   import Ecto.Query, warn: false
 
   alias Collaboration.Repo
@@ -54,8 +54,9 @@ defmodule Collaboration.Contributions do
   )
 
   def get_idea!(id), do: Repo.get!(Idea, id)
-  def get_idea!(id, :preload_comments), do:
-    from(i in Idea, preload: [comments: [:user]]) |> Repo.get!(id)
+  def get_idea!(id, :preload_comments) do
+    from(i in Idea, preload: [comments: [:user, :likes]]) |> Repo.get!(id)
+  end
 
   def create_idea(user, topic, attrs \\ %{}) do
     %Idea{}
@@ -121,4 +122,20 @@ defmodule Collaboration.Contributions do
 
   def delete_comment(%Comment{} = comment), do: Repo.delete(comment)
   def change_comment(%Comment{} = comment), do: Comment.changeset(comment, %{})
+
+  def like_comment(user, id) do
+    Repo.get(Comment, id)
+    |> Repo.preload(:likes)
+    |> change()
+    |> put_assoc(:likes, [user])
+    |> Repo.update!()
+  end
+
+  def unlike_comment(user, id) do
+    comment = Repo.get(Comment, id) |> Repo.preload(:likes)
+    comment
+    |> change()
+    |> put_assoc(:likes, List.delete(comment.likes, user))
+    |> Repo.update!()
+  end
 end

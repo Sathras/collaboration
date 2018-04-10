@@ -142,6 +142,13 @@
                   </small>
                   <strong><%= comment.user.name %></strong>
                   <%= comment.text %>
+                  <span class="text-primary">
+                    <i class="far fa-thumbs-up"></i>
+                    <div class="likes badge badge-primary
+                      <%= if Enum.count(comment.likes) === 0, do: " d-none" %>"
+                    ><%= Enum.count(comment.likes) %></div>
+                    <a class="like pointer"><%= like_label(@conn, comment) %></a>
+                  </span>
                 </li>
               <% end %>
             <% else %>

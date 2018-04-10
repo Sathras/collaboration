@@ -20,8 +20,6 @@ defmodule CollaborationWeb.IdeaController do
       do: get_user_rating!(conn.assigns.current_user, idea),
       else: nil
 
-    IO.inspect get_ratings!(idea)
-
     render conn, "index.html",
       topic: topic,
       ideas: list_ideas(topic.id),
