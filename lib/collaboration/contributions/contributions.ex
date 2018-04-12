@@ -2,6 +2,7 @@ defmodule Collaboration.Contributions do
   @moduledoc """
   The Contributions context.
   """
+  import Ecto
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
@@ -43,27 +44,15 @@ defmodule Collaboration.Contributions do
 
   def list_ideas, do: Repo.all(Idea)
 
-  def list_ideas(topic_id), do: Repo.all(from i in Idea,
-    left_join: c in assoc(i, :comments),
-    left_join: r in assoc(i, :ratings),
-    group_by: i.id,
-    select: %{
-      id: i.id,
-      title: i.title,
-      created: i.inserted_at,
-      comment_count: count(c.id),
-      real_rating: avg(r.rating),
-      real_raters: count(r.id),
-      fake_rating: i.fake_rating,
-      fake_raters: i.fake_raters
-    },
-    where: i.topic_id == ^topic_id
+  def list_ideas(topic_id, last_seen_id), do: Repo.all(
+    from i in Idea,
+    preload: [:user, :comments, :ratings],
+    where: i.topic_id == ^topic_id and i.id > ^last_seen_id
   )
 
   def get_idea!(id), do: Repo.get!(Idea, id)
-  def get_idea!(id, :preload_comments) do
-    from(i in Idea, preload: [comments: [:user, :likes]]) |> Repo.get!(id)
-  end
+
+  def get_idea_details(idea), do: Repo.preload idea, [:user, :comments, :ratings]
 
   def create_idea(user, topic, attrs \\ %{}) do
     %Idea{}
@@ -109,7 +98,12 @@ defmodule Collaboration.Contributions do
   def delete_idea(%Idea{} = idea), do: Repo.delete(idea)
   def change_idea(idea \\ %Idea{}), do:  Idea.changeset(idea, %{})
 
-  def list_comments, do: Repo.all(Comment)
+  def list_comments(idea_id, last_seen_id) do
+    Repo.all from c in Comment,
+      order_by: [asc: c.id],
+      preload: [:user, :likes],
+      where: c.id > ^last_seen_id and c.idea_id == ^idea_id
+  end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 

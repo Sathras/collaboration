@@ -5,6 +5,11 @@ defmodule CollaborationWeb.TopicController do
 
   def index(conn, _), do: render conn, "index.html"
 
+  def show(conn, %{"id" => id}) do
+    topic = get_topic!(id)
+    render conn, "show.html", topic: topic
+  end
+
   def new(conn, _), do: render conn, "new.html", changeset: change_topic()
 
   def edit(conn, %{"id" => id}) do
@@ -17,7 +22,7 @@ defmodule CollaborationWeb.TopicController do
       {:ok, topic} ->
         conn
         |> put_flash(:info, "Topic created successfully.")
-        |> redirect(to: topic_idea_path(conn, :index, topic))
+        |> redirect(to: topic_path(conn, :show, topic))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -28,7 +33,7 @@ defmodule CollaborationWeb.TopicController do
       {:ok, topic} ->
         conn
         |> put_flash(:info, "Topic updated successfully.")
-        |> redirect(to: topic_idea_path(conn, :index, topic))
+        |> redirect(to: topic_path(conn, :show, topic))
       {:error, changeset} ->
         render conn, "edit.html", changeset: changeset
     end

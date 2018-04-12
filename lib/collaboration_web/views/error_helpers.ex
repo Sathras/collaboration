@@ -14,6 +14,13 @@ defmodule CollaborationWeb.ErrorHelpers do
   end
 
   @doc """
+  Generates a map with all invalid fields and their first error
+  """
+  def error_map(changeset), do:
+    Map.new(changeset.errors, fn ({k, v}) -> {k, translate_error(v)} end)
+
+
+  @doc """
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field) do

@@ -5,3 +5,10 @@ body {
 div.mce-fullscreen{ z-index: 1050; }
 
 .pointer { cursor: pointer; }
+
+input.fake-ratings {
+  -webkit-appearance: none;
+  box-shadow: none !important;
+  border: none;
+  width: 50px;
+}

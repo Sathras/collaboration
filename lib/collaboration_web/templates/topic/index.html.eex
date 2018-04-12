@@ -27,7 +27,7 @@
 <%= for topic <- @conn.assigns.topics do %>
   <%= unless !admin?(@conn) && !topic.published do %>
     <tr class="pointer"
-      data-path="<%= topic_idea_path @conn, :index, topic.id %>"
+      data-path="<%= topic_path @conn, :show, topic.id %>"
       data-short-desc="<%= topic.short_desc %>"
     >
       <td class='text-center'>1</td>

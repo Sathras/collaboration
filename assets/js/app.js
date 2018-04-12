@@ -1,5 +1,8 @@
 // Import dependencies
 /* global $ */
+require( 'datatables.net-bs4' )();
+require( 'datatables.net-select' )( window, $ );
+
 import { Socket } from "phoenix"
 import "phoenix_html"
 import Turbolinks from "turbolinks"

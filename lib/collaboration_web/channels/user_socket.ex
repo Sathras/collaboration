@@ -3,6 +3,7 @@ defmodule CollaborationWeb.UserSocket do
 
   ## Channels
   channel "idea:*", CollaborationWeb.IdeaChannel
+  channel "topic:*", CollaborationWeb.TopicChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

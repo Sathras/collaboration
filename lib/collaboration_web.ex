@@ -56,6 +56,7 @@ defmodule CollaborationWeb do
     quote do
       use Phoenix.Channel
       import CollaborationWeb.Gettext
+      import CollaborationWeb.ErrorHelpers
     end
   end
 

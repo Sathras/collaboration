@@ -12,14 +12,14 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
     <link rel="icon" type="image/x-icon" href="<%= static_path(@conn, "/images/favicon.ico") %>" >
+    <script>
+      window.admin = <%= admin?(@conn) %>;
+      window.user = <%= user?(@conn) %>;
+    </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
-  <body
-    data-admin="<%= admin?(@conn) %>"
-    data-js-view-name="<%= js_view_name(@conn, @view_template) %>"
-    <%= path_params_to_data_attributes(@conn) %>
-  >
+  <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <header class="header">
       <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
@@ -43,7 +43,7 @@
               <%= for t <- @conn.assigns.topics do %>
                 <%= if t.featured && t.published, do:
                   nav_item @conn, t.short_title,
-                    topic_idea_path(@conn, :index, t.id),
+                    topic_path(@conn, :show, t.id),
                     badge: t.idea_count,
                     popover: t.short_desc
                 %>
