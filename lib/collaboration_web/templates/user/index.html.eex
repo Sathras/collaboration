@@ -3,7 +3,12 @@
 <table id="users" class="table table-sm">
   <thead>
     <tr>
-      <th data-searchable="false"><i class="fas fa-user" data-toggle="tooltip" title="User Status"></i></th>
+      <th data-searchable="false">
+        <i class="fas fa-user" data-toggle="tooltip" title="User Status"></i>
+      </th>
+      <th data-searchable="false">
+        <i class="fas fa-hands-helping" data-toggle="tooltip" title="Feedback Condition"></i>
+      </th>
       <th>Name</th>
       <th>Email</th>
       <th data-orderable="false" data-searchable="false">Actions</th>
@@ -13,9 +18,19 @@
 <%= for u <- @users do %>
     <tr>
       <td data-order="<%= u.admin %>"><%= user_icon u.admin %></td>
+      <td data-order="<%= u.feedback %>">
+        <%= if u.feedback do %>
+          <i class="fas fa-comment"></i>
+        <% else %>
+          <i class="fas fa-comment-slash text-muted"></i>
+        <% end %>
+      </td>
       <td><%= u.name %></td>
       <td><%= u.email %></td>
-      <td><%= toggle_admin @conn, u %></td>
+      <td>
+        <%= toggle_admin @conn, u %>
+        <%= toggle_feedback @conn, u %>
+      </td>
     </tr>
 <% end %>
   </tbody>

@@ -42,8 +42,28 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
+  def handle_in("delete:idea", %{"id" => id}, socket) do
+    if admin?(socket) do
+      case get_idea!(id) |> delete_idea do
+      {:ok, _idea} ->
+        broadcast! socket, "delete:idea", %{ id: id }
+        {:noreply, socket}
+      {:error, _changeset} ->
+        {:noreply, socket}
+      end
+    else
+      {:reply, {:error, %{
+        reason: dgettext("coherence", "You are not authorized.")}},
+        socket}
+    end
+  end
+
   defp authorized?(socket), do:
     Map.has_key?(socket.assigns, :user) && (
       socket.assigns.user.admin || socket.assigns.topic.open
     )
+
+  defp admin?(socket), do:
+    Map.has_key?(socket.assigns, :user) && socket.assigns.user.admin
+
 end

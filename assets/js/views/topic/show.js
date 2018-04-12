@@ -15,18 +15,47 @@ class View extends MainView {
 
     // join topic channels
     this.config_topic_channel(window.topic_id)
+  }
+
+  config_topic_channel(id){
+    this.topicChannel = socket.channel(`topic:${id}`, {})
+    this.topicChannel.join()
+    .receive("ok", resp => {
+      let ids = resp.ideas.map(i => i.id)
+      if(ids.length > 0) this.topicChannel.params.last_seen_id = Math.max(...ids)
+
+      if(!this.ideasTable){
+        this.ideasTable = $('#ideas').DataTable({
+          data: resp.ideas,
+          columns: [
+            { data: 'title', title: "Title" },
+            { data: 'rating', title: "<i class='fas fa-star'></i>" },
+            { data: 'comment_count', title: "<i class='far fa-comments'></i>" },
+            { data: 'created', title: "<i class='far fa-clock mr-2'></i>",
+              render: data => (`<small><time datetime='${data}'></time></small>`),
+              width: 60
+            }
+          ],
+          order: [[ 3, 'desc' ]],
+          rowId: 'js_id',
+          safeState: true,
+          select: { style: 'single', className: 'table-primary' }
+        });
+        $('#ideas time').timeago()
+      }
+
+      // loading/unloading idea when selecting/deselecting rows in idea table
+      this.ideasTable.on('select', ( e, dt, type, indexes ) => this.load_idea(indexes))
+      this.ideasTable.on('deselect', () => this.unload_idea())
+    })
 
     // differentiate add / edit idea modal
     $('#ideaModal').on('show.bs.modal', event => {
       const edit = $(event.relatedTarget).data('action') === 'update:idea'
       const data = edit
         ? this.idea
-        : {
-          title: '',
-          desc: '',
-          fake_rating: '',
-          fake_raters: 0
-        }
+        : { title: '', desc: '', fake_rating: '', fake_raters: 0 }
+
       // update modal with new data
       $(this).find('.modal-title').text(edit ? "Edit Idea" : "Add Idea")
       $('#idea_title').val(data.title)
@@ -37,66 +66,6 @@ class View extends MainView {
 
       // remove all errors
       $('#ideaModal input, #ideaModal textarea').removeClass('is-valid is-invalid')
-    })
-  }
-
-  config_topic_channel(id){
-    this.topicChannel = socket.channel(`topic:${id}`, {})
-    this.topicChannel.join()
-    .receive("ok", resp => {
-      let ids = resp.ideas.map(i => i.id)
-      if(ids.length > 0) this.topicChannel.params.last_seen_id = Math.max(...ids)
-
-      this.ideasTable = $('#ideas').DataTable({
-        data: resp.ideas,
-        columns: [
-          { data: 'title', title: "Title" },
-          { data: 'rating', title: "<i class='fas fa-star'></i>" },
-          { data: 'comment_count', title: "<i class='far fa-comments'></i>" },
-          { data: 'created', title: "<i class='far fa-clock mr-2'></i>",
-            render: data => (`<small><time datetime='${data}'></time></small>`),
-            width: 60
-          }
-        ],
-        order: [[ 3, 'desc' ]],
-        rowId: 'js_id',
-        safeState: true,
-        select: { style: 'single' }
-      });
-
-      this.ideasTable.on('select', ( e, dt, type, indexes ) => {
-
-        const idea = this.ideasTable.rows( indexes ).data().toArray()[0];
-
-        // join idea channel
-        this.config_idea_channel(idea.id)
-
-        this.ideasTable[ type ]( indexes ).nodes().to$().addClass('table-primary' );
-        $('#no-idea').addClass('d-none');
-        $('#idea h4').html(idea.title)
-        if(idea.rating) $('#rating').removeClass('d-none')
-        else $('#rating').addClass('d-none')
-        $('#rating strong').html(idea.rating)
-        $('#rating small span').html(idea.raters)
-        if(idea.user_rating) $('#star'+idea.user_rating).attr('checked', true)
-        if(idea.desc) $('#idea-desc').removeClass('d-none').html(idea.desc)
-        else $('#idea-desc').addClass('d-none')
-
-        $('#idea').removeClass('d-none');
-        this.idea = idea
-      })
-
-      this.ideasTable.on('deselect', ( e, dt, type, indexes ) => {
-        // leave idea channel
-        this.idea = null;
-        this.ideaChannel.leave()
-        this.ideasTable[ type ]( indexes ).nodes().to$().removeClass('table-primary' );
-        $('#no-idea').removeClass('d-none');
-        $('#idea').addClass('d-none');
-        this.comments.html(this.no_feedback_template())
-      })
-
-      $('#ideas time').timeago()
     })
 
     // Submit Add/Edit Idea Form
@@ -117,13 +86,20 @@ class View extends MainView {
           $('#ideaModal input, #ideaModal textarea').addClass('is-valid')
           $('#ideaModal .invalid-feedback').text('')
           $.each( res.errors, (field, error) => {
-            console.log(field)
             $('#idea_'+field).removeClass('is-valid').addClass('is-invalid')
             .siblings('.invalid-feedback').text(error)
           })
         }
       })
     })
+
+    // Delete Idea
+    $('#deleteIdea').on('click', e => {
+      var confirmed = confirm("Are you sure? This will delete all associated ratings, comments and likes!");
+      if(confirmed) this.topicChannel.push('delete:idea', {id: this.idea.id})
+    })
+
+    // TOPIC CHANNEL EVENTS
 
     // Response to broadcast event "new:idea"
     this.topicChannel.on("new:idea", idea => {
@@ -136,27 +112,43 @@ class View extends MainView {
     this.topicChannel.on("update:idea", idea => {
       this.ideasTable.row(`#idea_${idea.id}`).data(idea).draw();
       $('#ideas time').timeago()
+      // if currently selected idea matches updated idea, update idea panel
+      if(this.idea && this.idea.id === idea.id) this.update_idea_panel(idea)
+    })
+
+    // Response to broadcast event "delete:idea"
+    this.topicChannel.on("delete:idea", idea => {
+      this.ideasTable.row(`#idea_${idea.id}`).remove().draw();
+      // if currently selected idea matches deleted idea, close idea panel
+      if(this.idea && this.idea.id === idea.id) this.unload_idea(idea)
     })
   }
 
-  config_idea_channel(id){
+  load_idea(indexes){
+    this.idea = this.ideasTable.rows( indexes ).data().toArray()[0];
 
-    this.ideaChannel = socket.channel(`idea:${id}`, {})
+    // update idea panel with new idea information
+    this.update_idea_panel(this.idea)
+    $('#no-idea').addClass('d-none');
+    $('#idea').removeClass('d-none');
+
+    this.ideaChannel = socket.channel(`idea:${this.idea.id}`, {})
     this.ideaChannel.join()
     .receive("ok", resp => {
+
       let ids = resp.comments.map(c => c.id)
       if(ids.length > 0) this.ideaChannel.params.last_seen_id = Math.max(...ids)
 
       if(resp.comments.length > 0) $('#no_feedback').remove()
       resp.comments.forEach(c => this.comments.append(this.messageTemplate(c)))
+      $('#comments time').timeago()
     })
-    .receive("error", reason => console.log("join failed", reason) )
 
     this.feedback.off("keypress").on("keypress", e => {
       if (e.keyCode == 13) {
         this.ideaChannel.push("new:feedback", { text: this.feedback.val()} )
         .receive('ok', () => { this.feedback.val("").removeClass('is-invalid')})
-        .receive('error', (res) => { console.log(res.reason);  this.feedback.addClass('is-invalid') })
+        .receive('error', (res) => { this.feedback.addClass('is-invalid') })
       }
     })
 
@@ -168,13 +160,21 @@ class View extends MainView {
       scrollTo(0, document.body.scrollHeight)
     })
 
+    this.ideaChannel.on("update:feedback", (feedback) => {
+      // currently: just update likes and fake likes
+      $(`#comments li[data-id=${feedback.id}] input`).val(feedback.fake_likes)
+      const likes = $(`#comments li[data-id=${feedback.id}] .likes`)
+      likes.text(feedback.likes)
+      feedback.likes > 0 ? likes.removeClass('d-none') : likes.addClass('d-none')
+    })
+
     this.ideaChannel.on("delete:feedback", ({id}) => {
       $(`#comments li[data-id=${id}]`).remove()
     })
 
     if(window.admin){
       // Delete Feedback
-      $('#comments').on('click', 'a.delete', e => { console.log(e)
+      $('#comments').on('click', 'a.delete', e => {
         this.ideaChannel.push("delete:feedback", {
           id: $(e.currentTarget).closest('li').data('id')})
       })
@@ -183,24 +183,12 @@ class View extends MainView {
     $('#comments').on('click', 'a.like', e => {
       const elm = $(e.target)
       const comment = elm.closest('li').data('id')
-      let likes = parseInt(elm.siblings('.likes').html(), 10)
-
-      if( elm.html().trim() === "Like" ) {
+      if( elm.html().trim() === "Like" )
         this.ideaChannel.push("like:feedback", { comment })
-        .receive('ok', () => {
-          likes++
-          elm.html('Unlike')
-          elm.siblings('.likes').removeClass('d-none').html(likes)
-        })
-      } else {
+        .receive('ok', () => { elm.html('Unlike') })
+      else
         this.ideaChannel.push("unlike:feedback", { comment })
-        .receive('ok', () => {
-          likes--
-          elm.html('Like')
-          elm.siblings('.likes').html(likes)
-          if(!likes) elm.siblings('.likes').addClass('d-none')
-        })
-      }
+        .receive('ok', () => { elm.html('Like') })
     })
 
     $('#comments').on('focus', 'input.fake-ratings', e => { e.target.select() })
@@ -216,11 +204,33 @@ class View extends MainView {
     })
   }
 
+  update_idea_panel(idea){
+    $('#idea h4').text(idea.title)                        // update heading
+    idea.desc                                             // update description
+      ? $('#idea-desc').removeClass('d-none').html(idea.desc)
+      : $('#idea-desc').addClass('d-none')
+    if (idea.rating){                                     // toggle rating
+      $('#rating').removeClass('d-none')
+      $('#rating strong').html(idea.rating)
+      $('#rating small span').text(idea.raters)
+    } else $('#rating').addClass('d-none')
+    idea.user_rating                                      // update user rating
+      ? $('#star'+idea.user_rating).attr('checked', true)
+      : $('#rate input').removeAttr('checked')
+  }
+
+  unload_idea(){
+    // leave idea channel, empty feedbacks and hide idea panel
+    this.idea = null;
+    this.ideaChannel.leave()
+    $('#no-idea').removeClass('d-none');
+    $('#idea').addClass('d-none');
+    this.comments.html(this.no_feedback_template())
+  }
+
   sanitize(html){ return $("<div/>").text(html).html() }
 
   messageTemplate(comment){
-
-
     const thumbsup = window.admin || (window.user && window.topic_open)
       ? `<i class="far fa-thumbs-up text-primary"></i>` : ``
 
@@ -244,13 +254,13 @@ class View extends MainView {
     return(`
       <li class="list-group-item px-2 py-1" data-id="${comment.id}">
         <small class="ml-1 float-right font-italic text-muted">
-          <time datetime="${comment.time}Z"></time>
+          <time datetime="${comment.created}"></time>
         </small>
         <strong>${comment.author}</strong><br>
         ${this.sanitize(comment.text)}<br>
         <span>
           ${thumbsup}
-          <div class="likes badge badge-primary ${hidden}">${comment.likes}</div>
+          <div class="likes badge badge-primary ${hidden}">${comment.likes || ""}</div>
           ${like_btn}
           ${administrate}
         </span>
@@ -268,7 +278,8 @@ class View extends MainView {
 
   unmount() {
     super.unmount();
-    $('#ideas').DataTable().destroy()
+    this.ideasTable.destroy()
+    this.ideasTable=null;
     this.topicChannel.leave()
     if(this.ideaChannel) this.ideaChannel.leave()
   }

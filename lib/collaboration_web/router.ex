@@ -47,7 +47,8 @@ defmodule CollaborationWeb.Router do
     # add protected resources below
     resources "/topics", TopicController, except: [:index, :show]
 
-    get     "/users",                 UserController, :index
-    put     "/users/:id",             UserController, :toggle_admin
+    get "/users",                     UserController, :index
+    put "/users/:id/toggle_admin",    UserController, :toggle_admin
+    put "/users/:id/toggle_feedback", UserController, :toggle_feedback
   end
 end

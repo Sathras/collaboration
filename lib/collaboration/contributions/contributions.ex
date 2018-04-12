@@ -106,6 +106,7 @@ defmodule Collaboration.Contributions do
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
+  def get_comment_details(comment), do: Repo.preload comment, [:user, :likes]
 
   def create_comment(user, idea, attrs \\ %{}) do
     %Comment{}

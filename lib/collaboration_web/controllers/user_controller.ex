@@ -23,4 +23,19 @@ defmodule CollaborationWeb.UserController do
         |> redirect(to: user_path(conn, :index))
     end
   end
+
+  def toggle_feedback(conn, %{"id" => id}) do
+    user = Schemas.get_user!(id)
+    case Schemas.toggle(user, %{"feedback": !user.feedback}) do
+      {:ok, user} ->
+      IO.inspect user
+        conn
+        |> put_flash(:info, "User updated successfully.")
+        |> redirect(to: user_path(conn, :index))
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:info, "Error updating users.")
+        |> redirect(to: user_path(conn, :index))
+    end
+  end
 end
