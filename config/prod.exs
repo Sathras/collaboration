@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 
 config :collaboration, CollaborationWeb.Endpoint,
-  http: [port: System.get_env("PORT") || 4002],
+  http: [port: System.get_env("PORT") || 4003],
   url:  [scheme: "https", host: "collaboration.fuchsberger.us", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
