@@ -45,7 +45,8 @@ defmodule Collaboration.Mixfile do
       {:coherence, github: "smpallen99/coherence"},
       {:html_sanitize_ex, "~> 1.3.0-rc3"},
       {:distillery, "~> 1.5", runtime: false},
-      {:bootleg, "~> 0.7", runtime: false}
+      {:bootleg, "~> 0.7", runtime: false},
+      {:bootleg_phoenix, "~> 0.2", runtime: false}
     ]
   end
 
