@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+ * Added automated Prettier Codestyle for JS and CSS
+ * If new ideas are posted in a topic that is not the currently active topic, a badge appears that indicates the number of new ideas in that topic. resets when topic is opened.
+
 ## 2.0.0
 Complete Remade of the Application. Working Features:
  * Registration / Authentication with password reset, email confirmation and change account functionality

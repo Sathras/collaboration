@@ -1,5 +1,4 @@
-// web/static/js/views/loader.js
-import MainView    from './main';
+import MainView from './main';
 import TopicEditView from './topic/edit';
 import TopicIndexView from './topic/index';
 import TopicNewView from './topic/new';

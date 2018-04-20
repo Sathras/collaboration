@@ -2,6 +2,7 @@ defmodule CollaborationWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
+  channel "public", CollaborationWeb.PublicChannel
   channel "idea:*", CollaborationWeb.IdeaChannel
   channel "topic:*", CollaborationWeb.TopicChannel
 

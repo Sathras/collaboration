@@ -1,10 +1,14 @@
 body {
-  padding-top:70px;
+  padding-top: 70px;
 }
 
-div.mce-fullscreen{ z-index: 1050; }
+div.mce-fullscreen {
+  z-index: 1050;
+}
 
-.pointer { cursor: pointer; }
+.pointer {
+  cursor: pointer;
+}
 
 input.fake-ratings {
   -webkit-appearance: none;

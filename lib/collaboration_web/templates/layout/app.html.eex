@@ -44,7 +44,7 @@
                 <%= if t.featured && t.published, do:
                   nav_item @conn, t.short_title,
                     topic_path(@conn, :show, t.id),
-                    badge: t.idea_count,
+                    topic_id: t.id,
                     popover: t.short_desc
                 %>
               <% end %>

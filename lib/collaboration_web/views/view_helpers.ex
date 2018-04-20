@@ -7,7 +7,11 @@ defmodule CollaborationWeb.ViewHelpers do
 
   @type conn :: Plug.Conn.t
 
-  def badge(text), do: content_tag(:span, text, class: "badge badge-pill badge-light ml-1")
+  def badge(topic_id) do
+    content_tag :span, 0, data_topic_id: topic_id,
+      class: "badge badge-pill badge-light ml-1 d-none"
+  end
+
   def icon(class), do: content_tag(:i, "", class: class)
 
   def user?(conn), do: !!Coherence.current_user(conn)
@@ -23,7 +27,7 @@ defmodule CollaborationWeb.ViewHelpers do
   def nav_item(conn, text, to, opts \\ []) do
     if Keyword.get(opts, :show, true) do
       active    = Keyword.get(opts, :active, true)
-      badge     = Keyword.get(opts, :badge, nil)
+      topic_id  = Keyword.get(opts, :topic_id, false)
       method    = Keyword.get(opts, :method, :get)
       icon      = Keyword.get(opts, :icon, false)
       popover   = Keyword.get(opts, :popover, false)
@@ -31,12 +35,12 @@ defmodule CollaborationWeb.ViewHelpers do
       placement = Keyword.get(opts, :placement, "bottom")
 
       item_class = if active and current_path(conn, %{}) === to,
-        do: "nav-item active", else: "nav-item"
+        do: "topic-link nav-item active", else: "topic-link nav-item"
 
       text = cond do
-        icon && badge -> [icon(icon), text, badge(badge)]
+        icon && topic_id -> [icon(icon), text, badge(topic_id)]
         icon -> [icon(icon), text]
-        badge -> [text, badge(badge)]
+        topic_id -> [text, badge(topic_id)]
         true -> text
       end
 
@@ -69,5 +73,4 @@ defmodule CollaborationWeb.ViewHelpers do
       []
     end
   end
-
 end

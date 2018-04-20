@@ -21,7 +21,7 @@ defmodule CollaborationWeb.UserView do
   end
 
   def toggle_feedback(conn, user) do
-    current_user = Coherence.current_user(conn)
+    # current_user = Coherence.current_user(conn)
     color = if user.feedback, do: "danger", else: "success"
     label = if user.feedback, do: "No Feedback", else: "Feedback"
     action = user_path(conn, :toggle_feedback, user.id)

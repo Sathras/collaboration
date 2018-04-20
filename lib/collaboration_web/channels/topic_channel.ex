@@ -1,7 +1,9 @@
 defmodule CollaborationWeb.TopicChannel do
   use CollaborationWeb, :channel
   import Collaboration.Contributions
+
   alias Phoenix.View
+  alias CollaborationWeb.Endpoint
   alias CollaborationWeb.IdeaView
 
   def join("topic:"<> id, params, socket) do
@@ -17,7 +19,14 @@ defmodule CollaborationWeb.TopicChannel do
       case create_idea(socket.assigns.user, socket.assigns.topic, data) do
         {:ok, idea} ->
           idea = get_idea_details(idea)
+          # broadcast idea to topic channel
           broadcast! socket, "new:idea", View.render_one(idea, IdeaView, "idea.json")
+
+          # if topic is displayed in navbar also broadcast it to public channel
+          topic = socket.assigns.topic
+          if topic.featured && topic.published, do:
+            Endpoint.broadcast! "public", "new:idea", %{id: topic.id}
+
           {:reply, {:ok, %{}}, socket}
         {:error, changeset} ->
           {:reply, {:error, %{ errors: error_map(changeset) }}, socket}

@@ -51,6 +51,9 @@ exports.config = {
       // Do not use ES6 compiler in vendor code
       ignore: [/vendor/]
     },
+    beforeBrunch: [
+      'prettier --loglevel warn --single-quote --write "{js,css}/**/*"'
+    ],
     sass: {
       options: {
         includePaths: [ // tell sass-brunch where to look for files to @import
