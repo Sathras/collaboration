@@ -10,7 +10,8 @@ defmodule CollaborationWeb.TopicChannel do
     last_seen_id = params["last_seen_id"] || 0
     topic = get_topic!(id)
     ideas = list_ideas(topic.id, last_seen_id)
-    resp = %{ ideas: View.render_many(ideas, IdeaView, "idea.json") }
+    user_id = if authorized?(socket), do: socket.assigns.user.id, else: nil
+    resp = %{ ideas: render_ideas(ideas, user_id) }
     {:ok, resp, assign(socket, :topic, topic)}
   end
 

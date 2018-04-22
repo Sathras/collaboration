@@ -2,8 +2,12 @@ defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
   import Collaboration.Contributions
+  import CollaborationWeb.ViewHelpers, only: [admin?: 1]
 
-  def index(conn, _), do: render conn, "index.html"
+  def index(conn, _) do
+    topics = list_topics(admin?(conn))
+    render assign(conn, :topics, topics), "index.html"
+  end
 
   def show(conn, %{"id" => id}) do
     topic = get_topic!(id)

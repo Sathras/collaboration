@@ -39,13 +39,12 @@
             class="collapse navbar-collapse"
             id="navbarSupportedContent"
           >
-            <ul class="navbar-nav mr-auto">
-              <%= for t <- @conn.assigns.topics do %>
-                <%= if t.featured && t.published, do:
-                  nav_item @conn, t.short_title,
-                    topic_path(@conn, :show, t.id),
-                    topic_id: t.id,
-                    popover: t.short_desc
+            <ul id="nav-topics" class="navbar-nav mr-auto">
+              <%= for t <- @conn.assigns.nav_topics do %>
+                <%= nav_item @conn, t.short_title,
+                  topic_path(@conn, :show, t.id),
+                  topic_id: t.id,
+                  popover: t.short_desc
                 %>
               <% end %>
             </ul>

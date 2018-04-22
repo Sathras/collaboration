@@ -46,16 +46,7 @@ defmodule CollaborationWeb.ViewHelpers do
 
       link = cond do
         popover ->
-          link(text, to: to,
-            class: "nav-link",
-            method: method,
-            data_container: "body",
-            data_content: popover,
-            data_html: "true",
-            data_toggle: "popover",
-            data_trigger: "hover",
-            data_placement: placement
-          )
+          link text, to: to, class: "nav-link", data_content: popover
         tooltip ->
           link(text,
             to: to,

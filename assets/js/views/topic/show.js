@@ -7,7 +7,9 @@ class View extends MainView {
     super.mount();
 
     // reset badge in navbar
-    $(`.badge[data-topic-id=${window.topic_id}]`).text(0).addClass('d-none')
+    $(`.badge[data-topic-id=${window.topic_id}]`)
+      .text(0)
+      .addClass('d-none');
 
     this.comments = $('#comments');
     this.feedback = $('#feedback');
@@ -132,10 +134,11 @@ class View extends MainView {
 
     // Response to broadcast event "update:idea"
     this.topicChannel.on('update:idea', idea => {
-      this.ideasTable
-        .row(`#idea_${idea.id}`)
-        .data(idea)
-        .draw();
+      // preserve my_rating and update table row
+      let row = this.ideasTable.row(`#idea_${idea.id}`)
+      idea.my_rating = row.data().my_rating;
+      row.data(idea).draw();
+
       $('#ideas time').timeago();
       // if currently selected idea matches updated idea, update idea panel
       if (this.idea && this.idea.id === idea.id) this.update_idea_panel(idea);
@@ -157,6 +160,11 @@ class View extends MainView {
       .rows(indexes)
       .data()
       .toArray()[0];
+
+    // on initial load, set own rating if rated
+    $('input[name=rating]').prop('checked', false);
+    if (this.idea.my_rating)
+      $(`#star${this.idea.my_rating}`).prop('checked', true);
 
     // update idea panel with new idea information
     this.update_idea_panel(this.idea);
@@ -250,7 +258,15 @@ class View extends MainView {
 
     // clicking on rating icon should trigger rating
     $('#rate').on('change', 'input', e => {
-      this.ideaChannel.push('rate', { rating: e.target.value });
+      const rating = e.target.value
+      this.ideaChannel
+      .push('rate', { rating })
+      .receive('ok', () => {
+        // preserve my_rating and update table row
+        this.idea.my_rating = rating
+        let row = this.ideasTable.row(`#idea_${this.idea.id}`)
+        row.data(this.idea).draw();
+      });
     });
   }
 

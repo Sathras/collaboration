@@ -7,7 +7,12 @@ export default class MainView {
 
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
-    $('[data-toggle="popover"]').popover();
+    $('#nav-topics a').popover({
+      container: 'body',
+      html: true,
+      placement: 'bottom',
+      trigger: 'hover'
+    });
 
     $('time').timeago();
 

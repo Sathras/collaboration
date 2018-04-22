@@ -1,12 +1,7 @@
 defmodule CollaborationWeb.Plug.LoadTopics do
-
   import Plug.Conn
-  import CollaborationWeb.ViewHelpers, only: [admin?: 1]
+  import Collaboration.Contributions, only: [get_topic_titles!: 0]
 
   def init(opts), do: opts
-
-  def call(conn, _opts) do
-    topics = Collaboration.Contributions.list_topics(admin?(conn))
-    assign(conn, :topics, topics)
-  end
+  def call(conn, _opts), do: assign(conn, :nav_topics, get_topic_titles!())
 end

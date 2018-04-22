@@ -22,20 +22,13 @@ defmodule CollaborationWeb.IdeaChannel do
     if authenticated?(socket) do
       case create_comment(socket.assigns.user, socket.assigns.idea, data) do
       {:ok, comment} ->
-        comment = get_comment_details(comment)
-
-        # update idea channel
-        broadcast! socket, "update:feedback", View.render_one(
-            get_comment_details(comment), CommentView, "comment.json",
-            current_user: nil)
-
-        # update topic channel
-        idea = get_idea!(comment.idea_id) |> get_idea_details()
-        Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea",
-          View.render_one(idea, IdeaView, "idea.json")
-
+        idea = render_idea(comment.idea_id)
+        # update idea and topic channels
+        broadcast! socket, "new:feedback", render_comment(comment)
+        Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", idea
         {:reply, {:ok, %{}}, socket}
-      {:error, changeset} ->
+
+      {:error, _changeset} ->
         {:reply, {:error, %{
           reason: dgettext("coherence", "Invalid form data.")}},
           socket}
@@ -75,8 +68,10 @@ defmodule CollaborationWeb.IdeaChannel do
 
   def handle_in("rate", %{"rating" => rating}, socket) do
     if authenticated?(socket) do
-      rate_idea!(socket.assigns[:user], socket.assigns[:idea_id], %{rating: rating})
-      {:noreply, socket}
+      rate_idea!(socket.assigns[:user], socket.assigns.idea, %{rating: rating})
+      idea = render_idea socket.assigns.idea.id
+      Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", idea
+      {:reply, {:ok, %{}}, socket}
     else
       {:reply, {:error, %{}}, socket}
     end
@@ -85,7 +80,7 @@ defmodule CollaborationWeb.IdeaChannel do
   def handle_in("like:feedback", %{"comment" => id}, socket) do
     if authenticated?(socket) do
       case like_comment(socket.assigns.user, id) do
-        comment ->
+        {:ok, comment} ->
           broadcast! socket, "update:feedback", View.render_one(
             get_comment_details(comment), CommentView, "comment.json",
             current_user: nil)
@@ -101,7 +96,7 @@ defmodule CollaborationWeb.IdeaChannel do
   def handle_in("unlike:feedback", %{"comment" => id}, socket) do
     if authenticated?(socket) do
       case unlike_comment(socket.assigns.user, id) do
-        comment ->
+        {:ok, comment} ->
           broadcast! socket, "update:feedback", View.render_one(
             get_comment_details(comment), CommentView, "comment.json",
             current_user: nil)

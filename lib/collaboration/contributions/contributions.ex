@@ -2,15 +2,17 @@ defmodule Collaboration.Contributions do
   @moduledoc """
   The Contributions context.
   """
-  import Ecto
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
+  alias Phoenix.View
   alias Collaboration.Repo
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Comment
   alias Collaboration.Contributions.Rating
+  alias CollaborationWeb.CommentView
+  alias CollaborationWeb.IdeaView
 
   def list_topics(admin \\ false) do
     query = from t in Topic,
@@ -23,6 +25,13 @@ defmodule Collaboration.Contributions do
       }
     query = if admin, do: query, else: from [t, i] in query, where: t.published
     Repo.all(query)
+  end
+
+  def get_topic_titles!() do
+    Repo.all(from t in Topic,
+      select: %{id: t.id, short_title: t.short_title, short_desc: t.short_desc},
+      where: t.published and t.featured
+    )
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)
@@ -51,8 +60,19 @@ defmodule Collaboration.Contributions do
   )
 
   def get_idea!(id), do: Repo.get!(Idea, id)
-
   def get_idea_details(idea), do: Repo.preload idea, [:user, :comments, :ratings]
+
+  def render_idea(idea) when is_number(idea) do
+    View.render_one get_idea!(idea) |> get_idea_details(), IdeaView, "idea.json"
+  end
+
+  def render_idea(idea) when is_map(idea) do
+    View.render_one get_idea_details(idea), IdeaView, "idea.json"
+  end
+
+  def render_ideas(ideas, current_user_id) do
+    View.render_many ideas, IdeaView, "idea_rated.json", user_id: current_user_id
+  end
 
   def create_idea(user, topic, attrs \\ %{}) do
     %Idea{}
@@ -108,6 +128,13 @@ defmodule Collaboration.Contributions do
   def get_comment!(id), do: Repo.get!(Comment, id)
   def get_comment_details(comment), do: Repo.preload comment, [:user, :likes]
 
+  def render_comment(comment) do
+    View.render_one(
+      get_comment_details(comment), CommentView, "comment.json",
+      current_user: nil
+    )
+  end
+
   def create_comment(user, idea, attrs \\ %{}) do
     %Comment{}
     |> Comment.changeset(attrs)
@@ -130,7 +157,7 @@ defmodule Collaboration.Contributions do
     |> Repo.preload(:likes)
     |> change()
     |> put_assoc(:likes, [user])
-    |> Repo.update!()
+    |> Repo.update()
   end
 
   def unlike_comment(user, id) do
@@ -138,6 +165,6 @@ defmodule Collaboration.Contributions do
     comment
     |> change()
     |> put_assoc(:likes, List.delete(comment.likes, user))
-    |> Repo.update!()
+    |> Repo.update()
   end
 end

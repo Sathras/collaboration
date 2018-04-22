@@ -71,7 +71,7 @@
             <%= if admin?(@conn) || (user?(@conn) && @topic.open) do %>
               <div id="rate" class="btn btn-light pointer btn-sm starrating risingstar d-inline-flex justify-content-center flex-row-reverse"
                data-toggle="tooltip" data-placement="bottom" title="Your Rating">
-                <input type="radio" id="star5" name="rating" value="5" /><!-- if @rating.user == 5 , do: "checked" -->
+                <input type="radio" id="star5" name="rating" value="5" />
                 <label class='pointer' for="star5"><i class="fas fa-star"></i></label>
                 <input type="radio" id="star4" name="rating" value="4" />
                 <label class='pointer' for="star4"><i class="fas fa-star"></i></label>

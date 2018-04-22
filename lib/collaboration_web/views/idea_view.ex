@@ -7,6 +7,7 @@ defmodule CollaborationWeb.IdeaView do
       id: i.id,
       js_id: "idea_#{i.id}",
       title: i.title,
+      topic_id: i.topic_id,
       desc: i.desc,
       created: NaiveDateTime.to_iso8601(i.inserted_at)<>"Z",
       comment_count: Enum.count(i.comments),
@@ -14,6 +15,24 @@ defmodule CollaborationWeb.IdeaView do
       raters: i.fake_raters + Enum.count(i.ratings),
       fake_raters: i.fake_raters,
       fake_rating: i.fake_rating
+    }
+  end
+
+  def render("idea_rated.json", %{idea: i, user_id: user_id}) do
+    %{
+      author: i.user.name,
+      id: i.id,
+      js_id: "idea_#{i.id}",
+      title: i.title,
+      topic_id: i.topic_id,
+      desc: i.desc,
+      created: NaiveDateTime.to_iso8601(i.inserted_at)<>"Z",
+      comment_count: Enum.count(i.comments),
+      rating: rating(i),
+      raters: i.fake_raters + Enum.count(i.ratings),
+      fake_raters: i.fake_raters,
+      fake_rating: i.fake_rating,
+      my_rating: Map.get(ratings(i.ratings), user_id, nil)
     }
   end
 
@@ -40,4 +59,9 @@ defmodule CollaborationWeb.IdeaView do
   end
 
   def likes(comment), do: Enum.count(comment.likes) + comment.fake_likes
+
+  defp ratings(ratings) do
+    Enum.map(ratings, fn(r) -> {r.user_id, r.rating} end)
+    |> Map.new()
+  end
 end
