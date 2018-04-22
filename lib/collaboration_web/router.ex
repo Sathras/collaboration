@@ -38,17 +38,16 @@ defmodule CollaborationWeb.Router do
 
     # add public resources below
     get "/", PageController, :index
-    resources "/topics", TopicController, only: [:index, :show]
+    get "/topics", TopicController, :index
+    get "/topic/:id", TopicController, :show
   end
 
   scope "/", CollaborationWeb do
     pipe_through :protected
 
     # add protected resources below
-    resources "/topics", TopicController, except: [:index, :show]
-
-    get "/users",                     AdminController, :users
-    put "/users/:id/toggle_admin",    AdminController, :toggle_admin
-    put "/users/:id/toggle_feedback", AdminController, :toggle_feedback
+    resources "/topic", TopicController, only: [:edit, :update, :delete]
+    resources "/topics", TopicController, only: [:new, :create]
+    get "/users", AdminController, :users
   end
 end
