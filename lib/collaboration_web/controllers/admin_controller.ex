@@ -1,13 +1,12 @@
-defmodule CollaborationWeb.UserController do
+defmodule CollaborationWeb.AdminController do
   use CollaborationWeb, :controller
 
   plug CollaborationWeb.Plug.IsAdmin
 
   alias Collaboration.Coherence.Schemas
 
-  def index(conn, _params) do
-    users = Schemas.list_user()
-    render(conn, "index.html", users: users)
+  def users(conn, _params) do
+    render(conn, "users.html")
   end
 
   def toggle_admin(conn, %{"id" => id}) do
@@ -16,11 +15,11 @@ defmodule CollaborationWeb.UserController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: admin_path(conn, :users))
       {:error, _changeset} ->
         conn
         |> put_flash(:info, "Error updateing users.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: admin_path(conn, :users))
     end
   end
 
@@ -31,11 +30,11 @@ defmodule CollaborationWeb.UserController do
       IO.inspect user
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: admin_path(conn, :users))
       {:error, _changeset} ->
         conn
         |> put_flash(:info, "Error updating users.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: admin_path(conn, :users))
     end
   end
 end

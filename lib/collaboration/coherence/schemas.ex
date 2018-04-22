@@ -4,11 +4,14 @@ defmodule Collaboration.Coherence.Schemas do
 
   import Ecto.Query
 
+  alias Phoenix.View
+  alias CollaborationWeb.UserView
+
   @user_schema Config.user_schema
   @repo        Config.repo
 
   def list_user do
-    @repo.all @user_schema
+    @repo.all from u in @user_schema, order_by: u.inserted_at
   end
 
   def list_user(page_size, page_number, search_term) do
@@ -40,6 +43,16 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.get! @user_schema, id
   end
 
+  def get_random_feedback_user() do
+    from( u in @user_schema,
+      where: u.feedback,
+      order_by: fragment("RANDOM()"),
+      limit: 1
+    )
+    |> @repo.all()
+    |> List.first()
+  end
+
   def get_user_by_email(email) do
     @repo.get_by @user_schema, email: email
   end
@@ -66,6 +79,14 @@ defmodule Collaboration.Coherence.Schemas do
 
   def create_user!(params) do
     @repo.insert! change_user(params)
+  end
+
+  def render_user(user) do
+    View.render_one user, UserView, "user.json"
+  end
+
+  def render_users() do
+    View.render_many list_user(), UserView, "user.json"
   end
 
   def toggle(user, params) do

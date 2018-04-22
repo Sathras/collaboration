@@ -12,20 +12,29 @@ alias Collaboration.Contributions.Idea
 
 Collaboration.Repo.delete_all Collaboration.Coherence.User
 
-{:ok, admin} = User.changeset(%User{},
-%{
-  id: <<113, 148, 42, 145, 149, 203, 69, 49, 158, 34, 160, 79, 67, 170, 215, 61>>,
-  admin: true,
-  name: "Alexander Fuchsberger",
-  email: "alex@fuchsberger.us",
-  password: "password",
-  password_confirmation: "password"
-})
-|> Repo.insert!
-|> Coherence.ConfirmableService.confirm!
+{:ok, alex} = User.changeset(%User{}, %{ name: "Alexander Fuchsberger", email: "alex@fuchsberger.us", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, gj} = User.changeset(%User{}, %{ name: "GJ", email: "gdevreede@usf.edu", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, triparna} = User.changeset(%User{}, %{ name: "Triparna", email: "tdevreede@usf.edu ", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, nargess} = User.changeset(%User{}, %{ name: "Nargess", email: "nargess.tahmasbi@gmail.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, john} = User.changeset(%User{}, %{ name: "John", email: "test1@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, sarah} = User.changeset(%User{}, %{ name: "Sarah", email: "test2@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, kjetil} = User.changeset(%User{}, %{ name: "Kjetil", email: "test3@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, sam} = User.changeset(%User{}, %{ name: "Nargess", email: "test4@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, hannah} = User.changeset(%User{}, %{ name: "Hannah", email: "test5@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, claudia} = User.changeset(%User{}, %{ name: "Claudia", email: "test6@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
+{:ok, tim} = User.changeset(%User{}, %{ name: "Tim", email: "test7@test.com", password: "password", password_confirmation: "password"}) |> Repo.insert! |> Coherence.ConfirmableService.confirm!
 
-User.changeset(admin, %{admin: true}, :toggle)
-|> Repo.update!
+
+# make the following users feedback users:
+User.changeset(nargess, %{feedback: true}, :toggle) |> Repo.update!
+User.changeset(john, %{feedback: true}, :toggle) |> Repo.update!
+User.changeset(sarah, %{feedback: true}, :toggle) |> Repo.update!
+User.changeset(triparna, %{feedback: true}, :toggle) |> Repo.update!
+
+# make the following users admins:
+User.changeset(alex, %{admin: true}, :toggle) |> Repo.update!
+User.changeset(gj, %{admin: true}, :toggle) |> Repo.update!
+User.changeset(triparna, %{admin: true}, :toggle) |> Repo.update!
 
 ## add some sample topics
 topic1 = Topic.changeset(%Topic{},
@@ -85,5 +94,17 @@ Idea.changeset(%Idea{},
   fake_rating: 4.3
 })
 |> put_assoc(:topic, topic1)
-|> put_assoc(:user, admin)
+|> put_assoc(:user, triparna)
+|> Repo.insert!
+
+Idea.changeset(%Idea{},
+%{
+  id: 2,
+  title: "Second Idea",
+  desc: "This idea was premade without fake rating",
+  fake_raters: 0,
+  fake_rating: 4
+})
+|> put_assoc(:topic, topic1)
+|> put_assoc(:user, alex)
 |> Repo.insert!

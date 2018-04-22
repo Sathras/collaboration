@@ -57,6 +57,7 @@ defmodule CollaborationWeb do
       use Phoenix.Channel
       import CollaborationWeb.Gettext
       import CollaborationWeb.ErrorHelpers
+      import CollaborationWeb.UserSocket, only: [user?: 1, admin?: 1]
     end
   end
 

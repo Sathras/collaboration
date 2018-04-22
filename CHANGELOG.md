@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+ * On idea submission, server will automatically post a response comment from a random feedback user (after 30 seconds) that can only be seen by the posting user
+ * Improved Admin Users page
+ * Added a few test users with feedback condition
+ * ideas are now always sorted with newest one first descending
+
 ## 2.0.1
  * Added automated Prettier Codestyle for JS and CSS
  * If new ideas are posted in a topic that is not the currently active topic, a badge appears that indicates the number of new ideas in that topic. resets when topic is opened.

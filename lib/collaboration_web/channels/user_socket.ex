@@ -5,6 +5,7 @@ defmodule CollaborationWeb.UserSocket do
   channel "public", CollaborationWeb.PublicChannel
   channel "idea:*", CollaborationWeb.IdeaChannel
   channel "topic:*", CollaborationWeb.TopicChannel
+  channel "admin:users", CollaborationWeb.AdminUsersChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -41,4 +42,7 @@ defmodule CollaborationWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil
+
+  def user?(socket), do: !!Map.get(socket.assigns, :user, false)
+  def admin?(socket), do: user?(socket) && socket.assigns.user.admin
 end

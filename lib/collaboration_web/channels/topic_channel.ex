@@ -1,5 +1,6 @@
 defmodule CollaborationWeb.TopicChannel do
   use CollaborationWeb, :channel
+  import Collaboration.Coherence.Schemas
   import Collaboration.Contributions
 
   alias Phoenix.View
@@ -28,12 +29,35 @@ defmodule CollaborationWeb.TopicChannel do
           if topic.featured && topic.published, do:
             Endpoint.broadcast! "public", "new:idea", %{id: topic.id}
 
+          Task.Supervisor.async_nolink(Collaboration.TaskSupervisor, fn ->
+            :timer.sleep(30000)
+            create_feedback(idea)
+          end)
+
           {:reply, {:ok, %{}}, socket}
         {:error, changeset} ->
           {:reply, {:error, %{ errors: error_map(changeset) }}, socket}
       end
     else
       {:reply, {:error, %{}}, socket}
+    end
+  end
+
+  def create_feedback(idea) do
+    # choose a random feedback user
+    user = get_random_feedback_user()
+    if user do
+      case create_comment(user, idea, %{"text" => "Great feedback, thanks!"}) do
+        {:ok, comment} ->
+          # update idea and topic channels
+          Endpoint.broadcast! "idea:#{idea.id}", "new:feedback", render_comment(comment)
+          Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", render_idea(comment.idea_id)
+          :ok
+        _ ->
+          :error
+      end
+    else
+      :error
     end
   end
 
@@ -72,8 +96,4 @@ defmodule CollaborationWeb.TopicChannel do
     Map.has_key?(socket.assigns, :user) && (
       socket.assigns.user.admin || socket.assigns.topic.open
     )
-
-  defp admin?(socket), do:
-    Map.has_key?(socket.assigns, :user) && socket.assigns.user.admin
-
 end

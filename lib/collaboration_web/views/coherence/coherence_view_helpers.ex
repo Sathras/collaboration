@@ -34,7 +34,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
       current_user = Coherence.current_user(conn)
       user_schema = Coherence.Config.user_schema
       [
-        nav_item( conn, "", CollaborationWeb.Router.Helpers.user_path(conn, :index), [
+        nav_item( conn, "", CollaborationWeb.Router.Helpers.admin_path(conn, :users), [
           icon: "fas fa-users", tooltip: "Users", show: current_user.admin]),
         nav_item( conn, "",
           coherence_path(@helpers, :registration_path, conn, :edit), [

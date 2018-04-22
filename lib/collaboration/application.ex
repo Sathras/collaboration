@@ -13,6 +13,7 @@ defmodule Collaboration.Application do
       # Start the endpoint when the application starts
       supervisor(CollaborationWeb.Endpoint, []),
       # Start your own worker by calling: Collaboration.Worker.start_link(arg1, arg2, arg3)
+      supervisor(Task.Supervisor, [[name: Collaboration.TaskSupervisor]])
       # worker(Collaboration.Worker, [arg1, arg2, arg3]),
     ]
 

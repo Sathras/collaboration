@@ -8,6 +8,7 @@ defmodule Collaboration.Contributions.Comment do
     timestamps()
     belongs_to :idea, Collaboration.Contributions.Idea
     belongs_to :user, Collaboration.Coherence.User, type: :binary_id
+    belongs_to :recipient, Collaboration.Coherence.User, type: :binary_id
     many_to_many :likes, Collaboration.Coherence.User,
       join_through: "likes", on_replace: :delete, on_delete: :delete_all
   end

@@ -15,7 +15,7 @@ defmodule CollaborationWeb.ViewHelpers do
   def icon(class), do: content_tag(:i, "", class: class)
 
   def user?(conn), do: !!Coherence.current_user(conn)
-  def admin?(conn), do: Coherence.current_user(conn) && Coherence.current_user(conn).admin
+  def admin?(conn), do: user?(conn) && Coherence.current_user(conn).admin
 
   def nav_text(text, icon \\ false) do
     text = if icon, do: [icon(icon), text], else: text

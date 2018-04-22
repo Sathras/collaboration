@@ -19,7 +19,7 @@ defmodule CollaborationWeb.IdeaChannel do
   end
 
   def handle_in("new:feedback", data, socket) do
-    if authenticated?(socket) do
+    if user?(socket) do
       case create_comment(socket.assigns.user, socket.assigns.idea, data) do
       {:ok, comment} ->
         idea = render_idea(comment.idea_id)
@@ -67,7 +67,7 @@ defmodule CollaborationWeb.IdeaChannel do
   end
 
   def handle_in("rate", %{"rating" => rating}, socket) do
-    if authenticated?(socket) do
+    if user?(socket) do
       rate_idea!(socket.assigns[:user], socket.assigns.idea, %{rating: rating})
       idea = render_idea socket.assigns.idea.id
       Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", idea
@@ -78,7 +78,7 @@ defmodule CollaborationWeb.IdeaChannel do
   end
 
   def handle_in("like:feedback", %{"comment" => id}, socket) do
-    if authenticated?(socket) do
+    if user?(socket) do
       case like_comment(socket.assigns.user, id) do
         {:ok, comment} ->
           broadcast! socket, "update:feedback", View.render_one(
@@ -94,7 +94,7 @@ defmodule CollaborationWeb.IdeaChannel do
   end
 
   def handle_in("unlike:feedback", %{"comment" => id}, socket) do
-    if authenticated?(socket) do
+    if user?(socket) do
       case unlike_comment(socket.assigns.user, id) do
         {:ok, comment} ->
           broadcast! socket, "update:feedback", View.render_one(
@@ -110,7 +110,7 @@ defmodule CollaborationWeb.IdeaChannel do
   end
 
   def handle_in("update:fake_likes", %{"comment" => id} = params, socket) do
-    if authenticated?(socket) do
+    if user?(socket) do
       case get_comment!(id) |> update_comment(params) do
         {:ok, comment} ->
           broadcast! socket, "update:feedback", View.render_one(
@@ -124,7 +124,4 @@ defmodule CollaborationWeb.IdeaChannel do
       {:reply, {:error, %{}}, socket}
     end
   end
-
-  defp authenticated?(socket), do: Map.has_key? socket.assigns, :user
-  defp admin?(socket), do: authenticated?(socket) && socket.assigns.user.admin
 end

@@ -39,12 +39,14 @@ class View extends MainView {
               data: 'created',
               title: "<i class='far fa-clock mr-2'></i>",
               render: data => `<small><time datetime='${data}'></time></small>`,
-              width: 60
-            }
+              width: 60,
+              searchable: false,
+              orderData: 4,
+            },
+            { data: 'created', visible: false, searchable: false },
           ],
           order: [[3, 'desc']],
           rowId: 'js_id',
-          safeState: true,
           select: { style: 'single', className: 'table-primary' }
         });
         $('#ideas time').timeago();
@@ -135,7 +137,7 @@ class View extends MainView {
     // Response to broadcast event "update:idea"
     this.topicChannel.on('update:idea', idea => {
       // preserve my_rating and update table row
-      let row = this.ideasTable.row(`#idea_${idea.id}`)
+      let row = this.ideasTable.row(`#idea_${idea.id}`);
       idea.my_rating = row.data().my_rating;
       row.data(idea).draw();
 
@@ -258,13 +260,11 @@ class View extends MainView {
 
     // clicking on rating icon should trigger rating
     $('#rate').on('change', 'input', e => {
-      const rating = e.target.value
-      this.ideaChannel
-      .push('rate', { rating })
-      .receive('ok', () => {
+      const rating = e.target.value;
+      this.ideaChannel.push('rate', { rating }).receive('ok', () => {
         // preserve my_rating and update table row
-        this.idea.my_rating = rating
-        let row = this.ideasTable.row(`#idea_${this.idea.id}`)
+        this.idea.my_rating = rating;
+        let row = this.ideasTable.row(`#idea_${this.idea.id}`);
         row.data(this.idea).draw();
       });
     });
