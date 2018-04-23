@@ -45,4 +45,8 @@ defmodule CollaborationWeb.UserSocket do
 
   def user?(socket), do: !!Map.get(socket.assigns, :user, false)
   def admin?(socket), do: user?(socket) && socket.assigns.user.admin
+
+  def user_id(socket) do
+    if user?(socket), do: socket.assigns.user.id, else: nil
+  end
 end

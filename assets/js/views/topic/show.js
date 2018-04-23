@@ -41,12 +41,12 @@ class View extends MainView {
               render: data => `<small><time datetime='${data}'></time></small>`,
               width: 60,
               searchable: false,
-              orderData: 4,
+              orderData: 4
             },
-            { data: 'created', visible: false, searchable: false },
+            { data: 'created', visible: false, searchable: false }
           ],
           order: [[3, 'desc']],
-          rowId: 'js_id',
+          rowId: 'row_id',
           select: { style: 'single', className: 'table-primary' }
         });
         $('#ideas time').timeago();
@@ -262,10 +262,11 @@ class View extends MainView {
     $('#rate').on('change', 'input', e => {
       const rating = e.target.value;
       this.ideaChannel.push('rate', { rating }).receive('ok', () => {
-        // preserve my_rating and update table row
-        this.idea.my_rating = rating;
         let row = this.ideasTable.row(`#idea_${this.idea.id}`);
-        row.data(this.idea).draw();
+        let data = row.data();
+        data.my_rating = rating;
+        row.data(data).draw()
+        $('#ideas time').timeago();
       });
     });
   }
@@ -277,15 +278,21 @@ class View extends MainView {
           .removeClass('d-none')
           .html(idea.desc)
       : $('#idea-desc').addClass('d-none');
+
+    // update rating
     if (idea.rating) {
       // toggle rating
-      $('#rating').removeClass('d-none');
+      $('#rating').removeClass('d-none').addClass('d-inline-block');
       $('#rating strong').html(idea.rating);
       $('#rating small span').text(idea.raters);
-    } else $('#rating').addClass('d-none');
-    idea.user_rating // update user rating
-      ? $('#star' + idea.user_rating).attr('checked', true)
-      : $('#rate input').removeAttr('checked');
+    } else $('#rating').addClass('d-none').removeClass('d-inline-block');
+
+    // update user rating
+    if(idea.user_rating){
+      $('#rate input').removeAttr('checked')
+      $('#star' + idea.user_rating).attr('checked', true)
+    }
+    else $('#rate input').removeAttr('checked')
   }
 
   unload_idea() {

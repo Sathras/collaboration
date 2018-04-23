@@ -14,7 +14,8 @@
     <link rel="icon" type="image/x-icon" href="<%= static_path(@conn, "/images/favicon.ico") %>" >
     <script>
       window.admin = <%= admin?(@conn) %>;
-      window.user = <%= user?(@conn) %>;
+      window.user = <%= if user?(@conn),
+        do: raw("\"#{Coherence.current_user(@conn).id}\""), else: false %>;
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>

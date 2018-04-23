@@ -9,20 +9,15 @@ defmodule CollaborationWeb.IdeaChannel do
   def join("idea:"<> id, params, socket) do
     last_seen_id = params["last_seen_id"] || 0
     idea = get_idea!(id)
-    comments = list_comments(idea.id, last_seen_id)
-    resp = %{
-      comments: View.render_many(comments, CommentView, "comment.json",
-        current_user: Map.get(socket.assigns, :user_id, nil)
-      )
-    }
-    {:ok, resp, assign(socket, :idea, idea)}
+    comments = list_comments(idea.id, last_seen_id, user_id(socket))
+    {:ok, %{ comments: comments}, assign(socket, :idea, idea)}
   end
 
   def handle_in("new:feedback", data, socket) do
     if user?(socket) do
       case create_comment(socket.assigns.user, socket.assigns.idea, data) do
       {:ok, comment} ->
-        idea = render_idea(comment.idea_id)
+        idea = render_idea(comment.idea_id, nil)
         # update idea and topic channels
         broadcast! socket, "new:feedback", render_comment(comment)
         Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", idea
@@ -69,7 +64,7 @@ defmodule CollaborationWeb.IdeaChannel do
   def handle_in("rate", %{"rating" => rating}, socket) do
     if user?(socket) do
       rate_idea!(socket.assigns[:user], socket.assigns.idea, %{rating: rating})
-      idea = render_idea socket.assigns.idea.id
+      idea = render_idea socket.assigns.idea.id, nil
       Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", idea
       {:reply, {:ok, %{}}, socket}
     else

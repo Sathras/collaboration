@@ -10,19 +10,17 @@ defmodule CollaborationWeb.TopicChannel do
   def join("topic:"<> id, params, socket) do
     last_seen_id = params["last_seen_id"] || 0
     topic = get_topic!(id)
-    ideas = list_ideas(topic.id, last_seen_id)
-    user_id = if authorized?(socket), do: socket.assigns.user.id, else: nil
-    resp = %{ ideas: render_ideas(ideas, user_id) }
+    resp = %{ ideas: list_ideas(topic.id, last_seen_id, user_id(socket)) }
     {:ok, resp, assign(socket, :topic, topic)}
   end
 
   def handle_in("new:idea", data, socket) do
-    if authorized?(socket) do
+    if contributeable?(socket) do
       case create_idea(socket.assigns.user, socket.assigns.topic, data) do
         {:ok, idea} ->
-          idea = get_idea_details(idea)
+
           # broadcast idea to topic channel
-          broadcast! socket, "new:idea", View.render_one(idea, IdeaView, "idea.json")
+          broadcast! socket, "new:idea", render_idea(idea, nil)
 
           # if topic is displayed in navbar also broadcast it to public channel
           topic = socket.assigns.topic
@@ -31,7 +29,7 @@ defmodule CollaborationWeb.TopicChannel do
 
           Task.Supervisor.async_nolink(Collaboration.TaskSupervisor, fn ->
             :timer.sleep(30000)
-            create_feedback(idea)
+            create_feedback(idea, socket.assigns.user)
           end)
 
           {:reply, {:ok, %{}}, socket}
@@ -43,26 +41,8 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
-  def create_feedback(idea) do
-    # choose a random feedback user
-    user = get_random_feedback_user()
-    if user do
-      case create_comment(user, idea, %{"text" => "Great feedback, thanks!"}) do
-        {:ok, comment} ->
-          # update idea and topic channels
-          Endpoint.broadcast! "idea:#{idea.id}", "new:feedback", render_comment(comment)
-          Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", render_idea(comment.idea_id)
-          :ok
-        _ ->
-          :error
-      end
-    else
-      :error
-    end
-  end
-
   def handle_in("update:idea", data, socket) do
-    if authorized?(socket) do
+    if contributeable?(socket) do
       case get_idea!(data["id"]) |> update_idea(data) do
         {:ok, idea} ->
           idea = get_idea_details(idea)
@@ -92,8 +72,29 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
-  defp authorized?(socket), do:
-    Map.has_key?(socket.assigns, :user) && (
-      socket.assigns.user.admin || socket.assigns.topic.open
-    )
+  defp create_feedback(idea, recipient) do
+    # choose a random feedback user
+    author = get_random_feedback_user()
+    if author do
+      case create_comment(author, recipient, idea, %{"text" => "Great feedback, thanks!"}) do
+        {:ok, comment} ->
+          # update idea and topic channels
+          Endpoint.broadcast! "idea:#{idea.id}", "new:feedback", render_comment(comment)
+          Endpoint.broadcast! "topic:#{idea.topic_id}", "update:idea", render_idea(comment.idea_id, nil)
+          :ok
+        _ ->
+          :error
+      end
+    else
+      :error
+    end
+  end
+
+  defp contributeable?(socket) do
+    cond do
+      admin?(socket) -> true
+      user?(socket) && socket.assigns.topic.open && socket.assigns.topic.published -> true
+      true -> false
+    end
+  end
 end

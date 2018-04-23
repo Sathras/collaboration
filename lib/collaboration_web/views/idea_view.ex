@@ -1,33 +1,18 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
-  def render("idea.json", %{idea: i}) do
+  def render("idea.json", %{idea: i, user_id: user_id}) do
+    comments = Enum.filter(i.comments, fn(c) -> c.recipient_id == user_id || c.recipient_id == nil end)
     %{
       author: i.user.name,
+      user_id: i.user.id,
       id: i.id,
-      js_id: "idea_#{i.id}",
+      row_id: "idea_#{i.id}",
       title: i.title,
       topic_id: i.topic_id,
       desc: i.desc,
       created: NaiveDateTime.to_iso8601(i.inserted_at)<>"Z",
-      comment_count: Enum.count(i.comments),
-      rating: rating(i),
-      raters: i.fake_raters + Enum.count(i.ratings),
-      fake_raters: i.fake_raters,
-      fake_rating: i.fake_rating
-    }
-  end
-
-  def render("idea_rated.json", %{idea: i, user_id: user_id}) do
-    %{
-      author: i.user.name,
-      id: i.id,
-      js_id: "idea_#{i.id}",
-      title: i.title,
-      topic_id: i.topic_id,
-      desc: i.desc,
-      created: NaiveDateTime.to_iso8601(i.inserted_at)<>"Z",
-      comment_count: Enum.count(i.comments),
+      comment_count: Enum.count(comments),
       rating: rating(i),
       raters: i.fake_raters + Enum.count(i.ratings),
       fake_raters: i.fake_raters,

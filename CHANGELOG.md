@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3
+ * Fixed several bugs
+ * automatic feedback now only visible to the user who posted the idea
+
 ## 2.0.2
  * On idea submission, server will automatically post a response comment from a random feedback user (after 30 seconds) that can only be seen by the posting user
  * Improved Admin Users page

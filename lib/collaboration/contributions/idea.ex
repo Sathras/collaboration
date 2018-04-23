@@ -5,7 +5,7 @@ defmodule Collaboration.Contributions.Idea do
   schema "ideas" do
     field :desc, :string
     field :title, :string
-    field :fake_rating, :float, default: 4
+    field :fake_rating, :float, default: 4.2
     field :fake_raters, :integer, default: 0
     timestamps()
     has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
