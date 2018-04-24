@@ -4,7 +4,7 @@ defmodule Collaboration.Mixfile do
   def project do
     [
       app: :collaboration,
-      version: "2.0.4",
+      version: "2.0.5",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -43,7 +43,7 @@ defmodule Collaboration.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:coherence, github: "smpallen99/coherence"},
-      {:html_sanitize_ex, "~> 1.3.0-rc3"},
+      {:phoenix_html_sanitizer, "~> 1.1.0"},
       {:distillery, "~> 1.5", runtime: false},
       {:bootleg, "~> 0.7", runtime: false},
       {:bootleg_phoenix, "~> 0.2", runtime: false}

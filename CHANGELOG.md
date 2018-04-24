@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.5
+ * Topic Desc, Shortdesc, Idea Desc and Comment Text can now be indefiniately long (bug that prevented e.g. changing topics and adding images)
+ * When editing topics you can now make use of 2 styling options "Image Left" and "Image Right" which automatically floats the image in the text
+
 ## 2.0.4
  * Admin Users Table is now fully responsive with sticky header and removed pagination
  * Ideas Table now fully responsive with sticky header and removed pagination

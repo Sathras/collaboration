@@ -50,7 +50,7 @@ export default class View extends MainView {
         ]
       });
 
-      $('#users_filter input').addClass('form-control form-control-sm')
+      $('#users_filter input').addClass('form-control form-control-sm');
     });
 
     // USER CHANNEL EVENTS

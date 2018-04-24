@@ -19,16 +19,5 @@ defmodule Collaboration.Contributions.Topic do
     topic
     |> cast(attrs, [:title, :short_title, :desc, :featured, :published, :open, :short_desc])
     |> validate_required([:title, :short_title, :desc, :featured, :published, :open, :short_desc])
-    |> sanitize(:short_desc)
-    |> sanitize(:desc)
-  end
-
-  defp sanitize(changeset, field) do
-    if Map.has_key?(changeset.changes, field) do
-      changed_field = Map.get changeset.changes, field
-      put_change changeset, field, HtmlSanitizeEx.basic_html(changed_field)
-    else
-      changeset
-    end
   end
 end

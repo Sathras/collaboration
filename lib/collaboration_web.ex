@@ -36,6 +36,7 @@ defmodule CollaborationWeb do
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
+      use PhoenixHtmlSanitizer, :full_html
 
       import CollaborationWeb.Router.Helpers
       import CollaborationWeb.ErrorHelpers

@@ -20,7 +20,6 @@ defmodule Collaboration.Contributions.Idea do
     |> cast(attrs, [:title, :desc, :fake_rating, :fake_raters])
     |> validate_required([:title])
     |> validate_length(:title, min: 5, max: 80)
-    |> validate_length(:desc, max: 3000)
     |> validate_number(:fake_rating, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_number(:fake_raters, greater_than_or_equal_to: 0)
   end
