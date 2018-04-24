@@ -26,19 +26,25 @@
   <div class="col-md">
     <div class="card">
       <div class="card-header">
-        <%= if admin?(@conn) || ( user?(@conn) && @topic.open ) do %>
-          <button class="btn btn-success float-right"
-            data-toggle="modal" data-target="#ideaModal" data-action="new:idea"
-          >
-            <i class="fas fa-plus mr-2"></i><%= gettext "Submit Idea" %>
-          </button>
-        <% end %>
-        <h3><%= gettext "Ideas" %></h3>
+        <div class='form-row'>
+          <div class='col-sm-8 order-last order-sm-first order-xs-2 col-md-6 col-lg-7 col-xl-8'>
+            <input id='ideas-filter' class="form-control" type='search' placeholder='Search Ideas' />
+          </div>
+          <div class='col-sm-4 order-first order-sm-last order-xs-1 col-md-6 col-lg-5 col-xl-4'>
+            <%= if admin?(@conn) || ( user?(@conn) && @topic.open ) do %>
+              <button class="btn btn-success w-100"
+                data-toggle="modal" data-target="#ideaModal" data-action="new:idea"
+              >
+                <i class="fas fa-plus mr-2"></i><%= gettext "Submit Idea" %>
+              </button>
+            <% end %>
+          </div>
+        </div>
       </div>
-      <div class="card-body pl-0 pr-0">
+      <div class="card-body p-0 pb-1">
         <table
           id="ideas"
-          class="mr-0 table table-sm table-striped table-hover"
+          class="mr-0 table table-sm table-striped table-hover nowrap"
           cellspacing="0"
           cellpadding="0"
         ></table>

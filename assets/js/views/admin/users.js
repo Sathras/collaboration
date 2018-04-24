@@ -1,5 +1,6 @@
 /* global $ */
 import socket from '../../socket';
+import C from '../../utils/constants';
 import MainView from '../main';
 
 export default class View extends MainView {
@@ -21,9 +22,8 @@ export default class View extends MainView {
       if (users.length > 0) channel.params.last = users.slice(-1)[0].created;
 
       this.userTable = $('#users').DataTable({
-        autoWidth: false,
+        ...C.DATATABLE_BASE_CONFIG,
         data: users,
-        dom: '<"row"<"col-sm-6 order-sm-2"f><"col-sm-6 order-sm-1"i>>t',
         columns: [
           { data: 'name', title: 'Name', responsivePriority: 1 },
           { data: 'email', title: 'Email', responsivePriority: 3 },
@@ -47,30 +47,10 @@ export default class View extends MainView {
             width: 20,
             responsivePriority: 2
           }
-        ],
-        fixedHeader: {
-          header: true,
-          headerOffset: 53
-        },
-        language: {
-          search: '',
-          searchPlaceholder: 'Search...'
-        },
-        order: [[0, 'asc']],
-        responsive: {
-          breakpoints: [
-            { name: 'xl', width: Infinity },
-            { name: 'lg', width: 1200 },
-            { name: 'md', width: 992 },
-            { name: 'sm', width: 768 },
-            { name: 'xs', width: 576 },
-            { name: 'ba', width: 320 }
-          ]
-        },
-        paging: false,
-        rowId: 'row_id',
-        safeState: true
+        ]
       });
+
+      $('#users_filter input').addClass('form-control form-control-sm')
     });
 
     // USER CHANNEL EVENTS
@@ -102,7 +82,7 @@ export default class View extends MainView {
 
     // TOGGLE EVENTS
 
-    // demote admin
+    // toggle various user flags
     $('#users').on('click', '[data-toggle]', e => {
       const user = this.userTable.row($(e.target).closest('tr')).data().id;
       const field = $(e.target).data('toggle');

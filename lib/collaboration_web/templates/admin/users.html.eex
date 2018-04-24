@@ -1,3 +1,9 @@
 <h2>Listing Users</h2>
 
-<table id="users" class="table table-sm table-hover nowrap" style="width:100%"></table>
+<table
+  id="users"
+  class="table table-sm table-hover nowrap"
+  cellspacing="0"
+  cellpadding="0"
+  style="width:100%"
+></table>

@@ -2,6 +2,8 @@
 
 ## 2.0.4
  * Admin Users Table is now fully responsive with sticky header and removed pagination
+ * Ideas Table now fully responsive with sticky header and removed pagination
+ * Cleaned up Ideas Panel Header
 
 ## 2.0.3
  * Fixed several bugs

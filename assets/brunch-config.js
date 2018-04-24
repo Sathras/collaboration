@@ -32,18 +32,12 @@ exports.config = {
 
   // Configure your plugins
   plugins: {
+    babel: {
+      presets: ['env', 'stage-2']
+    },
     beforeBrunch: [
       'prettier --loglevel warn --single-quote --write "{js,css}/**/*"'
-    ],
-    sass: {
-      options: {
-        includePaths: [ // tell sass-brunch where to look for files to @import
-          "node_modules/font-awesome/scss",
-
-        ],
-        precision: 8 // minimum precision required by bootstrap
-      }
-    }
+    ]
   },
 
   modules: {

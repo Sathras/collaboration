@@ -5,3 +5,12 @@ div.dataTables_wrapper div.dataTables_info {
 div.dataTables_wrapper label {
   margin-bottom: 0rem;
 }
+
+#ideas_filter,
+#ideas_info {
+  text-align: center;
+}
+
+#ideas {
+  margin-top: 0 !important;
+}

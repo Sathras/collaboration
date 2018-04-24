@@ -1,5 +1,6 @@
 /* global $ */
 import socket from '../../socket';
+import C from '../../utils/constants';
 import MainView from '../main';
 
 class View extends MainView {
@@ -30,9 +31,11 @@ class View extends MainView {
 
       if (!this.ideasTable) {
         this.ideasTable = $('#ideas').DataTable({
+          ...C.DATATABLE_BASE_CONFIG,
           data: resp.ideas,
+          dom: `ti`,
           columns: [
-            { data: 'title', title: 'Title' },
+            { data: 'title', title: 'Idea' },
             { data: 'rating', title: "<i class='fas fa-star'></i>" },
             { data: 'comment_count', title: "<i class='far fa-comments'></i>" },
             {
@@ -46,10 +49,20 @@ class View extends MainView {
             { data: 'created', visible: false, searchable: false }
           ],
           order: [[3, 'desc']],
-          rowId: 'row_id',
-          select: { style: 'single', className: 'table-primary' }
+          responsive: {
+            ...C.DATATABLE_BASE_CONFIG.responsive,
+            details: false
+          },
+          safeState: false,
+          select: { style: 'single' }
         });
+
         $('#ideas time').timeago();
+
+        // enable filtering
+        $('#ideas-filter').on('keyup', e => {
+          this.ideasTable.search(e.target.value).draw();
+        });
       }
 
       // loading/unloading idea when selecting/deselecting rows in idea table
