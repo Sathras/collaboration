@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4
+ * Admin Users Table is now fully responsive with sticky header and removed pagination
+
 ## 2.0.3
  * Fixed several bugs
  * automatic feedback now only visible to the user who posted the idea

@@ -21,15 +21,21 @@ export default class View extends MainView {
       if (users.length > 0) channel.params.last = users.slice(-1)[0].created;
 
       this.userTable = $('#users').DataTable({
+        autoWidth: false,
         data: users,
+        dom: '<"row"<"col-sm-6 order-sm-2"f><"col-sm-6 order-sm-1"i>>t',
         columns: [
+          { data: 'name', title: 'Name', responsivePriority: 1 },
+          { data: 'email', title: 'Email', responsivePriority: 3 },
           {
             data: 'admin',
             title: '<i class="fas fa-user"></i>',
             render: admin =>
               admin
                 ? `<i data-toggle='admin' class="pointer fas fa-user-plus text-primary"></i>`
-                : `<i data-toggle='admin' class="pointer fas fa-user"></i>`
+                : `<i data-toggle='admin' class="pointer fas fa-user"></i>`,
+            width: 20,
+            responsivePriority: 2
           },
           {
             data: 'feedback',
@@ -37,12 +43,31 @@ export default class View extends MainView {
             render: feedback =>
               feedback
                 ? `<i data-toggle='feedback' class="pointer fas fa-comment"></i>`
-                : `<i data-toggle='feedback' class="pointer fas fa-comment-slash text-muted"></i>`
-          },
-          { data: 'name', title: 'Name' },
-          { data: 'email', title: 'Email' }
+                : `<i data-toggle='feedback' class="pointer fas fa-comment-slash text-muted"></i>`,
+            width: 20,
+            responsivePriority: 2
+          }
         ],
+        fixedHeader: {
+          header: true,
+          headerOffset: 53
+        },
+        language: {
+          search: '',
+          searchPlaceholder: 'Search...'
+        },
         order: [[0, 'asc']],
+        responsive: {
+          breakpoints: [
+            { name: 'xl', width: Infinity },
+            { name: 'lg', width: 1200 },
+            { name: 'md', width: 992 },
+            { name: 'sm', width: 768 },
+            { name: 'xs', width: 576 },
+            { name: 'ba', width: 320 }
+          ]
+        },
+        paging: false,
         rowId: 'row_id',
         safeState: true
       });

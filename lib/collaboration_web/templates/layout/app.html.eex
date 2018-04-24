@@ -21,41 +21,39 @@
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
-    <header class="header">
-      <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="/topics"><i class="far fa-lightbulb mr-1"></i>Idea Nexus</a>
-          <button
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            class="navbar-toggler"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            type="button"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div
-            class="collapse navbar-collapse"
-            id="navbarSupportedContent"
-          >
-            <ul id="nav-topics" class="navbar-nav mr-auto">
-              <%= for t <- @conn.assigns.nav_topics do %>
-                <%= nav_item @conn, t.short_title,
-                  topic_path(@conn, :show, t.id),
-                  topic_id: t.id,
-                  popover: t.short_desc
-                %>
-              <% end %>
-            </ul>
-            <ul class="navbar-nav">
-              <%= CollaborationWeb.Coherence.ViewHelpers.coherence_links(@conn, :layout) %>
-            </ul>
-          </div>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/topics"><i class="far fa-lightbulb mr-1"></i>Idea Nexus</a>
+        <button
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          class="navbar-toggler"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          type="button"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse"
+          id="navbarSupportedContent"
+        >
+          <ul id="nav-topics" class="navbar-nav mr-auto">
+            <%= for t <- @conn.assigns.nav_topics do %>
+              <%= nav_item @conn, t.short_title,
+                topic_path(@conn, :show, t.id),
+                topic_id: t.id,
+                popover: t.short_desc
+              %>
+            <% end %>
+          </ul>
+          <ul class="navbar-nav">
+            <%= CollaborationWeb.Coherence.ViewHelpers.coherence_links(@conn, :layout) %>
+          </ul>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
     <div class="container">
       <%= flash_messages(@conn) %>
       <main role="main">

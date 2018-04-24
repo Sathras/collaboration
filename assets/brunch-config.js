@@ -3,26 +3,11 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: "js/app.js"
-
-      // To use a separate vendor.js bundle, specify two files path
-      // http://brunch.io/docs/config#-files-
-      // joinTo: {
-      //   "js/app.js": /^js/,
-      //   "js/vendor.js": /^(?!js)/
-      // }
-      //
-      // To change the order of concatenation of files, explicitly mention here
-      // order: {
-      //   before: [
-      //     "vendor/js/jquery-2.1.1.js",
-      //     "vendor/js/bootstrap.min.js"
-      //   ]
-      // }
     },
     stylesheets: {
       joinTo: "css/app.css",
       order: {
-        after: ["priv/static/css/app.scss"] // concat app.css last
+        after: ["priv/static/css/app.css"] // concat app.css last
       }
     },
     templates: {
@@ -40,26 +25,21 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "css", "js", "vendor"],
+    watched: ["static", "css", "js"],
     // Where to compile files to
     public: "../priv/static"
   },
 
   // Configure your plugins
   plugins: {
-    babel: {
-      // Do not use ES6 compiler in vendor code
-      ignore: [/vendor/]
-    },
     beforeBrunch: [
       'prettier --loglevel warn --single-quote --write "{js,css}/**/*"'
     ],
     sass: {
       options: {
         includePaths: [ // tell sass-brunch where to look for files to @import
-          "node_modules/bootstrap/scss",
           "node_modules/font-awesome/scss",
-          "node_modules/datatables.net-bs4/css"
+
         ],
         precision: 8 // minimum precision required by bootstrap
       }
@@ -77,7 +57,15 @@ exports.config = {
     globals: { // Bootstrap requires both '$' and 'jQuery' in global scope
       $: 'jquery',
       jQuery: 'jquery',
-      bootstrap: 'bootstrap' // require Bootstrap JavaScript globally too
+      bootstrap: 'bootstrap'
+    },
+    styles: {
+      'bootstrap': ['dist/css/bootstrap.css'],
+      'datatables.net-bs4': ['css/dataTables.bootstrap4.css'],
+      'datatables.net-fixedheader-bs4': ['css/fixedHeader.bootstrap4.css'],
+      'datatables.net-responsive-bs4': ['css/responsive.bootstrap4.css'],
+      'datatables.net-scroller-bs4': ['css/scroller.bootstrap4.css'],
+      'datatables.net-select-bs4': ['css/select.bootstrap4.css']
     }
   }
 };

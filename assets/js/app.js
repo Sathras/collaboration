@@ -1,9 +1,13 @@
 /* global $ */
-require('datatables.net-bs4')();
-require('datatables.net-select')(window, $);
-
 import 'phoenix_html';
 import Turbolinks from 'turbolinks';
+
+// import datatables
+require('datatables.net-bs4')(window, $);
+require('datatables.net-fixedheader')();
+require('datatables.net-responsive-bs4')();
+// require('datatables.net-scroller-bs4')();
+// require('datatables.net-select-bs4')();
 
 // Import local files
 import { configPublicChannel } from './socket';

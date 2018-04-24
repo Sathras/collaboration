@@ -265,7 +265,7 @@ class View extends MainView {
         let row = this.ideasTable.row(`#idea_${this.idea.id}`);
         let data = row.data();
         data.my_rating = rating;
-        row.data(data).draw()
+        row.data(data).draw();
         $('#ideas time').timeago();
       });
     });
@@ -282,17 +282,21 @@ class View extends MainView {
     // update rating
     if (idea.rating) {
       // toggle rating
-      $('#rating').removeClass('d-none').addClass('d-inline-block');
+      $('#rating')
+        .removeClass('d-none')
+        .addClass('d-inline-block');
       $('#rating strong').html(idea.rating);
       $('#rating small span').text(idea.raters);
-    } else $('#rating').addClass('d-none').removeClass('d-inline-block');
+    } else
+      $('#rating')
+        .addClass('d-none')
+        .removeClass('d-inline-block');
 
     // update user rating
-    if(idea.user_rating){
-      $('#rate input').removeAttr('checked')
-      $('#star' + idea.user_rating).attr('checked', true)
-    }
-    else $('#rate input').removeAttr('checked')
+    if (idea.user_rating) {
+      $('#rate input').removeAttr('checked');
+      $('#star' + idea.user_rating).attr('checked', true);
+    } else $('#rate input').removeAttr('checked');
   }
 
   unload_idea() {
