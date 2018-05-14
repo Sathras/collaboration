@@ -28,8 +28,9 @@ defmodule CollaborationWeb do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/collaboration_web/templates",
-                        namespace: CollaborationWeb
+      use Phoenix.View,
+        root: "lib/collaboration_web/templates",
+        namespace: CollaborationWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
@@ -58,7 +59,9 @@ defmodule CollaborationWeb do
       use Phoenix.Channel
       import CollaborationWeb.Gettext
       import CollaborationWeb.ErrorHelpers
-      import CollaborationWeb.UserSocket, only: [user?: 1, admin?: 1, user_id: 1]
+
+      import CollaborationWeb.UserSocket,
+        only: [user?: 1, admin?: 1, user_id: 1]
     end
   end
 

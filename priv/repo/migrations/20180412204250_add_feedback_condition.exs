@@ -3,7 +3,7 @@ defmodule Collaboration.Repo.Migrations.AddFeedbackCondition do
 
   def change do
     alter table(:users) do
-      add :feedback, :boolean
+      add(:feedback, :boolean)
     end
   end
 end

@@ -3,7 +3,10 @@ defmodule Collaboration.Repo.Migrations.CommentsAddRecipient do
 
   def change do
     alter table(:comments) do
-      add :recipient_id, references(:users, type: :binary_id, on_delete: :delete_all)
+      add(
+        :recipient_id,
+        references(:users, type: :binary_id, on_delete: :delete_all)
+      )
     end
   end
 end

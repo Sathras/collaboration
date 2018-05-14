@@ -6,9 +6,30 @@ defmodule Collaboration.ContributionsTest do
   describe "topics" do
     alias Collaboration.Contributions.Topic
 
-    @valid_attrs %{desc: "some desc", open: true, published: true, short_desc: "some short_desc", short_title: "some short_title", title: "some title"}
-    @update_attrs %{desc: "some updated desc", open: false, published: false, short_desc: "some updated short_desc", short_title: "some updated short_title", title: "some updated title"}
-    @invalid_attrs %{desc: nil, open: nil, published: nil, short_desc: nil, short_title: nil, title: nil}
+    @valid_attrs %{
+      desc: "some desc",
+      open: true,
+      published: true,
+      short_desc: "some short_desc",
+      short_title: "some short_title",
+      title: "some title"
+    }
+    @update_attrs %{
+      desc: "some updated desc",
+      open: false,
+      published: false,
+      short_desc: "some updated short_desc",
+      short_title: "some updated short_title",
+      title: "some updated title"
+    }
+    @invalid_attrs %{
+      desc: nil,
+      open: nil,
+      published: nil,
+      short_desc: nil,
+      short_title: nil,
+      title: nil
+    }
 
     def topic_fixture(attrs \\ %{}) do
       {:ok, topic} =
@@ -40,7 +61,8 @@ defmodule Collaboration.ContributionsTest do
     end
 
     test "create_topic/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Contributions.create_topic(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.create_topic(@invalid_attrs)
     end
 
     test "update_topic/2 with valid data updates the topic" do
@@ -57,14 +79,20 @@ defmodule Collaboration.ContributionsTest do
 
     test "update_topic/2 with invalid data returns error changeset" do
       topic = topic_fixture()
-      assert {:error, %Ecto.Changeset{}} = Contributions.update_topic(topic, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.update_topic(topic, @invalid_attrs)
+
       assert topic == Contributions.get_topic!(topic.id)
     end
 
     test "delete_topic/1 deletes the topic" do
       topic = topic_fixture()
       assert {:ok, %Topic{}} = Contributions.delete_topic(topic)
-      assert_raise Ecto.NoResultsError, fn -> Contributions.get_topic!(topic.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Contributions.get_topic!(topic.id)
+      end
     end
 
     test "change_topic/1 returns a topic changeset" do
@@ -106,7 +134,8 @@ defmodule Collaboration.ContributionsTest do
     end
 
     test "create_idea/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Contributions.create_idea(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.create_idea(@invalid_attrs)
     end
 
     test "update_idea/2 with valid data updates the idea" do
@@ -119,14 +148,20 @@ defmodule Collaboration.ContributionsTest do
 
     test "update_idea/2 with invalid data returns error changeset" do
       idea = idea_fixture()
-      assert {:error, %Ecto.Changeset{}} = Contributions.update_idea(idea, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.update_idea(idea, @invalid_attrs)
+
       assert idea == Contributions.get_idea!(idea.id)
     end
 
     test "delete_idea/1 deletes the idea" do
       idea = idea_fixture()
       assert {:ok, %Idea{}} = Contributions.delete_idea(idea)
-      assert_raise Ecto.NoResultsError, fn -> Contributions.get_idea!(idea.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Contributions.get_idea!(idea.id)
+      end
     end
 
     test "change_idea/1 returns a idea changeset" do
@@ -162,31 +197,43 @@ defmodule Collaboration.ContributionsTest do
     end
 
     test "create_comment/1 with valid data creates a comment" do
-      assert {:ok, %Comment{} = comment} = Contributions.create_comment(@valid_attrs)
+      assert {:ok, %Comment{} = comment} =
+               Contributions.create_comment(@valid_attrs)
+
       assert comment.text == "some text"
     end
 
     test "create_comment/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Contributions.create_comment(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.create_comment(@invalid_attrs)
     end
 
     test "update_comment/2 with valid data updates the comment" do
       comment = comment_fixture()
-      assert {:ok, comment} = Contributions.update_comment(comment, @update_attrs)
+
+      assert {:ok, comment} =
+               Contributions.update_comment(comment, @update_attrs)
+
       assert %Comment{} = comment
       assert comment.text == "some updated text"
     end
 
     test "update_comment/2 with invalid data returns error changeset" do
       comment = comment_fixture()
-      assert {:error, %Ecto.Changeset{}} = Contributions.update_comment(comment, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Contributions.update_comment(comment, @invalid_attrs)
+
       assert comment == Contributions.get_comment!(comment.id)
     end
 
     test "delete_comment/1 deletes the comment" do
       comment = comment_fixture()
       assert {:ok, %Comment{}} = Contributions.delete_comment(comment)
-      assert_raise Ecto.NoResultsError, fn -> Contributions.get_comment!(comment.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Contributions.get_comment!(comment.id)
+      end
     end
 
     test "change_comment/1 returns a comment changeset" do

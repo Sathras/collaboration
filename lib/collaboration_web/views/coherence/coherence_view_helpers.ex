@@ -6,17 +6,17 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   import CollaborationWeb.Gettext
   import CollaborationWeb.ViewHelpers
 
-  @type conn :: Plug.Conn.t
-  @type schema :: Ecto.Schema.t
+  @type conn :: Plug.Conn.t()
+  @type schema :: Ecto.Schema.t()
 
   @helpers CollaborationWeb.Router.Helpers
 
-  @recover_link  dgettext("coherence", "Forgot password?")
-  @unlock_link   dgettext("coherence", "Send an unlock email")
+  @recover_link dgettext("coherence", "Forgot password?")
+  @unlock_link dgettext("coherence", "Send an unlock email")
   @register_link dgettext("coherence", "Join Us")
-  @invite_link   dgettext("coherence", "Invite Someone")
-  @confirm_link  dgettext("coherence", "Confirm Account")
-  @signin_link   dgettext("coherence", "Sign In")
+  @invite_link dgettext("coherence", "Invite Someone")
+  @confirm_link dgettext("coherence", "Confirm Account")
+  @signin_link dgettext("coherence", "Sign In")
   @settings_link dgettext("coherence", "Settings")
 
   @doc """
@@ -32,98 +32,122 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   def coherence_links(conn, :layout) do
     if Coherence.logged_in?(conn) do
       current_user = Coherence.current_user(conn)
-      user_schema = Coherence.Config.user_schema
+      user_schema = Coherence.Config.user_schema()
+
       [
-        nav_item( conn, "", CollaborationWeb.Router.Helpers.admin_path(conn, :users), [
-          icon: "fas fa-users", tooltip: "Users", show: current_user.admin]),
-        nav_item( conn, "",
-          coherence_path(@helpers, :registration_path, conn, :edit), [
-            icon: "fas fa-cog", tooltip: "Settings",
-            show: user_schema.registerable?
-          ]
+        nav_item(
+          conn,
+          "",
+          CollaborationWeb.Router.Helpers.admin_path(conn, :users),
+          icon: "fas fa-users",
+          tooltip: "Users",
+          show: current_user.admin
         ),
-        nav_item( conn, "",
+        nav_item(
+          conn,
+          "",
+          coherence_path(@helpers, :registration_path, conn, :edit),
+          icon: "fas fa-cog",
+          tooltip: "Settings",
+          show: user_schema.registerable?
+        ),
+        nav_item(
+          conn,
+          "",
           coherence_path(@helpers, :session_path, conn, :delete),
-          [active: false, method: :delete, icon: "fas fa-power-off", tooltip: "Sign Out"]
+          active: false,
+          method: :delete,
+          icon: "fas fa-power-off",
+          tooltip: "Sign Out"
         )
-      ] |> List.flatten
+      ]
+      |> List.flatten()
     else
-      nav_item conn, @signin_link,
+      nav_item(
+        conn,
+        @signin_link,
         coherence_path(@helpers, :session_path, conn, :new),
         icon: "fas fa-sign-in-alt mr-1"
+      )
     end
   end
 
   @doc """
   Helper to avoid compile warnings when options are disabled.
   """
-  @spec coherence_path(module, atom, conn, atom) :: String.t
+  @spec coherence_path(module, atom, conn, atom) :: String.t()
   def coherence_path(module, route_name, conn, action) do
     apply(module, route_name, [conn, action])
   end
+
   def coherence_path(module, route_name, conn, action, opts) do
     apply(module, route_name, [conn, action, opts])
   end
 
-  @spec recover_link(conn, module, false | String.t) :: [any] | []
+  @spec recover_link(conn, module, false | String.t()) :: [any] | []
   def recover_link(_conn, _user_schema, false), do: []
+
   def recover_link(conn, user_schema, text) do
     if user_schema.recoverable?, do: [recover_link(conn, text)], else: []
   end
 
-  @spec recover_link(conn, String.t) :: tuple
-  def recover_link(conn, text \\ @recover_link), do:
-    link(text, to: coherence_path(@helpers, :password_path, conn, :new))
+  @spec recover_link(conn, String.t()) :: tuple
+  def recover_link(conn, text \\ @recover_link),
+    do: link(text, to: coherence_path(@helpers, :password_path, conn, :new))
 
-  @spec register_link(conn, module, false | String.t) :: [any] | []
+  @spec register_link(conn, module, false | String.t()) :: [any] | []
   def register_link(_conn, _user_schema, false), do: []
+
   def register_link(conn, user_schema, text) do
     if user_schema.registerable?, do: [register_link(conn, text)], else: []
   end
 
-  @spec register_link(conn, String.t) :: tuple
-  def register_link(conn, text \\ @register_link), do:
-    link(text, to: coherence_path(@helpers, :registration_path, conn, :new))
+  @spec register_link(conn, String.t()) :: tuple
+  def register_link(conn, text \\ @register_link),
+    do: link(text, to: coherence_path(@helpers, :registration_path, conn, :new))
 
-  @spec unlock_link(conn, module, false | String.t) :: [any] | []
+  @spec unlock_link(conn, module, false | String.t()) :: [any] | []
   def unlock_link(_conn, _user_schema, false), do: []
+
   def unlock_link(conn, _user_schema, text) do
     if conn.assigns[:locked], do: [unlock_link(conn, text)], else: []
   end
 
-  @spec unlock_link(conn, String.t) :: tuple
-  def unlock_link(conn, text \\ @unlock_link), do:
-    link(text, to: coherence_path(@helpers, :unlock_path, conn, :new))
+  @spec unlock_link(conn, String.t()) :: tuple
+  def unlock_link(conn, text \\ @unlock_link),
+    do: link(text, to: coherence_path(@helpers, :unlock_path, conn, :new))
 
-  @spec invitation_link(conn, String.t) :: tuple
+  @spec invitation_link(conn, String.t()) :: tuple
   def invitation_link(conn, text \\ @invite_link) do
-    link text, to: coherence_path(@helpers, :invitation_path, conn, :new)
+    link(text, to: coherence_path(@helpers, :invitation_path, conn, :new))
   end
 
-  @spec settings_link(conn, module, false | String.t) :: [any] | []
+  @spec settings_link(conn, module, false | String.t()) :: [any] | []
   def settings_link(_conn, _user_schema, false), do: []
+
   def settings_link(conn, user_schema, text) do
     if user_schema.registerable?, do: [settings_link(conn, text)], else: []
   end
 
-  @spec settings_link(conn, false | String.t) :: tuple
+  @spec settings_link(conn, false | String.t()) :: tuple
   def settings_link(conn, text \\ @settings_link) do
     to = coherence_path(@helpers, :registration_path, conn, :edit)
     if text, do: link(text, to: to), else: link(icon("fas fa-cog"), to: to)
   end
 
-  @spec confirmation_link(conn, module, false | String.t) :: [any] | []
+  @spec confirmation_link(conn, module, false | String.t()) :: [any] | []
   def confirmation_link(_conn, _user_schema, false), do: []
+
   def confirmation_link(conn, user_schema, text) do
     if user_schema.confirmable?, do: [confirmation_link(conn, text)], else: []
   end
 
-  @spec confirmation_link(conn, String.t) :: tuple
+  @spec confirmation_link(conn, String.t()) :: tuple
   def confirmation_link(conn, text \\ @confirm_link) do
     link(text, to: coherence_path(@helpers, :confirmation_path, conn, :new))
   end
 
-  @spec required_label(atom, String.t | atom, Keyword.t) :: tuple
+  @spec required_label(atom, String.t() | atom, Keyword.t()) :: tuple
   def required_label(f, name, opts \\ []) do
     label f, name, opts do
       [
@@ -161,7 +185,14 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(CollaborationWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(
+        CollaborationWeb.Gettext,
+        "errors",
+        msg,
+        msg,
+        count,
+        opts
+      )
     else
       Gettext.dgettext(CollaborationWeb.Gettext, "errors", msg, opts)
     end
@@ -173,6 +204,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   def error_string_from_changeset(changeset) do
     Enum.map(changeset.errors, fn {k, v} ->
       "#{Phoenix.Naming.humanize(k)} #{translate_error(v)}"
-    end) |> Enum.join(". ")
+    end)
+    |> Enum.join(". ")
   end
 end

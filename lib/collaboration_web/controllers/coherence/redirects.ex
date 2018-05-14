@@ -46,10 +46,21 @@ defmodule Coherence.Redirects do
   import CollaborationWeb.Router.Helpers
 
   # return the user to the login form after creating / confirming account
-  def confirmation_create(conn, _), do: redirect(conn, to: session_path(conn, :new))
-  def confirmation_edit_invalid(conn, _), do: redirect(conn, to: session_path(conn, :new))
-  def confirmation_edit_expired(conn, _), do: redirect(conn, to: session_path(conn, :new))
-  def confirmation_edit(conn, _), do: redirect(conn, to: session_path(conn, :new))
-  def confirmation_edit_error(conn, _), do: redirect(conn, to: session_path(conn, :new))
-  def registration_create(conn, _), do: redirect(conn, to: session_path(conn, :new))
+  def confirmation_create(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
+
+  def confirmation_edit_invalid(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
+
+  def confirmation_edit_expired(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
+
+  def confirmation_edit(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
+
+  def confirmation_edit_error(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
+
+  def registration_create(conn, _),
+    do: redirect(conn, to: session_path(conn, :new))
 end

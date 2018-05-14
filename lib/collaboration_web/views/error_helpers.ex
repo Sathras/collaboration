@@ -16,16 +16,15 @@ defmodule CollaborationWeb.ErrorHelpers do
   @doc """
   Generates a map with all invalid fields and their first error
   """
-  def error_map(changeset), do:
-    Map.new(changeset.errors, fn ({k, v}) -> {k, translate_error(v)} end)
-
+  def error_map(changeset),
+    do: Map.new(changeset.errors, fn {k, v} -> {k, translate_error(v)} end)
 
   @doc """
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field) do
-    Enum.map(Keyword.get_values(form.errors, field), fn (error) ->
-      content_tag :div, translate_error(error), class: "invalid-feedback"
+    Enum.map(Keyword.get_values(form.errors, field), fn error ->
+      content_tag(:div, translate_error(error), class: "invalid-feedback")
     end)
   end
 
@@ -56,7 +55,14 @@ defmodule CollaborationWeb.ErrorHelpers do
     # should be written to the errors.po file. The :count option is
     # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
-      Gettext.dngettext(CollaborationWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(
+        CollaborationWeb.Gettext,
+        "errors",
+        msg,
+        msg,
+        count,
+        opts
+      )
     else
       Gettext.dgettext(CollaborationWeb.Gettext, "errors", msg, opts)
     end

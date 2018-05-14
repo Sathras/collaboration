@@ -3,9 +3,30 @@ defmodule CollaborationWeb.TopicControllerTest do
 
   alias Collaboration.Contributions
 
-  @create_attrs %{desc: "some desc", open: true, published: true, short_desc: "some short_desc", short_title: "some short_title", title: "some title"}
-  @update_attrs %{desc: "some updated desc", open: false, published: false, short_desc: "some updated short_desc", short_title: "some updated short_title", title: "some updated title"}
-  @invalid_attrs %{desc: nil, open: nil, published: nil, short_desc: nil, short_title: nil, title: nil}
+  @create_attrs %{
+    desc: "some desc",
+    open: true,
+    published: true,
+    short_desc: "some short_desc",
+    short_title: "some short_title",
+    title: "some title"
+  }
+  @update_attrs %{
+    desc: "some updated desc",
+    open: false,
+    published: false,
+    short_desc: "some updated short_desc",
+    short_title: "some updated short_title",
+    title: "some updated title"
+  }
+  @invalid_attrs %{
+    desc: nil,
+    open: nil,
+    published: nil,
+    short_desc: nil,
+    short_title: nil,
+    title: nil
+  }
 
   def fixture(:topic) do
     {:ok, topic} = Contributions.create_topic(@create_attrs)
@@ -14,31 +35,31 @@ defmodule CollaborationWeb.TopicControllerTest do
 
   describe "index" do
     test "lists all topics", %{conn: conn} do
-      conn = get conn, topic_path(conn, :index)
+      conn = get(conn, topic_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Topics"
     end
   end
 
   describe "new topic" do
     test "renders form", %{conn: conn} do
-      conn = get conn, topic_path(conn, :new)
+      conn = get(conn, topic_path(conn, :new))
       assert html_response(conn, 200) =~ "New Topic"
     end
   end
 
   describe "create topic" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post conn, topic_path(conn, :create), topic: @create_attrs
+      conn = post(conn, topic_path(conn, :create), topic: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == topic_path(conn, :show, id)
 
-      conn = get conn, topic_path(conn, :show, id)
+      conn = get(conn, topic_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Topic"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, topic_path(conn, :create), topic: @invalid_attrs
+      conn = post(conn, topic_path(conn, :create), topic: @invalid_attrs)
       assert html_response(conn, 200) =~ "New Topic"
     end
   end
@@ -47,7 +68,7 @@ defmodule CollaborationWeb.TopicControllerTest do
     setup [:create_topic]
 
     test "renders form for editing chosen topic", %{conn: conn, topic: topic} do
-      conn = get conn, topic_path(conn, :edit, topic)
+      conn = get(conn, topic_path(conn, :edit, topic))
       assert html_response(conn, 200) =~ "Edit Topic"
     end
   end
@@ -56,15 +77,15 @@ defmodule CollaborationWeb.TopicControllerTest do
     setup [:create_topic]
 
     test "redirects when data is valid", %{conn: conn, topic: topic} do
-      conn = put conn, topic_path(conn, :update, topic), topic: @update_attrs
+      conn = put(conn, topic_path(conn, :update, topic), topic: @update_attrs)
       assert redirected_to(conn) == topic_path(conn, :show, topic)
 
-      conn = get conn, topic_path(conn, :show, topic)
+      conn = get(conn, topic_path(conn, :show, topic))
       assert html_response(conn, 200) =~ "some updated desc"
     end
 
     test "renders errors when data is invalid", %{conn: conn, topic: topic} do
-      conn = put conn, topic_path(conn, :update, topic), topic: @invalid_attrs
+      conn = put(conn, topic_path(conn, :update, topic), topic: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit Topic"
     end
   end
@@ -73,11 +94,12 @@ defmodule CollaborationWeb.TopicControllerTest do
     setup [:create_topic]
 
     test "deletes chosen topic", %{conn: conn, topic: topic} do
-      conn = delete conn, topic_path(conn, :delete, topic)
+      conn = delete(conn, topic_path(conn, :delete, topic))
       assert redirected_to(conn) == topic_path(conn, :index)
-      assert_error_sent 404, fn ->
-        get conn, topic_path(conn, :show, topic)
-      end
+
+      assert_error_sent(404, fn ->
+        get(conn, topic_path(conn, :show, topic))
+      end)
     end
   end
 

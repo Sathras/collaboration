@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, ga */
 import 'phoenix_html';
 import Turbolinks from 'turbolinks';
 
@@ -14,13 +14,18 @@ import { configPublicChannel } from './socket';
 import { configTimeago } from './utils/functions';
 import loadView from './views/loader';
 
-function handleDOMContentLoaded() {
+function handleDOMContentLoaded(event) {
   // Load view class and mount it
   const ViewClass = loadView($('body').data('js-view-name'));
   const view = new ViewClass();
   view.mount();
-
   window.currentView = view;
+
+  // google analytics tracking
+  if (typeof ga === 'function') {
+    ga('set', 'location', event.data.url);
+    ga('send', 'pageview');
+  }
 }
 
 function handleDocumentUnload() {

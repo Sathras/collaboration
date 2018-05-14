@@ -6,19 +6,19 @@ defmodule CollaborationWeb.TopicController do
 
   def index(conn, _) do
     topics = list_topics(admin?(conn))
-    render assign(conn, :topics, topics), "index.html"
+    render(assign(conn, :topics, topics), "index.html")
   end
 
   def show(conn, %{"id" => id}) do
     topic = get_topic!(id)
-    render conn, "show.html", topic: topic
+    render(conn, "show.html", topic: topic)
   end
 
-  def new(conn, _), do: render conn, "new.html", changeset: change_topic()
+  def new(conn, _), do: render(conn, "new.html", changeset: change_topic())
 
   def edit(conn, %{"id" => id}) do
     topic = get_topic!(id)
-    render conn, "edit.html", changeset: change_topic(topic), topic: topic
+    render(conn, "edit.html", changeset: change_topic(topic), topic: topic)
   end
 
   def create(conn, %{"topic" => params}) do
@@ -27,6 +27,7 @@ defmodule CollaborationWeb.TopicController do
         conn
         |> put_flash(:info, "Topic created successfully.")
         |> redirect(to: topic_path(conn, :show, topic))
+
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -38,13 +39,15 @@ defmodule CollaborationWeb.TopicController do
         conn
         |> put_flash(:info, "Topic updated successfully.")
         |> redirect(to: topic_path(conn, :show, topic))
+
       {:error, changeset} ->
-        render conn, "edit.html", changeset: changeset
+        render(conn, "edit.html", changeset: changeset)
     end
   end
 
-  def delete(conn, %{ "id" => id }) do
+  def delete(conn, %{"id" => id}) do
     get_topic!(id) |> delete_topic
+
     conn
     |> put_flash(:info, "Topic deleted successfully.")
     |> redirect(to: topic_path(conn, :index))

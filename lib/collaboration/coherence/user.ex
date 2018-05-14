@@ -7,17 +7,39 @@ defmodule Collaboration.Coherence.User do
   @foreign_key_type :binary_id
 
   schema "users" do
-    field :admin, :boolean, default: false
-    field :name, :string
-    field :email, :string
-    field :feedback, :boolean, default: false
+    field(:admin, :boolean, default: false)
+    field(:name, :string)
+    field(:email, :string)
+    field(:feedback, :boolean, default: false)
     coherence_schema()
     timestamps()
-    has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
-    has_many :feedbacks, Collaboration.Contributions.Comment, on_delete: :delete_all
-    has_many :ideas, Collaboration.Contributions.Idea, on_delete: :delete_all
-    has_many :ratings, Collaboration.Contributions.Rating, on_delete: :delete_all
-    many_to_many :likes, Collaboration.Contributions.Comment, join_through: "likes", on_delete: :delete_all
+
+    has_many(
+      :comments,
+      Collaboration.Contributions.Comment,
+      on_delete: :delete_all
+    )
+
+    has_many(
+      :feedbacks,
+      Collaboration.Contributions.Comment,
+      on_delete: :delete_all
+    )
+
+    has_many(:ideas, Collaboration.Contributions.Idea, on_delete: :delete_all)
+
+    has_many(
+      :ratings,
+      Collaboration.Contributions.Rating,
+      on_delete: :delete_all
+    )
+
+    many_to_many(
+      :likes,
+      Collaboration.Contributions.Comment,
+      join_through: "likes",
+      on_delete: :delete_all
+    )
   end
 
   def changeset(model, params \\ %{}) do
@@ -37,7 +59,10 @@ defmodule Collaboration.Coherence.User do
 
   def changeset(model, params, :password) do
     model
-    |> cast(params, ~w(password password_confirmation reset_password_token reset_password_sent_at))
+    |> cast(
+      params,
+      ~w(password password_confirmation reset_password_token reset_password_sent_at)
+    )
     |> validate_coherence_password_reset(params)
   end
 

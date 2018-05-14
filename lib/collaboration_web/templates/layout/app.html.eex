@@ -12,6 +12,20 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
     <link rel="icon" type="image/x-icon" href="<%= static_path(@conn, "/images/favicon.ico") %>" >
+
+    <!-- Google Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '<%= ga_code() %>', 'auto');
+    ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics -->
+
+
     <script>
       window.admin = <%= admin?(@conn) %>;
       window.user = <%= if user?(@conn),
@@ -19,6 +33,9 @@
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
+
+
   </head>
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">

@@ -10,10 +10,11 @@ defmodule CollaborationWeb.CommentView do
       recipient_id: c.recipient_id,
       id: c.id,
       text: c.text,
-      created: NaiveDateTime.to_iso8601(c.inserted_at)<>"Z",
+      created: NaiveDateTime.to_iso8601(c.inserted_at) <> "Z",
       fake_likes: c.fake_likes,
       likes: c.fake_likes + Enum.count(liked_ids),
-      liked: liked
+      liked: liked,
+      public: c.public
     }
   end
 end

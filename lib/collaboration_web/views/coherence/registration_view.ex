@@ -28,6 +28,7 @@ defmodule CollaborationWeb.Coherence.RegistrationView do
         is_bitstring(changeset) -> changeset
         true -> error_string_from_changeset(changeset)
       end
+
     %{error: changeset}
   end
 end

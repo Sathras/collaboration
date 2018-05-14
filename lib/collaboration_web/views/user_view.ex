@@ -10,7 +10,7 @@ defmodule CollaborationWeb.UserView do
       email: u.email,
       admin: u.admin,
       feedback: u.feedback,
-      created: NaiveDateTime.to_iso8601(u.inserted_at)<>"Z",
+      created: NaiveDateTime.to_iso8601(u.inserted_at) <> "Z"
     }
   end
 end

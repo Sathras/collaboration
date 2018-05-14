@@ -2,13 +2,13 @@ defmodule CollaborationWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "public", CollaborationWeb.PublicChannel
-  channel "idea:*", CollaborationWeb.IdeaChannel
-  channel "topic:*", CollaborationWeb.TopicChannel
-  channel "admin:users", CollaborationWeb.AdminUsersChannel
+  channel("public", CollaborationWeb.PublicChannel)
+  channel("idea:*", CollaborationWeb.IdeaChannel)
+  channel("topic:*", CollaborationWeb.TopicChannel)
+  channel("admin:users", CollaborationWeb.AdminUsersChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport(:websocket, Phoenix.Transports.WebSocket)
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
@@ -24,7 +24,9 @@ defmodule CollaborationWeb.UserSocket do
   # performing token verification on connect.
   def connect(%{"token" => token}, socket) do
     case Coherence.verify_user_token(socket, token, &assign/3) do
-      {:error, _} -> {:ok, socket}
+      {:error, _} ->
+        {:ok, socket}
+
       {:ok, socket} ->
         user = Collaboration.Coherence.Schemas.get_user!(socket.assigns.user_id)
         {:ok, assign(socket, :user, user)}

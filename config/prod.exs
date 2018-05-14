@@ -14,7 +14,7 @@ use Mix.Config
 
 config :collaboration, CollaborationWeb.Endpoint,
   http: [port: System.get_env("PORT") || 4003],
-  url:  [scheme: "https", host: "collaboration.fuchsberger.us", port: 443],
+  url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   version: Application.spec(:collaboration, :vsn)

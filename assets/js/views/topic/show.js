@@ -35,7 +35,14 @@ class View extends MainView {
           data: resp.ideas,
           dom: `ti`,
           columns: [
-            { data: 'title', title: 'Idea' },
+            {
+              data: 'title',
+              render: (title, type, row) =>
+                row.public
+                  ? title
+                  : `<span class="font-italic">${title}</span>`,
+              title: 'Idea'
+            },
             { data: 'rating', title: "<i class='fas fa-star'></i>" },
             { data: 'comment_count', title: "<i class='far fa-comments'></i>" },
             {
@@ -140,11 +147,15 @@ class View extends MainView {
     // Response to broadcast event "new:idea"
     this.topicChannel.on('new:idea', idea => {
       this.topicChannel.params.last_seen_id = idea.id;
-      this.ideasTable.row
-        .add(idea)
-        .draw()
-        .node();
-      $('#ideas time').timeago();
+
+      // add public or own ideas to table
+      if (idea.public || idea.user_id === window.user) {
+        this.ideasTable.row
+          .add(idea)
+          .draw()
+          .node();
+        $('#ideas time').timeago();
+      }
     });
 
     // Response to broadcast event "update:idea"

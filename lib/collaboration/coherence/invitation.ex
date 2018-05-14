@@ -5,15 +5,13 @@ defmodule Collaboration.Coherence.Invitation do
   use Ecto.Schema
   import Ecto.Changeset
 
-  
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  
 
   schema "invitations" do
-    field :name, :string
-    field :email, :string
-    field :token, :string
+    field(:name, :string)
+    field(:email, :string)
+    field(:token, :string)
 
     timestamps()
   end
@@ -24,7 +22,7 @@ defmodule Collaboration.Coherence.Invitation do
   If no params are provided, an invalid changeset is returned
   with no validation performed.
   """
-  @spec changeset(Ecto.Schema.t, Map.t) :: Ecto.Changeset.t
+  @spec changeset(Ecto.Schema.t(), Map.t()) :: Ecto.Changeset.t()
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(name email token))
@@ -36,8 +34,8 @@ defmodule Collaboration.Coherence.Invitation do
   @doc """
   Creates a changeset for a new schema
   """
-  @spec new_changeset(Map.t) :: Ecto.Changeset.t
+  @spec new_changeset(Map.t()) :: Ecto.Changeset.t()
   def new_changeset(params \\ %{}) do
-    changeset %__MODULE__{}, params
+    changeset(%__MODULE__{}, params)
   end
 end

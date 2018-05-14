@@ -7,22 +7,24 @@ defmodule CollaborationWeb.LayoutView do
   """
   def js_view_name(conn, view_template) do
     [view_name(conn), template_name(view_template)]
-    |> Enum.reverse
+    |> Enum.reverse()
     |> List.insert_at(0, "view")
     |> Enum.map(&String.capitalize/1)
-    |> Enum.reverse
+    |> Enum.reverse()
     |> Enum.join("")
   end
 
-  def path_params_to_data_attributes(conn), do:
-    Enum.map(conn.path_params, fn({p, v}) -> " data-#{p}=#{v}" end) |> Enum.join
+  def path_params_to_data_attributes(conn),
+    do:
+      Enum.map(conn.path_params, fn {p, v} -> " data-#{p}=#{v}" end)
+      |> Enum.join()
 
   # Takes the resource name of the view module and removes the
   # the ending *_view* string.
   defp view_name(conn) do
     conn
     |> view_module
-    |> Phoenix.Naming.resource_name
+    |> Phoenix.Naming.resource_name()
     |> String.replace("_view", "")
   end
 
@@ -37,20 +39,40 @@ defmodule CollaborationWeb.LayoutView do
   def flash_messages(conn) do
     [
       flash_alert(get_flash(conn, :info), "info", "fas fa-info-circle"),
-      flash_alert(get_flash(conn, :error), "danger", "fas fa-exclamation-circle")
-    ] |> Enum.filter(& &1)
+      flash_alert(
+        get_flash(conn, :error),
+        "danger",
+        "fas fa-exclamation-circle"
+      )
+    ]
+    |> Enum.filter(& &1)
   end
 
   defp flash_alert(message, class, icon) do
-    icon = content_tag :i, "", class: icon <> " mr-2"
-    button = content_tag(:button,
-      content_tag(:span, raw("&times;"), area_hidden: "true"),
-      class: "close", type: "button", data_dismiss: "alert", aria_label: "Close"
-    )
+    icon = content_tag(:i, "", class: icon <> " mr-2")
+
+    button =
+      content_tag(
+        :button,
+        content_tag(:span, raw("&times;"), area_hidden: "true"),
+        class: "close",
+        type: "button",
+        data_dismiss: "alert",
+        aria_label: "Close"
+      )
+
     if message do
-      content_tag :div,
+      content_tag(
+        :div,
         [icon, message, button],
         class: "alert alert-#{class} alert-dismissible fade show"
+      )
     end
+  end
+
+  def ga_code() do
+    if Application.get_env(:collaboration, :env) == :dev,
+      do: "UA-119119225-1",
+      else: "UA-119138942-1"
   end
 end
