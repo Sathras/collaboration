@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+ * New system to avoid javascript and utilize commanders
+ * Admins can now toggle topic flags directly in topic overview
+ * Admins can now filter users by their condition in the user list
+
 ## 2.0.6
  * Own ideas (if normal user) or non-admin ideas (if admin) are now displayed cursive in idealist to better identify them among pregenerated ideas.
  * Isolation established: Ideas and comments have now a flag "public". If it is true the idea/comment is visible to all users. Non-public ideas can still be viewed by admins. By default contributions from admins are public and contributions from normal users are non-public.

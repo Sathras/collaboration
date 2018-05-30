@@ -1,20 +1,6 @@
 defmodule CollaborationWeb.UserCommander do
   use CollaborationWeb, :commander
 
-  onconnect :initialize
-  onload :page_loaded
-
-  def initialize(socket) do
-  end
-
-  def page_loaded(socket) do
-    # exec_js socket,
-    #   "$('#users').dataTable({ destroy: true, stateSave: true, order: [[3, 'desc']] });" <>
-    #   "$('#users_filter input').addClass('form-control form-control-sm');" <>
-    #   "$('#users_length select').addClass('form-control form-control-sm');" <>
-    #   "$('#users_length').addClass('float-left');"
-  end
-
   defhandler filter_condition(socket, sender) do
     condition = sender["value"]
 

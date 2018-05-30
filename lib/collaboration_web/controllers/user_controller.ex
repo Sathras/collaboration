@@ -8,7 +8,7 @@ defmodule CollaborationWeb.UserController do
   def index(conn, params) do
     page = list_users(params)
     render conn, "index.html",
-      condition: "0",
+      condition: Map.get(params, "condition", ""),
       search: Map.get(params, "search", ""),
       page_number: page.page_number,
       page_size: page.page_size,

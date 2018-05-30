@@ -1,6 +1,5 @@
 import MainView from './main';
 import TopicEditView from './topic/edit';
-import TopicIndexView from './topic/index';
 import TopicNewView from './topic/new';
 import TopicShowView from './topic/show';
 
@@ -8,7 +7,6 @@ import TopicShowView from './topic/show';
 const views = {
   TopicShowView,
   TopicEditView,
-  TopicIndexView,
   TopicNewView
 };
 

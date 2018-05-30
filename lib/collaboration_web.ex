@@ -31,6 +31,7 @@ defmodule CollaborationWeb do
       use Drab.Commander, modules: [Drab.Element, Drab.Live, Drab.Query]
       use Phoenix.HTML
       import Collaboration.Coherence.Schemas
+      import Collaboration.Contributions
     end
   end
 
