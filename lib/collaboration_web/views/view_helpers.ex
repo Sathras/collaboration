@@ -16,6 +16,8 @@ defmodule CollaborationWeb.ViewHelpers do
     )
   end
 
+  def date(datetime), do: NaiveDateTime.to_iso8601(datetime) <> "Z"
+
   def icon(class), do: content_tag(:i, "", class: class)
 
   def user?(conn), do: !!Coherence.current_user(conn)

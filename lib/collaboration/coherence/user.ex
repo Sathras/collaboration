@@ -3,46 +3,37 @@ defmodule Collaboration.Coherence.User do
   use Ecto.Schema
   use Coherence.Schema
 
+  alias Collaboration.Contributions.Comment
+  alias Collaboration.Contributions.Idea
+  alias Collaboration.Contributions.Rating
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
   schema "users" do
-    field(:admin, :boolean, default: false)
-    field(:name, :string)
-    field(:email, :string)
-    field(:feedback, :boolean, default: false)
-    coherence_schema()
     timestamps()
+    coherence_schema()
 
-    has_many(
-      :comments,
-      Collaboration.Contributions.Comment,
-      on_delete: :delete_all
-    )
+    field :admin, :boolean, default: false
+    field :name, :string
+    field :email, :string
+    field :condition, :integer
 
-    has_many(
-      :feedbacks,
-      Collaboration.Contributions.Comment,
-      on_delete: :delete_all
-    )
+    has_many :comments, Comment, on_delete: :delete_all
+    has_many :feedbacks, Comment, on_delete: :delete_all
+    has_many :ideas, Idea, on_delete: :delete_all
+    has_many :ratings, Rating, on_delete: :delete_all
 
-    has_many(:ideas, Collaboration.Contributions.Idea, on_delete: :delete_all)
-
-    has_many(
-      :ratings,
-      Collaboration.Contributions.Rating,
-      on_delete: :delete_all
-    )
-
-    many_to_many(
-      :likes,
-      Collaboration.Contributions.Comment,
-      join_through: "likes",
-      on_delete: :delete_all
-    )
+    many_to_many :likes, Comment, join_through: "likes", on_delete: :delete_all
   end
 
-  def changeset(model, params \\ %{}) do
+  def changeset(model, params \\ %{})
+  def changeset(model, %{:admin => _admin} = params) do
+    model
+    |> cast(params, [:admin])
+    |> validate_inclusion(:admin, [true, false])
+  end
+  def changeset(model, params) do
     model
     |> cast(params, [:name, :email] ++ coherence_fields())
     |> feedback_condition()
@@ -50,11 +41,6 @@ defmodule Collaboration.Coherence.User do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> validate_coherence(params)
-  end
-
-  def changeset(model, params, :toggle) do
-    model
-    |> cast(params, ~w(admin feedback))
   end
 
   def changeset(model, params, :password) do
@@ -67,10 +53,8 @@ defmodule Collaboration.Coherence.User do
   end
 
   def feedback_condition(model) do
-    if model.data.feedback === nil do
-      random = Enum.random(0..1)
-      random = if random >= 0.5, do: true, else: false
-      model |> put_change(:feedback, random)
+    if model.data.condition === nil do
+      put_change(model, :condition, Enum.random(1..4))
     else
       model
     end

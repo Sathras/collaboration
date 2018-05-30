@@ -33,9 +33,6 @@
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-
-
-
   </head>
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
@@ -80,5 +77,6 @@
     <div id="spinner-wrapper">
       <div id="spinner" />
     </div>
+    <%= Drab.Client.run(@conn) %>
   </body>
 </html>

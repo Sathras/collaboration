@@ -26,6 +26,14 @@ defmodule CollaborationWeb do
     end
   end
 
+  def commander do
+    quote do
+      use Drab.Commander, modules: [Drab.Element, Drab.Live, Drab.Query]
+      use Phoenix.HTML
+      import Collaboration.Coherence.Schemas
+    end
+  end
+
   def view do
     quote do
       use Phoenix.View,

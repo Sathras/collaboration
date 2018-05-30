@@ -48,6 +48,8 @@ defmodule CollaborationWeb.Router do
     # add protected resources below
     resources("/topic", TopicController, only: [:edit, :update, :delete])
     resources("/topics", TopicController, only: [:new, :create])
-    get("/users", AdminController, :users)
+    get("/users2", AdminController, :users)
+
+    resources("/users", UserController, only: [:index, :update])
   end
 end

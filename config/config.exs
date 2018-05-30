@@ -59,3 +59,6 @@ config :coherence, CollaborationWeb.Coherence.Mailer,
   domain: "fuchsberger.us"
 
 # %% End Coherence Configuration %%
+
+config :phoenix, :template_engines,
+  drab: Drab.Live.Engine

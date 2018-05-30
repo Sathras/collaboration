@@ -44,7 +44,7 @@ config :collaboration, CollaborationWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/collaboration_web/views/.*(ex)$},
-      ~r{lib/collaboration_web/templates/.*(eex)$}
+      ~r{lib/collaboration_web/templates/.*(eex|drab)$}
     ]
   ]
 

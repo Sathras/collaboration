@@ -20,7 +20,7 @@ defmodule Collaboration.Mixfile do
   def application do
     [
       mod: {Collaboration.Application, []},
-      extra_applications: [:logger, :runtime_tools, :coherence]
+      extra_applications: [:logger, :runtime_tools, :coherence, :scrivener_ecto]
     ]
   end
 
@@ -42,6 +42,7 @@ defmodule Collaboration.Mixfile do
       {:scrivener_ecto, "~> 1.3"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
+      {:drab, "~> 0.8.1"},
       {:coherence, github: "smpallen99/coherence"},
       {:phoenix_html_sanitizer, "~> 1.1.0"},
       {:distillery, "~> 1.5", runtime: false},

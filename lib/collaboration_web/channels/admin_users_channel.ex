@@ -4,7 +4,7 @@ defmodule CollaborationWeb.AdminUsersChannel do
 
   def join("admin:users", _params, socket) do
     if admin?(socket) do
-      {:ok, %{users: render_users()}, socket}
+      {:ok, %{users: list_users()}, socket}
     else
       {:error, socket}
     end

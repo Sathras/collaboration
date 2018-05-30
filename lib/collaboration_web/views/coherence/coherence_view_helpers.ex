@@ -38,7 +38,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
         nav_item(
           conn,
           "",
-          CollaborationWeb.Router.Helpers.admin_path(conn, :users),
+          CollaborationWeb.Router.Helpers.user_path(conn, :index),
           icon: "fas fa-users",
           tooltip: "Users",
           show: current_user.admin

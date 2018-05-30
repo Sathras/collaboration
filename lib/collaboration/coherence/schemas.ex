@@ -2,6 +2,7 @@ defmodule Collaboration.Coherence.Schemas do
   use Coherence.Config
 
   import Ecto.Query
+  import Collaboration.Repo, only: [paginate: 2]
 
   alias Phoenix.View
   alias CollaborationWeb.UserView
@@ -9,8 +10,30 @@ defmodule Collaboration.Coherence.Schemas do
   @user_schema Config.user_schema()
   @repo Config.repo()
 
-  def list_user do
-    @repo.all(from(u in @user_schema, order_by: u.inserted_at))
+  def list_users(params \\ %{}) do
+    # prepare params
+    condition = Map.get(params, :condition, "0")
+    search = Map.get(params, :search, :nil)
+
+    # basic query
+    query = from(u in @user_schema,
+      select: map(u, [:admin, :email, :id, :inserted_at, :name]),
+      order_by: u.inserted_at
+    )
+
+    # optionally filter results by condition
+    query = if condition !== "0",
+      do: query |> where([u], u.condition == ^condition),
+      else: query
+
+    # optionally filter results by search term
+    query = if search,
+      do: query |> where([u],
+        ilike(u.email, ^"%#{String.replace(search, "%", "\\%")}%") or
+        ilike(u.name, ^"%#{String.replace(search, "%", "\\%")}%")),
+      else: query
+
+    paginate(query, params)
   end
 
   def list_user(page_size, page_number, search_term) do
@@ -63,6 +86,10 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.get_by(@user_schema, email: email)
   end
 
+  def is_admin?(id) do
+    @repo.one from(u in @user_schema, select: u.admin, where: u.id == ^id)
+  end
+
   def change_user(struct, params, changeset_variation) do
     @user_schema.changeset(struct, params, changeset_variation)
   end
@@ -89,10 +116,6 @@ defmodule Collaboration.Coherence.Schemas do
 
   def render_user(user) do
     View.render_one(user, UserView, "user.json")
-  end
-
-  def render_users() do
-    View.render_many(list_user(), UserView, "user.json")
   end
 
   def toggle(user, params) do

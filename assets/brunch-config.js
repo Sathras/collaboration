@@ -51,7 +51,8 @@ exports.config = {
     globals: { // Bootstrap requires both '$' and 'jQuery' in global scope
       $: 'jquery',
       jQuery: 'jquery',
-      bootstrap: 'bootstrap'
+      bootstrap: 'bootstrap',
+      // datatables_bs4: 'datatables.net-bs4',
     },
     styles: {
       'bootstrap': ['dist/css/bootstrap.css'],

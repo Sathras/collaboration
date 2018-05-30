@@ -1,0 +1,60 @@
+<h2>Listing Users</h2>
+<div class="row form-inline mb-3">
+  <div class="col-md-4 text-center text-md-left">
+    Condition
+    <select
+      class='form-control form-control-sm'
+      drab-change='filter_condition'
+      value="<%= @condition %>"
+    >
+      <option value="0">Any</option>
+      <option value="1">1 - No Feedback</option>
+      <option value="2">2 - No Feedback (past visible)</option>
+      <option value="3">3 - Peer Feedback only</option>
+      <option value="4">4 - USF Admin Feedback only</option>
+    </select>
+  </div>
+  <div class="col-md-4 text-center">
+    Showing <%= Enum.min([@page_size, @total_entries]) %> of <%= @total_entries %> Users
+    (Page <%= @page_number %> of <%= @total_pages %>)
+  </div>
+  <div class="col-md-4 text-center text-md-right">
+    <input
+      class='form-control form-control-sm'
+      drab-keyup="search"
+      drab-options="debounce(500)"
+      type='search'
+      placeholder='Search...'
+      value='<%= @search %>'
+    />
+  </div>
+</div>
+<table
+  id="users"
+  class="table table-sm table-hover nowrap"
+  cellspacing="0"
+  cellpadding="0"
+>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th data-searchable="false" data-order-sequence="[ 'desc', 'asc' ]">Joined</th>
+      <th data-searchable="false"><i class="fas fa-user"></i></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for u <- @users do %>
+    <tr>
+      <td><%= u.name %></td>
+      <td><%= u.email %></td>
+      <td data-order="u.inserted_at">
+        <time datetime="<%= date(u.inserted_at) %>"></time>
+      </td>
+      <td data-order="<%= u.admin %>">
+        <%= admin_icon(u) %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
