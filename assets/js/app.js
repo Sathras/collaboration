@@ -2,14 +2,6 @@
 import 'phoenix_html';
 import Turbolinks from 'turbolinks';
 
-// import datatables
-require('datatables.net-bs4')($);
-require('datatables.net-buttons-bs4')($);
-require('datatables.net-fixedheader')();
-require('datatables.net-responsive-bs4')();
-// require('datatables.net-scroller-bs4')();
-require('datatables.net-select')();
-
 // Import local files
 import { configPublicChannel } from './socket';
 import { configTimeago } from './utils/functions';

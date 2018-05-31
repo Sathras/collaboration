@@ -63,17 +63,6 @@ defmodule CollaborationWeb.IdeaChannel do
     end
   end
 
-  def handle_in("rate", %{"rating" => rating}, socket) do
-    if user?(socket) do
-      rate_idea!(socket.assigns[:user], socket.assigns.idea, %{rating: rating})
-      idea = render_idea(socket.assigns.idea.id, nil)
-      Endpoint.broadcast!("topic:#{idea.topic_id}", "update:idea", idea)
-      {:reply, {:ok, %{}}, socket}
-    else
-      {:reply, {:error, %{}}, socket}
-    end
-  end
-
   def handle_in("like:feedback", %{"comment" => id}, socket) do
     if user?(socket) do
       case like_comment(socket.assigns.user, id) do

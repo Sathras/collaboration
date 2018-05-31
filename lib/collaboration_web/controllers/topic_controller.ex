@@ -10,9 +10,17 @@ defmodule CollaborationWeb.TopicController do
     # render(assign(conn, :topics, topics), "index.html")
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
+    current_user = Coherence.current_user(conn)
     topic = get_topic!(id)
-    render(conn, "show.html", topic: topic)
+    ideas = list_ideas(topic.id, current_user)
+    current_idea = Map.get(params, "idea", nil)
+    render conn, "show.html",
+      current_idea: Enum.find(ideas, fn(x) -> x.id == current_idea end),
+      current_user: current_user,
+      topic: topic,
+      ideas: ideas,
+      my_ratings: list_my_ratings(Enum.map(ideas, & &1.id), current_user)
   end
 
   def new(conn, _), do: render(conn, "new.html", changeset: change_topic())

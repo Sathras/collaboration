@@ -51,16 +51,10 @@ exports.config = {
     globals: { // Bootstrap requires both '$' and 'jQuery' in global scope
       $: 'jquery',
       jQuery: 'jquery',
-      bootstrap: 'bootstrap',
-      // datatables_bs4: 'datatables.net-bs4',
+      bootstrap: 'bootstrap'
     },
     styles: {
-      'bootstrap': ['dist/css/bootstrap.css'],
-      'datatables.net-bs4': ['css/dataTables.bootstrap4.css'],
-      'datatables.net-fixedheader-bs4': ['css/fixedHeader.bootstrap4.css'],
-      'datatables.net-responsive-bs4': ['css/responsive.bootstrap4.css'],
-      'datatables.net-scroller-bs4': ['css/scroller.bootstrap4.css'],
-      'datatables.net-select-bs4': ['css/select.bootstrap4.css']
+      'bootstrap': ['dist/css/bootstrap.css']
     }
   }
 };

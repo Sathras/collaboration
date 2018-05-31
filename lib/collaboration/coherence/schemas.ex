@@ -5,6 +5,7 @@ defmodule Collaboration.Coherence.Schemas do
   import Collaboration.Repo, only: [paginate: 2]
 
   alias Phoenix.View
+  alias Collaboration.Repo
   alias CollaborationWeb.UserView
 
   @user_schema Config.user_schema()
@@ -36,10 +37,17 @@ defmodule Collaboration.Coherence.Schemas do
     paginate(query, params)
   end
 
+  def list_admin_ids() do
+    from(u in @user_schema,
+      select: u.id,
+      where: u.admin == true
+    ) |> Repo.all()
+  end
+
   def list_user(page_size, page_number, search_term) do
     query = from(u in @user_schema, select: struct(u, [:name, :email]))
     query = add_filter(query, search_term)
-    Collaboration.Repo.paginate(query, page: page_number, page_size: page_size)
+    Repo.paginate(query, page: page_number, page_size: page_size)
   end
 
   defp add_filter(query, search_term)

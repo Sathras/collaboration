@@ -25,7 +25,7 @@
 <hr>
 
 <div class="row">
-  <div class="col-md">
+  <div class="col-md-6">
     <div class="card">
       <div class="card-header">
         <div class='form-row'>
@@ -46,52 +46,96 @@
       <div class="card-body p-0 pb-1">
         <table
           id="ideas"
-          class="mr-0 table table-sm table-striped table-hover nowrap"
+          class="mr-0 table table-sm table-hover nowrap"
           cellspacing="0"
           cellpadding="0"
-        ></table>
+        >
+          <thead>
+            <tr>
+              <th><strong>Idea</strong></th>
+              <th class='text-center'><i class='fas fa-star'></i></th>
+              <th class='text-center'><i class='far fa-comments'></i></th>
+              <th class='text-center'><i class='far fa-clock mr-2'></i></th>
+            </tr>
+          </thead>
+          <tbody>
+        <%= for i <- @ideas do %>
+            <tr
+              class="pointer <%= active_idea(i, @current_idea) %>"
+              drab-click="select_idea(<%= i.id %>)"
+            >
+              <td><%= ideaTitle(i, @current_user) %></td>
+              <td class='text-center'><%= rating(i, my_rating(i, @my_ratings)) %></td>
+              <td class='text-center'><%= Enum.count(i.comments) %></td>
+              <td class='text-center'>
+                <small><time datetime="<%= date(i.inserted_at) %>"></time></small>
+              </td>
+            </tr>
+        <% end %>
+        </table>
       </div>
     </div>
   </div>
-  <div id="no-idea" class="col-md">
+  <div class="col-md-6">
     <div class="card">
-      <div class="card-body">
-        <p class="card-text font-italic">
-          <%= gettext "Please select an idea from the list on the left to show
-            feedback and further details." %>
-        </p>
-      </div>
-    </div>
-  </div>
-    <div id="idea" class="col-md d-none">
-      <div class="card">
+      <%= if is_nil(@current_idea) do %>
+        <div class="card-body">
+          <p class="card-text font-italic">
+            Please select an idea from the list on the left to show feedback and further details.
+          </p>
+        </div>
+      <% else %>
         <div class="card-header text-center">
-          <h4></h4>
+          <h4><%= @current_idea.title %></h4>
           <div>
-            <div id="rating" class="d-inline-block">
-              <span class="lead">
-                <i class="fas fa-star"></i>
-                <strong></strong>
-              </span>
-              <small class="text-muted mr-2"> / <span></span> Ratings</small>
-            </div>
+            <%= if my_rating = my_rating(@current_idea, @my_ratings) do %>
+              <div id="rating" class="d-inline-block">
+                <span class="lead">
+                  <i class="fas fa-star mr-1"></i>
+                  <strong><%= rating(@current_idea, my_rating) %></strong>
+                </span>
+                <small class="text-muted mr-2">
+                  / <%= raters(@current_idea, my_rating) %> Raters
+                </small>
+              </div>
+            <% end %>
 
-            <%= if admin?(@conn) || (user?(@conn) && @topic.open) do %>
-              <div id="rate" class="btn btn-light pointer btn-sm starrating risingstar d-inline-flex justify-content-center flex-row-reverse"
+            <%= if @current_user && @current_user.id !== @current_idea.user_id
+              && (@current_user.admin || ( @current_user.condition !== 1 && @topic.open )) do %>
+              <div class="btn btn-light pointer btn-sm starrating risingstar d-inline-flex justify-content-center flex-row-reverse"
                data-toggle="tooltip" data-placement="bottom" title="Your Rating">
-                <input type="radio" id="star5" name="rating" value="5" />
+                <input
+                  type="radio" id="star5" name="rating" value="5" drab-click="rate"
+                  <%= if my_rating === 5, do: "checked" %>
+                />
                 <label class='pointer' for="star5"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star4" name="rating" value="4" />
+
+                <input
+                  type="radio" id="star4" name="rating" value="4" drab-click="rate"
+                  <%= if my_rating === 4, do: "checked" %>
+                />
                 <label class='pointer' for="star4"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star3" name="rating" value="3" />
+
+                <input
+                  type="radio" id="star3" name="rating" value="3" drab-click="rate"
+                  <%= if my_rating === 3, do: "checked" %>
+                />
                 <label class='pointer' for="star3"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star2" name="rating" value="2" />
+
+                <input
+                  type="radio" id="star2" name="rating" value="2" drab-click="rate"
+                  <%= if my_rating === 2, do: "checked" %>
+                />
                 <label class='pointer' for="star2"><i class="fas fa-star"></i></label>
-                <input type="radio" id="star1" name="rating" value="1" />
+
+                <input
+                  type="radio" id="star1" name="rating" value="1"
+                  <%= if my_rating === 1, do: "checked" %>
+                />
                 <label class='pointer' for="star1"><i class="fas fa-star"></i></label>
               </div>
             <% end %>
-            <%= if admin?(@conn) do %>
+            <%= if @current_user && @current_user.admin do %>
               <button class="btn btn-outline-dark btn-sm" data-toggle="modal"
               data-target="#ideaModal" data-action="update:idea">
                 <i class="fas fa-pencil-alt"></i>
@@ -102,19 +146,24 @@
             <% end %>
           </div>
         </div>
-        <div id='idea-desc' class="card-body"></div>
+        <%= if @current_idea.desc do %>
+          <div id='idea-desc' class="card-body"><%= @current_idea.desc %></div>
+        <% end %>
 
         <ul id="comments" class="list-group list-group-flush">
 
         </ul>
-        <%= if admin?(@conn) || ( user?(@conn) && @topic.open )do %>
+        <!-- Only Admins can post or users (not in condition 1), if the topic is open -->
+        <%= if @current_user && ( @current_user.admin ||
+          ( @current_user.condition !== 1 && @topic.open )) do %>
           <div class="card-footer">
             <input id="feedback" class="form-control form-control-sm"
               placeholder="Leave feedback..." />
           </div>
         <% end %>
-      </div>
+      <% end %>
     </div>
+  </div>
 </div>
 
 <div id="ideaModal" class="modal fade" tabindex="-1" role="dialog"

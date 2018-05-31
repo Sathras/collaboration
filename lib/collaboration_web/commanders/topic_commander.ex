@@ -1,6 +1,28 @@
 defmodule CollaborationWeb.TopicCommander do
   use CollaborationWeb, :commander
 
+  defhandler select_idea(socket, _sender, id) do
+    ideas = peek socket, :ideas
+    poke socket, current_idea: Enum.find(ideas, fn(x) -> x.id == id end)
+    socket |> exec_js("$(#ideas time).timeago();")
+  end
+
+  def rate(socket, sender) do
+    idea = peek socket, :current_idea
+    user = peek socket, :current_user
+    rating = rate_idea! user, idea, sender["value"]
+
+    # if updated search rating and replace/insert in my_ratings
+    if rating do
+      my_ratings = peek socket, :my_ratings
+      index = Enum.find_index(my_ratings, fn(x) -> x.id == rating.id end)
+      my_ratings = if index,
+        do: List.replace_at(my_ratings, index, rating),
+        else: Enum.into(rating, my_ratings)
+      poke socket, my_ratings: my_ratings
+    end
+  end
+
   defhandler toggle(socket, sender) do
     param = sender["data"]["param"]
     value = !sender["data"]["value"]

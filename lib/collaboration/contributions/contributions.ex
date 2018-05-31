@@ -4,6 +4,7 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset
   import Ecto.Query, warn: false
+  import Collaboration.Coherence.Schemas
 
   alias Phoenix.View
   alias Collaboration.Repo
@@ -67,6 +68,31 @@ defmodule Collaboration.Contributions do
   def delete_topic(%Topic{} = topic), do: Repo.delete(topic)
   def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
 
+
+  def list_ideas(topic_id, user) do
+
+    query = from i in Idea,
+      order_by: [desc: i.inserted_at],
+      preload: [:comments],
+      where: i.topic_id == ^topic_id
+
+    # only show pregenerated and own ideas (unless admin)
+    query = if !user || !user.admin,
+      do: query |> where([u], u.id in ^(list_admin_ids() ++ [user.id])),
+      else: query
+
+    Repo.all(query)
+  end
+
+  def list_my_ratings(idea_ids, user) do
+    if !user do
+      []
+    else
+      from(r in Rating, where: r.idea_id in ^idea_ids and r.user_id == ^user.id)
+      |> Repo.all()
+    end
+  end
+
   def list_ideas(topic_id, last_seen_id, user) do
     query = from i in Idea,
       preload: [:user, :comments, :ratings],
@@ -129,22 +155,13 @@ defmodule Collaboration.Contributions do
       )
       |> Repo.one!()
 
-  def rate_idea!(user, idea, params) do
+  def rate_idea!(user, idea, rating) do
     case Repo.get_by(Rating, user_id: user.id, idea_id: idea.id) do
-      nil ->
-        # rating not found, we build one
-        %Rating{}
-        |> Rating.changeset(params)
-        |> put_assoc(:user, user)
-        |> put_assoc(:idea, idea)
-        |> Repo.insert!()
-
-      rating ->
-        # rating exists, let's use it
-        rating
-        |> Rating.changeset(params)
-        |> Repo.update!()
+      nil -> %Rating{}
+      rating -> rating
     end
+    |> Rating.changeset(%{rating: rating})
+    |> Repo.insert_or_update!()
   end
 
   def delete_idea(%Idea{} = idea), do: Repo.delete(idea)
