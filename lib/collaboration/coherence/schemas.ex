@@ -18,7 +18,7 @@ defmodule Collaboration.Coherence.Schemas do
 
     # basic query
     query = from(u in @user_schema,
-      select: map(u, [:admin, :email, :id, :inserted_at, :name]),
+      select: map(u, [:admin, :owner, :email, :id, :inserted_at, :name]),
       order_by: u.inserted_at
     )
 
@@ -37,11 +37,12 @@ defmodule Collaboration.Coherence.Schemas do
     paginate(query, params)
   end
 
-  def list_admin_ids() do
-    from(u in @user_schema,
-      select: u.id,
-      where: u.admin == true
-    ) |> Repo.all()
+  def select_user_ids(types, user_id \\ nil) do
+    query = from(u in @user_schema, select: u.id)
+    query = if types[:admins], do: or_where(query, admin: true), else: query
+    query = if types[:owners], do: or_where(query, owner: true), else: query
+    query = if user_id, do: or_where(query, id: ^user_id), else: query
+    Repo.all(query)
   end
 
   def list_user(page_size, page_number, search_term) do

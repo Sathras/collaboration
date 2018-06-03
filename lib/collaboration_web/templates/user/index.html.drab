@@ -41,6 +41,7 @@
       <th>Email</th>
       <th data-searchable="false" data-order-sequence="[ 'desc', 'asc' ]">Joined</th>
       <th data-searchable="false"><i class="fas fa-user"></i></th>
+      <th data-searchable="false"><i class="fas fa-user"></i></th>
     </tr>
   </thead>
   <tbody>
@@ -51,9 +52,8 @@
       <td data-order="u.inserted_at">
         <time datetime="<%= date(u.inserted_at) %>"></time>
       </td>
-      <td data-order="<%= u.admin %>">
-        <%= admin_icon(u) %>
-      </td>
+      <td class='admin'><%= toggle_icon(u, :admin) %></td>
+      <td class='owner'><%= toggle_icon(u, :owner) %></td>
     </tr>
 <% end %>
   </tbody>

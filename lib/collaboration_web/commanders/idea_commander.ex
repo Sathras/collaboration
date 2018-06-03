@@ -1,25 +1,31 @@
 defmodule CollaborationWeb.IdeaCommander do
   use CollaborationWeb, :commander
 
-  after_handler :timeago, except: [:toggle]
+  alias CollaborationWeb.CommentView
+  import CollaborationWeb.IdeaView, only: [calc_rating: 4]
 
-  def timeago(socket, _sender, _retval) do
-    socket |> exec_js("$('time').timeago();")
+  defhandler delete_comment(socket, sender, comment_id) do
+    if delete_comment!(comment_id) do
+      socket |> delete!("#comments [data-id=#{comment_id}]")
+    end
   end
 
-  defhandler submit_feedback(socket, sender) do
-    input = this(sender)
-    idea_id = peek socket, :idea
+  defhandler submit_feedback(socket, sender, idea_id) do
     user = peek socket, :user
     case create_comment(user, idea_id, %{text: sender["value"]}) do
-      {:ok, _comment} ->
-        update_comments(socket, user)
+      {:ok, comment} ->
+        comment = render_to_string CommentView, "comment.html",
+          comment: load_comment(comment.id, user.id),
+          user: user
         socket
-        |> delete(class: "is-invalid", from: input)
-        |> set_prop(input, value: "")
+        |> insert(comment, append: "#comments")
+        |> exec_js("$('#comments time:last').timeago();")
+        |> delete(class: "is-invalid", from: this(sender))
+        |> execute("val('')", on: this(sender))
+
       {:error, _changeset} ->
         socket
-        |> insert(class: "is-invalid", into: input)
+        |> insert(class: "is-invalid", into: this(sender))
     end
   end
 
@@ -48,15 +54,17 @@ defmodule CollaborationWeb.IdeaCommander do
   end
 
   defhandler rate(socket, sender) do
-    idea_id = peek socket, :idea
-    user = peek socket, :user
-    if rate_idea!(user, idea_id, sender["value"]),
-      do: update_comments(socket, user)
-  end
-
-  defp update_comments(socket, user) do
     idea = peek socket, :idea
-    poke socket, comments: load_comments(idea.id, user)
+    user = peek socket, :user
+    rating = String.to_integer sender["value"]
+    if rate_idea!(user, idea.id, rating) do
+      {rating, raters}
+        = calc_rating(idea.rating, idea.raters, rating, idea.my_rating)
+      socket
+      |> update(:text, set: rating, on: "#rating")
+      |> update(:text, set: raters, on: "#raters")
+      |> execute("prop(\"checked\", true).trigger(\"click\")", on: this(sender))
+    end
   end
 
   defhandler update_fake_likes(socket, sender, comment_id) do

@@ -8,7 +8,7 @@ defmodule Collaboration.Contributions do
 
   alias Phoenix.View
   alias Collaboration.Repo
-  alias Collaboration.Coherence.User
+  # alias Collaboration.Coherence.User
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Comment
@@ -72,10 +72,9 @@ defmodule Collaboration.Contributions do
   # gets list of ideas to a specific topic
   def load_ideas(topic_id, user) do
 
-    # only show pregenerated and own ideas
-    valid_authors = list_admin_ids()
-    valid_authors = if user && !user.admin,
-      do: valid_authors ++ [user.id], else: valid_authors
+    # only show own ideas, admin ideas and owner ideas
+    user_id = if user && !user.admin, do: user.id, else: nil
+    valid_authors = select_user_ids([:admins, :owners], user_id)
 
     ideas = from i in Idea,
       left_join: c in assoc(i, :comments),
@@ -121,11 +120,11 @@ defmodule Collaboration.Contributions do
         user_id: i.user_id
       }
 
-    # if not authenticated, do not load any comments
+    # if not authenticated, do not load my rating
     idea = if user do
       from i in idea,
-        left_join: r in Rating,
-        on: r.user_id == i.user_id and r.idea_id == i.id,
+        left_join: r in assoc(i, :ratings),
+        on: r.user_id == ^user.id,
         group_by: [r.rating],
         select_merge: %{ my_rating: r.rating }
     else
@@ -192,31 +191,38 @@ defmodule Collaboration.Contributions do
 
   def delete_idea(id), do: Repo.delete(get_idea!(id))
 
-  def load_comments(idea_id, user) do
-    if user do
-      # only load own comments, or feedback (targeted to self)
-      from( c in Comment,
-        left_join: u in assoc(c, :user),
-        left_join: l in assoc(c, :likes), on: [id: ^user.id],
-        group_by: [c.id, u.name, l.id],
-        select: %{
-          id: c.id,
-          author: u.name,
-          created: c.inserted_at,
-          liked: l.id,
-          likes: c.fake_likes,
-          text: c.text,
-          user_id: c.user_id
-        },
-        order_by: [asc: c.inserted_at],
-        where: c.idea_id == ^idea_id and c.user_id == ^user.id,
-        or_where: c.idea_id == ^idea_id and c.recipient_id == ^user.id
-      )
-      |> Repo.all()
-      |> View.render_many(CommentView, "comment.json")
-    else
-      []
-    end
+  defp comment_query(user_id) do
+    from( c in Comment,
+      left_join: u in assoc(c, :user),
+      left_join: l in assoc(c, :likes), on: [id: ^user_id],
+      group_by: [c.id, u.name, l.id],
+      select: %{
+        id: c.id,
+        author: u.name,
+        created: c.inserted_at,
+        liked: l.id,
+        likes: c.fake_likes,
+        text: c.text,
+        user_id: c.user_id
+      }
+    )
+  end
+
+  # only load own comments, or feedback (targeted to self)
+  def load_comments(idea_id, user_id) do
+    from(c in comment_query(user_id),
+      order_by: [asc: c.inserted_at],
+      where: c.idea_id == ^idea_id and c.user_id == ^user_id,
+      or_where: c.idea_id == ^idea_id and c.recipient_id == ^user_id
+    )
+    |> Repo.all()
+    |> View.render_many(CommentView, "comment.json")
+  end
+
+  def load_comment(comment_id, user_id) do
+    comment_query(user_id)
+    |> Repo.get(comment_id)
+    |> View.render_one(CommentView, "comment.json")
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
@@ -260,7 +266,7 @@ defmodule Collaboration.Contributions do
     |> Repo.update()
   end
 
-  def delete_comment(%Comment{} = comment), do: Repo.delete(comment)
+  def delete_comment!(id), do: Repo.delete!(get_comment!(id))
   def change_comment(%Comment{} = comment), do: Comment.changeset(comment, %{})
 
   def like_comment(user, id) do

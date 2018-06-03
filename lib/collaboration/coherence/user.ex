@@ -15,6 +15,7 @@ defmodule Collaboration.Coherence.User do
     coherence_schema()
 
     field :admin, :boolean, default: false
+    field :owner, :boolean, default: false
     field :name, :string
     field :email, :string
     field :condition, :integer
@@ -32,6 +33,16 @@ defmodule Collaboration.Coherence.User do
     model
     |> cast(params, [:admin])
     |> validate_inclusion(:admin, [true, false])
+  end
+  def changeset(model, %{:owner => _owner} = params) do
+    model
+    |> cast(params, [:owner])
+    |> validate_inclusion(:owner, [true, false])
+  end
+  def changeset(model, %{:condition => _cond} = params) do
+    model
+    |> cast(params, [:condition])
+    |> validate_inclusion(:condition, 1..4)
   end
   def changeset(model, params) do
     model

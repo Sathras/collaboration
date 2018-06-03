@@ -12,10 +12,12 @@ defmodule CollaborationWeb.IdeaController do
   end
 
   def show(conn, %{"id" => id, "topic_id" => topic_id}) do
+    user = current_user(conn)
+    comments = if user, do: load_comments(id, user.id), else: []
     render conn, "index.html",
-      comments: load_comments(id, current_user(conn)),
-      idea: load_idea(id, current_user(conn)),
-      ideas: load_ideas(topic_id, current_user(conn)),
+      comments: comments,
+      idea: load_idea(id, user),
+      ideas: load_ideas(topic_id, user),
       topic: get_topic!(topic_id)
   end
 

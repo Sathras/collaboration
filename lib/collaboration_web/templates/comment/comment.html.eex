@@ -37,6 +37,11 @@
           <%= if @comment.liked, do: "Unlike", else: "Like" %>
         </small>
       <% end %>
+      <%= if @user && @user.admin do %>
+        <i class="float-right text-danger fas fa-trash-alt"
+          drab-click="delete_comment(<%= @comment.id %>)"
+        ></i>
+      <% end %>
     </span>
   </p>
 </li>

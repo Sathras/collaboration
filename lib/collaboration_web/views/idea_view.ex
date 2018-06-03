@@ -1,7 +1,12 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
-  def idea_id(conn), do: String.to_integer conn.params["id"]
+  def idea_id(conn) do
+    if Map.has_key?(conn.params, "id"),
+      do: Map.get(conn.params, "id") |> String.to_integer,
+      else: nil
+  end
+
   def topic_id(conn), do: String.to_integer conn.params["topic_id"]
 
   def active?(idea, idea_id) do
@@ -9,9 +14,11 @@ defmodule CollaborationWeb.IdeaView do
   end
 
   # calculates rating for an idea
-  defp calc_rating(rating, raters, my_rating) do
-    all_raters = if my_rating, do: raters + 1, else: raters
+  def calc_rating(rating, raters, my_rating, old_rating \\ nil) do
+    all_raters = if my_rating && !old_rating, do: raters + 1, else: raters
     rating = cond do
+      old_rating ->
+        Float.round((rating * raters + my_rating - old_rating) / all_raters)
       all_raters === 0 ->
         nil
       !my_rating ->
