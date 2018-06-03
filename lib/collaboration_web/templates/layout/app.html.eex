@@ -56,7 +56,7 @@
           <ul id="nav-topics" class="navbar-nav mr-auto">
             <%= for t <- @conn.assigns.nav_topics do %>
               <%= nav_item @conn, t.short_title,
-                topic_path(@conn, :show, t.id),
+                topic_idea_path(@conn, :index, t.id),
                 topic_id: t.id,
                 popover: t.short_desc
               %>
@@ -73,9 +73,6 @@
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
-    </div> <!-- /container -->
-    <div id="spinner-wrapper">
-      <div id="spinner" />
     </div>
     <%= Drab.Client.run(@conn) %>
   </body>

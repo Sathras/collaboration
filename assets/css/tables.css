@@ -1,0 +1,10 @@
+.table-responsive {
+  overflow-y: auto;
+}
+.table-responsive td {
+  white-space: nowrap;
+}
+
+th.time {
+  width: 100px;
+}

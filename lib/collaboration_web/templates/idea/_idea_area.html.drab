@@ -1,0 +1,92 @@
+<div class="card-header text-center">
+  <h4><%= @idea.title %></h4>
+  <div class='d-flex justify-content-around'>
+    <span class="lead text-muted">by <%= @idea.author %></span>
+    <div>
+      <%= if @idea.my_rating do %>
+        <span id="rating">
+          <span class="lead">
+            <i class="fas fa-star mr-1"></i>
+            <strong><%= @idea.rating %></strong>
+          </span>
+          <small class="text-muted">
+            / <%= @idea.raters %> Raters
+          </small>
+        </span>
+      <% end %>
+      <%= if @user && @idea.user_id !== @user.id &&
+        (@user.admin || (@user.condition !== 1 && @topic.open )) do %>
+        <span class="btn btn-light pointer btn-sm starrating risingstar d-inline-flex justify-content-center flex-row-reverse"
+         data-toggle="tooltip" data-placement="bottom" title="Your Rating">
+          <input
+            type="radio" id="star5" name="rating" value="5" drab-click="rate"
+            <%= if @idea.my_rating === 5, do: "checked" %>
+          />
+          <label class='pointer' for="star5"><i class="fas fa-star"></i></label>
+
+          <input
+            type="radio" id="star4" name="rating" value="4" drab-click="rate"
+            <%= if @idea.my_rating === 4, do: "checked" %>
+          />
+          <label class='pointer' for="star4"><i class="fas fa-star"></i></label>
+
+          <input
+            type="radio" id="star3" name="rating" value="3" drab-click="rate"
+            <%= if @idea.my_rating === 3, do: "checked" %>
+          />
+          <label class='pointer' for="star3"><i class="fas fa-star"></i></label>
+
+          <input
+            type="radio" id="star2" name="rating" value="2" drab-click="rate"
+            <%= if @idea.my_rating === 2, do: "checked" %>
+          />
+          <label class='pointer' for="star2"><i class="fas fa-star"></i></label>
+
+          <input
+            type="radio" id="star1" name="rating" value="1"
+            <%= if @idea.my_rating === 1, do: "checked" %>
+          />
+          <label class='pointer' for="star1"><i class="fas fa-star"></i></label>
+        </span>
+      <% end %>
+    </div>
+    <%= if @user && (@idea.user_id == @user.id || @user.admin) do %>
+      <div>
+        <a class="btn btn-outline-dark btn-sm"
+          href="<%= topic_idea_path @conn, :edit, @topic.id, @idea.id %>">
+          <i class="fas fa-pencil-alt"></i>
+        </a>
+        <%= if @user.admin, do:
+          link icon("far fa-trash-alt"),
+            to: topic_idea_path(@conn, :delete, @topic.id, @idea.id),
+            data: [confirm: "Are you sure?"],
+            class: "btn btn-sm btn-outline-danger",
+            method: "delete"
+        %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= if @idea.desc do %>
+  <div id='idea-desc' class="card-body"><%= @idea.desc %></div>
+<% end %>
+
+<%= if Enum.count(@comments) > 0 do %>
+  <ul id="comments" class="list-group list-group-flush">
+    <%= for c <- @comments do %>
+      <%= render CommentView, "comment.html", comment: c, user: @user %>
+    <% end %>
+  </ul>
+<% end %>
+<!-- Only Admins can post or users (not in condition 1), if the topic is open -->
+<%= if @user && ( @user.admin || ( @user.condition !== 1 && @topic.open )) do %>
+  <div class="card-footer">
+    <input
+      class="form-control form-control-sm"
+      drab-change="submit_feedback"
+      placeholder="Leave feedback..."
+    />
+  </div>
+<% end %>
+

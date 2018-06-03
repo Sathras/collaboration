@@ -1,0 +1,42 @@
+<div class="card">
+  <div class="card-body p-0 pb-1">
+    <div class='table-responsive'>
+      <table
+        id="ideas"
+        class="mr-0 table table-sm table-hover nowrap"
+        cellspacing="0"
+        cellpadding="0"
+      >
+        <thead>
+          <tr>
+            <th><strong>Idea</strong></th>
+            <th class='text-center'><i class='fas fa-star'></i></th>
+            <th class='text-center'><i class='far fa-comments'></i></th>
+            <th class='text-center time'><i class='far fa-clock'></i></th>
+          </tr>
+        </thead>
+        <tbody>
+      <%= for i <- @ideas do %>
+          <tr
+            class="pointer <%= active?(i, idea_id(@conn)) %>"
+            onClick='Turbolinks.visit("<%=
+              topic_idea_path @conn, :show, topic_id(@conn), i.id
+            %>")'
+          >
+            <td>
+              <%= if user?(@conn) && i.user_id === user_id(@conn) do %>
+                <i class="fas fa-angle-double-right"></i>
+              <% end %>
+              <%= i.title %>
+            </td>
+            <td class='text-center'><%= i.rating %></td>
+            <td class='text-center'><%= i.comment_count %></td>
+            <td class='text-center'>
+              <small><time datetime="<%= i.created %>"></time></small>
+            </td>
+          </tr>
+      <% end %>
+      </table>
+    </div>
+  </div>
+</div>

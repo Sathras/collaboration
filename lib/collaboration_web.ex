@@ -21,15 +21,16 @@ defmodule CollaborationWeb do
     quote do
       use Phoenix.Controller, namespace: CollaborationWeb
       import Plug.Conn
+      import Collaboration.Contributions
       import CollaborationWeb.Router.Helpers
       import CollaborationWeb.Gettext
+      import Coherence, only: [current_user: 1]
     end
   end
 
   def commander do
     quote do
       use Drab.Commander, modules: [Drab.Element, Drab.Live, Drab.Query]
-      use Phoenix.HTML
       import Collaboration.Coherence.Schemas
       import Collaboration.Contributions
     end
@@ -42,7 +43,11 @@ defmodule CollaborationWeb do
         namespace: CollaborationWeb
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
+      import Phoenix.Controller, only: [
+        action_name: 1,
+        get_flash: 2,
+        view_module: 1
+      ]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
@@ -52,6 +57,11 @@ defmodule CollaborationWeb do
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
       import CollaborationWeb.Gettext
+      import Coherence, only: [current_user: 1]
+
+      alias CollaborationWeb.TopicView
+      alias CollaborationWeb.IdeaView
+      alias CollaborationWeb.CommentView
     end
   end
 

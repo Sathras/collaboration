@@ -53,12 +53,8 @@ defmodule Collaboration.Repo.Migrations.Contributions do
     create(unique_index(:ratings, [:user_id, :idea_id]))
 
     create table(:likes) do
-      add(
-        :user_id,
-        references(:users, type: :binary_id, on_delete: :delete_all)
-      )
-
-      add(:comment_id, references(:comments, on_delete: :delete_all))
+      add :user_id, references(:users, type: :binary_id, on_delete: :delete_all)
+      add :comment_id, references(:comments, on_delete: :delete_all)
     end
 
     create(unique_index(:likes, [:user_id, :comment_id]))

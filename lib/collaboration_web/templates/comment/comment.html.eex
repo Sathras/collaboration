@@ -1,0 +1,42 @@
+<li
+  class="list-group-item pb-1 pt-1"
+  data-id="<%= @comment.id %>"
+  data-liked="<%= @comment.liked %>"
+  data-likes="<%= @comment.likes %>"
+>
+  <p class='mb-1'>
+    <strong><%= @comment.author %></strong>
+    <small class="font-italic float-right">
+      <time datetime="<%= @comment.created %>"></time>
+    </small>
+  </p>
+  <p class="mb-0">
+    <%= @comment.text %>
+    <span>
+      <%= if thumbsUp?(@comment, @user) do %>
+        <i class="text-primary far fa-thumbs-up"></i>
+      <% end %>
+      <%= if @user && @user.admin do %>
+        <input
+          class="badge badge-pill badge-primary mr-1 d-inline border-0"
+          drab-change="update_fake_likes(<%= @comment.id %>)"
+          onfocus="$(this).select();"
+          style="width:36px;"
+          type="number"
+          value="<%= @comment.likes %>"
+        />
+      <% else %>
+        <%= if @comment.likes > 0 do %>
+          <span class="likes badge badge-pill badge-primary mr-1">
+            <%= @comment.likes %>
+          </span>
+        <% end %>
+      <% end %>
+      <%= if @user && @comment.user_id !== @user.id do %>
+        <small class='text-primary' drab-click='like(<%= @comment.id %>)'>
+          <%= if @comment.liked, do: "Unlike", else: "Like" %>
+        </small>
+      <% end %>
+    </span>
+  </p>
+</li>

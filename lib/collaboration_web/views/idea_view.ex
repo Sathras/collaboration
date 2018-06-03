@@ -1,70 +1,58 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
-  def render("idea.json", %{idea: i, user: user}) do
-    user_id = if is_map(user), do: user.id, else: nil
-    admin = if is_map(user), do: user.admin, else: false
+  def idea_id(conn), do: String.to_integer conn.params["id"]
+  def topic_id(conn), do: String.to_integer conn.params["topic_id"]
 
-    comments = cond do
-      admin ->
-        i.comments
-      user_id ->
-        Enum.filter(i.comments, fn c -> c.public || c.recipient_id == user_id end)
+  def active?(idea, idea_id) do
+    if idea.id === idea_id, do: " table-active"
+  end
+
+  # calculates rating for an idea
+  defp calc_rating(rating, raters, my_rating) do
+    all_raters = if my_rating, do: raters + 1, else: raters
+    rating = cond do
+      all_raters === 0 ->
+        nil
+      !my_rating ->
+        Float.round(rating/1, 2)
       true ->
-        Enum.filter(i.comments, fn c -> c.public end)
+        Float.round((rating * raters + my_rating) / all_raters, 2)
     end
+    {rating, all_raters}
+  end
 
+  # used for displaying list of ideas
+  # calculates rating
+  def render("idea-basic.json", %{idea: i}) do
+    my_rating = Map.get i, :my_rating
+    { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
     %{
-      author: i.user.name,
-      user_id: i.user.id,
       id: i.id,
-      row_id: "idea_#{i.id}",
       title: i.title,
-      topic_id: i.topic_id,
-      desc: i.desc,
-      created: NaiveDateTime.to_iso8601(i.inserted_at) <> "Z",
-      comment_count: Enum.count(comments),
-      public: i.public,
-      rating: rating(i),
-      raters: i.fake_raters + Enum.count(i.ratings),
-      fake_raters: i.fake_raters,
-      fake_rating: i.fake_rating,
-      my_rating: Map.get(ratings(i.ratings), user_id, nil)
+      created: NaiveDateTime.to_iso8601(i.created) <> "Z",
+      comment_count: i.comment_count,
+      rating: rating,
+      raters: raters,
+      user_id: i.user_id
     }
   end
 
-  def like_label(conn, comment) do
-    user_ids = Enum.map(comment.likes, fn u -> u.id end)
+  # used for displaying idea with all its details (likes,...)
+  def render("idea.json", %{idea: i}) do
+    my_rating = Map.get i, :my_rating
+    { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    if Enum.member?(user_ids, Coherence.current_user(conn).id) do
-      "Unlike"
-    else
-      "Like"
-    end
-  end
-
-  def rating(idea) do
-    ratings = Enum.map(idea.ratings, fn r -> r.rating end)
-    r_count = Enum.count(idea.ratings)
-    f_count = idea.fake_raters
-    f_rating = idea.fake_rating
-
-    if r_count == 0 do
-      if f_count > 0, do: f_rating, else: nil
-    else
-      r_rating = Enum.sum(ratings) / r_count
-
-      Float.round(
-        (r_rating * r_count + f_rating * f_count) / (r_count + f_count),
-        2
-      )
-    end
-  end
-
-  def likes(comment), do: Enum.count(comment.likes) + comment.fake_likes
-
-  defp ratings(ratings) do
-    Enum.map(ratings, fn r -> {r.user_id, r.rating} end)
-    |> Map.new()
+    %{
+      id: i.id,
+      author: i.author,
+      created: NaiveDateTime.to_iso8601(i.created) <> "Z",
+      desc: i.desc,
+      my_rating: my_rating,
+      rating: rating,
+      raters: raters,
+      title: i.title,
+      user_id: i.user_id
+    }
   end
 end

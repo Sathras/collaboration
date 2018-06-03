@@ -24,7 +24,7 @@
   <%= unless !admin?(@conn) && !topic.published do %>
     <tr>
       <td>
-        <a href="<%= topic_path(@conn, :show, topic.id) %>">
+        <a href="<%= topic_idea_path(@conn, :index, topic.id) %>">
           <strong><%= topic.title %></strong>
         </a>
       </td>

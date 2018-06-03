@@ -8,12 +8,13 @@ defmodule Collaboration.Contributions do
 
   alias Phoenix.View
   alias Collaboration.Repo
+  alias Collaboration.Coherence.User
   alias Collaboration.Contributions.Topic
   alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Comment
   alias Collaboration.Contributions.Rating
-  alias CollaborationWeb.CommentView
   alias CollaborationWeb.IdeaView
+  alias CollaborationWeb.CommentView
 
   def list_topics(admin \\ false) do
     query =
@@ -68,46 +69,70 @@ defmodule Collaboration.Contributions do
   def delete_topic(%Topic{} = topic), do: Repo.delete(topic)
   def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
 
+  # gets list of ideas to a specific topic
+  def load_ideas(topic_id, user) do
 
-  def list_ideas(topic_id, user) do
+    # only show pregenerated and own ideas
+    valid_authors = list_admin_ids()
+    valid_authors = if user && !user.admin,
+      do: valid_authors ++ [user.id], else: valid_authors
 
-    query = from i in Idea,
+    ideas = from i in Idea,
+      left_join: c in assoc(i, :comments),
       order_by: [desc: i.inserted_at],
-      preload: [:comments],
-      where: i.topic_id == ^topic_id
+      group_by: i.id,
+      select: %{
+        id: i.id,
+        comment_count: count(c.id),
+        created: i.inserted_at,
+        fake_rating: i.fake_rating,
+        fake_raters: i.fake_raters,
+        title: i.title,
+        user_id: i.user_id
+      },
+      where: i.topic_id == ^topic_id and i.user_id in ^valid_authors
 
-    # only show pregenerated and own ideas (unless admin)
-    query = if !user || !user.admin,
-      do: query |> where([u], u.id in ^(list_admin_ids() ++ [user.id])),
-      else: query
-
-    Repo.all(query)
-  end
-
-  def list_my_ratings(idea_ids, user) do
-    if !user do
-      []
+    ideas = if user do
+      from i in ideas,
+        left_join: r in Rating,
+        on: r.user_id == i.user_id and r.idea_id == i.id,
+        group_by: r.rating,
+        select_merge: %{ my_rating: r.rating }
     else
-      from(r in Rating, where: r.idea_id in ^idea_ids and r.user_id == ^user.id)
-      |> Repo.all()
+      ideas
     end
+
+    View.render_many(Repo.all(ideas), IdeaView, "idea-basic.json", user: user)
   end
 
-  def list_ideas(topic_id, last_seen_id, user) do
-    query = from i in Idea,
-      preload: [:user, :comments, :ratings],
-      where: i.topic_id == ^topic_id and i.id > ^last_seen_id
-    query = cond do
-      !user ->
-        from i in query, where: i.public
-      user.admin ->
-        query
-      user.id ->
-        from i in query, where: i.public, or_where:
-          i.topic_id == ^topic_id and i.id > ^last_seen_id and i.user_id == ^user.id
-    end
+  # get idea with all details
+  def load_idea(id, user) do
+    idea = from i in Idea,
+      left_join: u in assoc(i, :user),
+      group_by: [i.id, u.name],
+      select: %{
+        id: i.id,
+        author: u.name,
+        created: i.inserted_at,
+        desc: i.desc,
+        fake_rating: i.fake_rating,
+        fake_raters: i.fake_raters,
+        title: i.title,
+        user_id: i.user_id
+      }
 
-    View.render_many Repo.all(query), IdeaView, "idea.json", user: user
+    # if not authenticated, do not load any comments
+    idea = if user do
+      from i in idea,
+        left_join: r in Rating,
+        on: r.user_id == i.user_id and r.idea_id == i.id,
+        group_by: [r.rating],
+        select_merge: %{ my_rating: r.rating }
+    else
+      idea
+    end
+    Repo.get(idea, id)
+    |> View.render_one(IdeaView, "idea.json")
   end
 
   def get_idea!(id), do: Repo.get!(Idea, id)
@@ -122,10 +147,11 @@ defmodule Collaboration.Contributions do
   def render_idea(idea, user) when is_map(idea), do:
     View.render_one get_idea_details(idea), IdeaView, "idea.json", user: user
 
+  def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
+
   def create_idea(user, topic, attrs) do
     %Idea{}
-    # make idea automatically public if posted by admin
-    |> Idea.changeset(Map.put(attrs, "public", user.admin))
+    |> Idea.changeset(attrs)
     |> put_assoc(:user, user)
     |> put_assoc(:topic, topic)
     |> Repo.insert()
@@ -155,8 +181,8 @@ defmodule Collaboration.Contributions do
       )
       |> Repo.one!()
 
-  def rate_idea!(user, idea, rating) do
-    case Repo.get_by(Rating, user_id: user.id, idea_id: idea.id) do
+  def rate_idea!(user, idea_id, rating) do
+    case Repo.get_by(Rating, user_id: user.id, idea_id: idea_id) do
       nil -> %Rating{}
       rating -> rating
     end
@@ -164,31 +190,33 @@ defmodule Collaboration.Contributions do
     |> Repo.insert_or_update!()
   end
 
-  def delete_idea(%Idea{} = idea), do: Repo.delete(idea)
-  def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
+  def delete_idea(id), do: Repo.delete(get_idea!(id))
 
-  def list_comments(idea_id, last_seen_id, user_id, admin) do
-    query = from c in Comment,
-      order_by: [asc: c.id],
-      preload: [:user, :likes],
-      where: c.id > ^last_seen_id and c.idea_id == ^idea_id
-
-    query = cond do
-      admin ->
-        query
-      user_id ->
-        from c in query, where: c.recipient_id == ^user_id, or_where:
-          c.id > ^last_seen_id and c.idea_id == ^idea_id and c.public
-      true ->
-        from c in query, where: c.public
+  def load_comments(idea_id, user) do
+    if user do
+      # only load own comments, or feedback (targeted to self)
+      from( c in Comment,
+        left_join: u in assoc(c, :user),
+        left_join: l in assoc(c, :likes), on: [id: ^user.id],
+        group_by: [c.id, u.name, l.id],
+        select: %{
+          id: c.id,
+          author: u.name,
+          created: c.inserted_at,
+          liked: l.id,
+          likes: c.fake_likes,
+          text: c.text,
+          user_id: c.user_id
+        },
+        order_by: [asc: c.inserted_at],
+        where: c.idea_id == ^idea_id and c.user_id == ^user.id,
+        or_where: c.idea_id == ^idea_id and c.recipient_id == ^user.id
+      )
+      |> Repo.all()
+      |> View.render_many(CommentView, "comment.json")
+    else
+      []
     end
-
-    View.render_many(
-      Repo.all(query),
-      CommentView,
-      "comment.json",
-      current_user: user_id
-    )
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
@@ -203,11 +231,11 @@ defmodule Collaboration.Contributions do
     )
   end
 
-  def create_comment(author, idea, attrs) do
+  def create_comment(author, idea_id, attrs) do
     %Comment{}
-    |> Comment.changeset(Map.put(attrs, "public", author.admin))
+    |> Comment.changeset(Map.put(attrs, :public, author.admin))
     |> put_assoc(:user, author)
-    |> put_assoc(:idea, idea)
+    |> put_assoc(:idea, get_idea!(idea_id))
     |> Repo.insert()
   end
 
@@ -220,7 +248,13 @@ defmodule Collaboration.Contributions do
     |> Repo.insert()
   end
 
-  def update_comment(%Comment{} = comment, attrs) do
+  def update_comment(id, attrs) when is_number(id) do
+    get_comment!(id)
+    |> Comment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_comment(comment, attrs) when is_map(comment) do
     comment
     |> Comment.changeset(attrs)
     |> Repo.update()
@@ -239,7 +273,6 @@ defmodule Collaboration.Contributions do
 
   def unlike_comment(user, id) do
     comment = Repo.get(Comment, id) |> Repo.preload(:likes)
-
     comment
     |> change()
     |> put_assoc(:likes, List.delete(comment.likes, user))

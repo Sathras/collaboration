@@ -1,43 +1,8 @@
 defmodule CollaborationWeb.TopicView do
   use CollaborationWeb, :view
 
-  def active_idea(idea, current_idea) do
-    if idea.id === current_idea, do: " table-active"
-  end
-
-  def my_rating(idea, my_ratings) do
-    rating = Enum.find(my_ratings, fn(x) -> x.idea_id == idea.id end)
-    if rating, do: rating.rating, else: nil
-  end
-
-  def show_rating?(idea, rating) do
-    me = if rating, do: true, else: idea.raters > 0
-  end
-
-  # only uses fake ratings and own rating
-  def rating(idea, my_rating) do
-    cond do
-      idea.fake_raters === 0 && !my_rating -> ""
-      idea.fake_raters === 0 && my_rating -> "#{my_rating}.00"
-      !my_rating ->
-        :erlang.float_to_binary(idea.fake_rating*1, [decimals: 2])
-      my_rating ->
-        :erlang.float_to_binary(
-        (idea.fake_rating * idea.fake_raters + my_rating)
-        / (idea.fake_raters + 1), [decimals: 2])
-    end
-  end
-
-  def raters(idea, my_rating) do
-    if my_rating, do: idea.fake_raters + 1, else: idea.fake_raters
-  end
-
-  def ideaTitle(idea, user) do
-    if user && idea.user_id === user.id do
-      content_tag :u, idea.title
-    else
-      idea.title
-    end
+  def ideaTitle(idea) do
+    if idea.my_idea?, do: content_tag(:u, idea.title), else: idea.title
   end
 
   def iconFeatured(topic) do

@@ -4,7 +4,7 @@
  * New system to avoid javascript and utilize commanders
  * Admins can now toggle topic flags directly in topic overview
  * Admins can now filter users by their condition in the user list
- * Users can no longer rate their own ideas
+ * Users can no longer rate their own ideas and like their own comments
 
 ## 2.0.6
  * Own ideas (if normal user) or non-admin ideas (if admin) are now displayed cursive in idealist to better identify them among pregenerated ideas.

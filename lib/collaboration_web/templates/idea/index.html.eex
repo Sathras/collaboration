@@ -1,0 +1,44 @@
+<%= render IdeaView, "_topic_area.html", conn: @conn, topic: @topic %>
+<div class="row">
+  <div class="col-md-6">
+    <%= render IdeaView, "_idea_list.html", conn: @conn, ideas: @ideas %>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <%= case action_name(@conn) do
+        :new ->
+          render IdeaView, "form.html",
+            action: topic_idea_path(@conn, :create, @topic.id),
+            admin: admin?(@conn),
+            cancel: false,
+            changeset: Map.get(@conn.assigns, :changeset),
+            topic_id: @topic.id
+
+        :edit ->
+          render IdeaView, "form.html",
+            action: topic_idea_path(@conn, :update, @topic.id, idea_id(@conn)),
+            admin: admin?(@conn),
+            cancel: topic_idea_path(@conn, :show, @topic.id, idea_id(@conn)),
+            changeset: Map.get(@conn.assigns, :changeset),
+            topic_id: @topic.id
+
+        :show ->
+          render IdeaView, "_idea_area.html",
+            conn: @conn,
+            comments: Map.get(@conn.assigns, :comments),
+            idea: Map.get(@conn.assigns, :idea),
+            topic: @topic,
+            user: @current_user
+
+        :index -> raw("""
+          <div class='card-body'>
+            <p class='card-text font-italic'>
+              Please select an idea from the list on the left to show feedback and further details.
+            </p>
+          </div>
+        """)
+      end
+    %>
+    </div>
+  </div>
+</div>

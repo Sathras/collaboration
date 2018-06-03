@@ -34,22 +34,22 @@ defmodule CollaborationWeb.Router do
   end
 
   scope "/", CollaborationWeb do
-    pipe_through(:browser)
-
-    # add public resources below
-    get("/", PageController, :index)
-    get("/topics", TopicController, :index)
-    get("/topic/:id", TopicController, :show)
-  end
-
-  scope "/", CollaborationWeb do
     pipe_through(:protected)
 
     # add protected resources below
-    resources("/topic", TopicController, only: [:edit, :update, :delete])
-    resources("/topics", TopicController, only: [:new, :create])
-    get("/users2", AdminController, :users)
-
+    resources "/topics", TopicController, only: [:new, :create, :edit, :update, :delete] do
+      resources "/ideas", IdeaController, only: [:new, :create, :edit, :update, :delete]
+    end
     resources("/users", UserController, only: [:index, :update])
+  end
+
+  scope "/", CollaborationWeb do
+    pipe_through(:browser)
+
+    # add public resources below
+    get "/", TopicController, :index
+    resources "/topics", TopicController, only: [:index, :show] do
+      resources "/ideas", IdeaController, only: [:index, :show]
+    end
   end
 end

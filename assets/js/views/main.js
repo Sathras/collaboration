@@ -48,12 +48,9 @@ export default class MainView {
       ],
       style_formats_merge: true
     });
-
-    $('#spinner-wrapper').addClass('invisible');
   }
 
   unmount() {
     // This will be executed when the document unloads...
-    $('#spinner-wrapper').removeClass('invisible');
   }
 }

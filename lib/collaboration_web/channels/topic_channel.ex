@@ -7,13 +7,7 @@ defmodule CollaborationWeb.TopicChannel do
   alias CollaborationWeb.Endpoint
   alias CollaborationWeb.IdeaView
 
-  def join("topic:" <> id, params, socket) do
-    last_seen_id = params["last_seen_id"] || 0
-    topic = get_topic!(id)
-    user = Map.get(socket.assigns, :user, nil)
-    resp = %{ideas: list_ideas(topic.id, last_seen_id, user)}
-    {:ok, resp, assign(socket, :topic, topic)}
-  end
+
 
   def handle_in("new:idea", data, socket) do
     if contributeable?(socket) do
