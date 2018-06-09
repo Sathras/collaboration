@@ -4,26 +4,9 @@ defmodule CollaborationWeb.IdeaController do
   alias CollaborationWeb.CommentView
   import Phoenix.View, only: [render_to_string: 3]
 
-  def index(conn, %{"topic_id" => topic_id}) do
-    if current_user(conn) do
-      redirect conn, to: topic_idea_path(conn, :new, topic_id )
-    else
-      render conn, "index.html",
-        ideas: load_ideas(topic_id, current_user(conn)),
-        topic: get_topic!(topic_id)
-    end
-  end
-
-  def new(conn, %{"topic_id" => topic_id} = params) do
-    render conn, "index.html",
-      changeset: Map.get(params, :changeset, change_idea()),
-      ideas: load_ideas(topic_id, current_user(conn)),
-      topic: get_topic!(topic_id)
-  end
-
   def create(conn, %{"topic_id" => topic_id, "idea" => params}) do
     topic = get_topic!(topic_id)
-    user = current_user conn
+    user = get_user!(conn.assigns.current_user.id)
     case create_idea(user, topic, params) do
       {:ok, idea} ->
         # create automated feedback (if not admin or in condition 1 and 2
@@ -73,28 +56,6 @@ defmodule CollaborationWeb.IdeaController do
         conn
         |> put_flash(:error, "Please check your errors!")
         |> redirect(to: "/topics/#{topic_id}", changeset: changeset)
-    end
-  end
-
-  def edit(conn, %{"id" => id, "topic_id" => topic_id} = params) do
-    render conn, "index.html",
-      id: topic_id,
-      changeset: Map.get(params, :changeset, change_idea(get_idea!(id))),
-      ideas: load_ideas(topic_id, current_user(conn)),
-      topic: get_topic!(topic_id)
-  end
-
-  def update(conn, %{"id" => id, "topic_id" => topic_id, "idea" => params}) do
-    case update_idea(get_idea!(id), params) do
-      {:ok, idea} ->
-        conn
-        |> redirect(to: topic_idea_path(conn, :show, topic_id, idea.id ))
-
-      {:error, changeset} ->
-        render conn, "index.html",
-          changeset: changeset,
-          ideas: load_ideas(topic_id, current_user(conn)),
-          topic: get_topic!(topic_id)
     end
   end
 

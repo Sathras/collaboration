@@ -12,7 +12,6 @@ defmodule Collaboration.Coherence.Invitation do
     field(:name, :string)
     field(:email, :string)
     field(:token, :string)
-
     timestamps()
   end
 

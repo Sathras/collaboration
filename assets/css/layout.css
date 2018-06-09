@@ -1,7 +1,3 @@
-body {
-  padding-top: 70px;
-}
-
 div.mce-fullscreen {
   z-index: 1050;
 }
@@ -52,4 +48,10 @@ textarea.card-text {
   resize: none;
   overflow: hidden;
   height: 29px;
+}
+
+/* TABLES */
+.icon-cell {
+  width: 33px;
+  text-align: center;
 }

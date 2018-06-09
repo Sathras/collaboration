@@ -45,6 +45,8 @@ defmodule CollaborationWeb.TopicCommander do
     user = get_user!(socket.assigns.user_id)
     if liked do
       if unlike_comment(user, comment_id) do
+        if likes === 0, do:
+          socket |> insert(class: "d-none", into: elm <> " span.likes")
         socket
         |> update(data: "liked", set: false, on: elm)
         |> update(:text, set: "Like", on: this(sender))
@@ -57,6 +59,7 @@ defmodule CollaborationWeb.TopicCommander do
         |> update(data: "liked", set: true, on: elm)
         |> update(:text, set: "Unlike", on: this(sender))
         |> update(:text, set: likes + 1, on: elm <> " span.likes")
+        |> delete(class: "d-none", from: elm <> " span.likes")
         |> execute("val(#{likes + 1})", on: elm <> " input")
       end
     end

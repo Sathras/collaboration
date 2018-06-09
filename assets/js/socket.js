@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, Drab */
 import { Socket } from 'phoenix';
 
 // get user variables from tags

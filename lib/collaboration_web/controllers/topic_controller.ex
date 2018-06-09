@@ -13,6 +13,7 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def show(conn, %{"id" => id} = params) do
+    IO.inspect conn.assigns
     render conn, "show.html",
       changeset: Map.get(params, :idea_changeset, change_idea()),
       ideas: load_ideas(id, current_user(conn)),

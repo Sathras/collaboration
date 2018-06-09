@@ -1,5 +1,10 @@
 # Changelog
 
+### 2.1.1
+ * fixed feedback loop (will go to next feedback now and so on until 10th feedback, then restart loop)
+ * fixed missing like count badge when being the first one to like a comment with no previous fake likes
+ * removed unnessesary javascript and css code
+
 ## 2.1.0
  * Separated authentication for experiment users from admins, simpler account creation using only name and passcode now possible
  * New system to avoid javascript and utilize commanders

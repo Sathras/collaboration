@@ -1,10 +1,6 @@
 defmodule CollaborationWeb.CommentView do
   use CollaborationWeb, :view
 
-  def thumbsUp?(comment, user_id, admin) do
-    comment.likes > 0 || admin || (user_id && comment.id !== user_id)
-  end
-
   def render("comment.json", %{comment: c, user: u}) do
     liked = !!Enum.find(c.likes, & &1.id === u.id)
     likes = if liked, do: c.fake_likes + 1, else: c.fake_likes

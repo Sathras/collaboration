@@ -60,7 +60,7 @@ defmodule CollaborationWeb.Router do
 
     # add protected resources below
     resources "/topics", TopicController, only: [:index, :show] do
-      resources "/ideas", IdeaController, only: [:create, :update]
+      resources "/ideas", IdeaController, only: [:create]
     end
     post "/complete", UserController, :finish
   end

@@ -16,7 +16,7 @@
   <p class="mb-0">
     <%= @comment.text %>
     <span>
-      <%= if thumbsUp?(@comment, @user_id, @admin) do %>
+      <%= if @comment.user_id !== @user_id || @admin do %>
         <i class="text-primary far fa-thumbs-up"></i>
       <% end %>
       <%= if @admin do %>
@@ -29,11 +29,10 @@
           value="<%= @comment.likes %>"
         />
       <% else %>
-        <%= if @comment.likes > 0 do %>
-          <span class="likes badge badge-pill badge-primary mr-1">
-            <%= @comment.likes %>
-          </span>
-        <% end %>
+        <span class="likes badge badge-pill badge-primary mr-1
+          <%= if @comment.likes === 0, do: "d-none" %>">
+          <%= @comment.likes %>
+        </span>
       <% end %>
       <%= if @user_id && @comment.user_id !== @user_id do %>
         <small class='text-primary' drab-click='like(<%= @comment.id %>)'>

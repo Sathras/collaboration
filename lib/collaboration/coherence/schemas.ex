@@ -11,7 +11,8 @@ defmodule Collaboration.Coherence.Schemas do
   def list_users() do
     from(u in @user_schema,
       select: map(u, [:admin, :peer, :email, :id, :inserted_at, :name]),
-      order_by: u.inserted_at
+      order_by: u.inserted_at,
+      limit: 1000
     ) |> Repo.all()
   end
 
@@ -32,25 +33,6 @@ defmodule Collaboration.Coherence.Schemas do
     end
     |> Repo.all()
     |> List.first()
-  end
-
-  def list_user(page_size, page_number, search_term) do
-    query = from(u in @user_schema, select: struct(u, [:name, :email]))
-    query = add_filter(query, search_term)
-    Repo.paginate(query, page: page_number, page_size: page_size)
-  end
-
-  defp add_filter(query, search_term)
-       when search_term == nil or search_term == "",
-       do: query
-
-  defp add_filter(query, original_search_term) do
-    search_term = "#{original_search_term}%"
-
-    from(
-      u in query,
-      where: like(u.email, ^search_term) or like(u.name, ^search_term)
-    )
   end
 
   def list_by_user(opts) do

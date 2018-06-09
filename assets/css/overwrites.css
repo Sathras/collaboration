@@ -1,18 +1,5 @@
-div.dataTables_wrapper div.dataTables_info {
-  padding-top: 0em;
-}
-
-div.dataTables_wrapper label {
-  margin-bottom: 0rem;
-}
-
-#ideas_filter,
-#ideas_info {
-  text-align: center;
-}
-
-#ideas {
-  margin-top: 0 !important;
+body {
+  padding-top: 70px;
 }
 
 /* Disables steppers in number input fields */
