@@ -8,3 +8,8 @@
 th.time {
   width: 100px;
 }
+
+.icon-cell {
+  width: 33px;
+  text-align: center;
+}

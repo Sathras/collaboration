@@ -1,0 +1,81 @@
+<h2>Idea Nexus</h2>
+<div class="row">
+  <div class="col-sm-7">
+    <p class="lead"><mark>Please ensure to read the following carefully:</mark></p>
+    <p>This is a scientific experiment conducted by the University of Florida.
+    The goal is to [...]</p>
+    <ul>
+      <li>You can find your passcode on the website that lead you to this page</li>
+      <li>Once started please collaborate on any available topics through:
+        <ul>
+          <li>Contributing your own ideas</li>
+          <li>Rating or commenting the ideas of others</li>
+          <li>Liking other comments</li>
+        </ul>
+      </li>
+      <li>Please do not close this tab or delete your cookies while the experiment is going on.
+      Otherwise you may have to start over.</li>
+      <li>After 10 minutes you may finish your session by clicking the "Finish"
+      button that will replace the countdown in the navigation bar. This will
+      yield you a <strong>Code</strong> and a <strong>Link</strong> to our survey.
+      </li>
+      <li>You may complete at any time after the countdown runs out. There is no time pressure!</li>
+      <li class="text-danger">To receive payout this code must be included in the appropriate field
+      in the survey.</li>
+    </ul>
+  </div>
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-body text-center">
+        <h5 class="card-title">Start Experiment</h5>
+        <%= form_for @changeset, user_path(@conn, :create), fn f  -> %>
+          <div class="form-group">
+            <small id="passcode-help" class="form-text text-muted">
+              Please type in your experiment passcode:
+            </small>
+            <div class="input-group">
+              <div class="input-group-prepend" style="width: 40px;">
+                <div class="input-group-text">
+                  <i class="fas fa-key"></i>
+                </div>
+              </div>
+              <%= text_input f, :passcode,
+                aria_describedby: "passcode-help",
+                autocomplete: "off",
+                class: "form-control",
+                required: true,
+                length: 6,
+                placeholder: "Passcode"
+              %>
+              <%= error_tag f.source, :passcode %>
+            </div>
+          </div>
+          <div class="form-group">
+            <small id="name-help" class="form-text text-muted">
+              How would you like to be called?
+            </small>
+            <div class="input-group">
+              <div class="input-group-prepend" style="width: 40px;">
+                <div class="input-group-text">
+                  <i class="far fa-user"></i>
+                </div>
+              </div>
+              <%= text_input f, :name,
+                aria_describedby: "name-help",
+                autocomplete: "off",
+                class: "form-control",
+                required: true,
+                minlength: 3,
+                maxlength: 30,
+                placeholder: "Name"
+              %>
+              <%= error_tag f.source, :name %>
+            </div>
+          </div>
+          <p><small>By submitting this form you accept that all information given is voluntarily and may be used for scientific research. You further agree that a session cookie is temporarily stored on this computer.</small></p>
+          <%= submit "Start", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

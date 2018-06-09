@@ -46,3 +46,11 @@ export function toggleMCE(editorId) {
     tinymce.EditorManager.execCommand('mceAddEditor', false, editorId);
   }
 }
+
+// EXPOSE GLOBAL FUNCTIONS
+
+// autogrow text input when editing ideas or comments
+window.auto_grow = element => {
+  element.style.height = '30px';
+  element.style.height = element.scrollHeight + 'px';
+};

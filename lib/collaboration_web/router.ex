@@ -9,7 +9,6 @@ defmodule CollaborationWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(Coherence.Authentication.Session)
-    plug(CollaborationWeb.Plug.LoadTopics)
   end
 
   pipeline :protected do
@@ -23,6 +22,18 @@ defmodule CollaborationWeb.Router do
     plug(CollaborationWeb.Plug.LoadTopics)
   end
 
+  pipeline :protected_admin do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+    plug(Coherence.Authentication.Session, protected: true, login: true)
+    plug(Coherence.Authentication.Token, source: :params, param: "auth_token")
+    plug CollaborationWeb.Plug.IsAdmin
+    plug(CollaborationWeb.Plug.LoadTopics)
+  end
+
   scope "/" do
     pipe_through(:browser)
     coherence_routes()
@@ -33,23 +44,35 @@ defmodule CollaborationWeb.Router do
     coherence_routes(:protected)
   end
 
+  # admin routes first
+  scope "/", CollaborationWeb do
+    pipe_through(:protected_admin)
+
+    # add protected resources below
+    resources "/topics", TopicController, only: [:new, :create, :edit, :update] do
+      resources "/ideas", IdeaController, only: [:delete]
+    end
+    resources("/users", UserController, only: [:index, :update])
+  end
+
   scope "/", CollaborationWeb do
     pipe_through(:protected)
 
     # add protected resources below
-    resources "/topics", TopicController, only: [:new, :create, :edit, :update, :delete] do
-      resources "/ideas", IdeaController, only: [:new, :create, :edit, :update, :delete]
+    resources "/topics", TopicController, only: [:index, :show] do
+      resources "/ideas", IdeaController, only: [:create, :update]
     end
-    resources("/users", UserController, only: [:index, :update])
+    post "/complete", UserController, :finish
   end
 
   scope "/", CollaborationWeb do
     pipe_through(:browser)
 
     # add public resources below
-    get "/", TopicController, :index
-    resources "/topics", TopicController, only: [:index, :show] do
-      resources "/ideas", IdeaController, only: [:index, :show]
-    end
+    get "/", TopicController, :home
+    get "/complete", UserController, :complete
+
+    get "/start", UserController, :start
+    post "/start", UserController, :create
   end
 end

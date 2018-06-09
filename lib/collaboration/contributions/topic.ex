@@ -8,7 +8,6 @@ defmodule Collaboration.Contributions.Topic do
     field(:short_title, :string)
     field(:title, :string)
     field(:featured, :boolean, default: false)
-    field(:open, :boolean, default: true)
     field(:published, :boolean, default: false)
     timestamps()
     has_many(:ideas, Collaboration.Contributions.Idea, on_delete: :delete_all)
@@ -23,7 +22,6 @@ defmodule Collaboration.Contributions.Topic do
       :desc,
       :featured,
       :published,
-      :open,
       :short_desc
     ])
     |> validate_required([
@@ -32,7 +30,6 @@ defmodule Collaboration.Contributions.Topic do
       :desc,
       :featured,
       :published,
-      :open,
       :short_desc
     ])
   end

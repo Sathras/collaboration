@@ -1,10 +1,27 @@
 # Changelog
 
 ## 2.1.0
+ * Separated authentication for experiment users from admins, simpler account creation using only name and passcode now possible
  * New system to avoid javascript and utilize commanders
+ * Experiment users can finish the experiment gracefully after a predefined amount of time.
+ * New, simplified rating system
+ * Functionality to directly edit content in page where needed (admins and partially normal users)
  * Admins can now toggle topic flags directly in topic overview
  * Admins can now filter users by their condition in the user list
+ * Moved Edit Topic link (for admins) to topic list
+ * Removed Delete Topic link as it poses a risk to data loss and topics can simply be hidden
  * Users can no longer rate their own ideas and like their own comments
+ * Author names in comments from admins are now highlighted
+ * Instructions on first page included
+ * after completing experiment users are redirected to a thank you page
+ * Removed unnecessary social login buttons
+ * Removed link to register a normal account (although still possible)
+ * Removed option to open/close topics as hiding/showing topics already includes this feature for experiment users
+ * Removed unnecessary sorting/filtering features in user list
+ * Comments now ordered by date (ASC)
+ * Ideas now ordered by date (DESC)
+ * Form fields automaticaly size themselves if the content becomes larger (available when posting comments or editing ideas)
+ * Users that gracefully complete the experiment will be flaged as completed to separate them later from unfinished users
 
 ## 2.0.6
  * Own ideas (if normal user) or non-admin ideas (if admin) are now displayed cursive in idealist to better identify them among pregenerated ideas.

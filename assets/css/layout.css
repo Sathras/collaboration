@@ -27,3 +27,29 @@ input.fake-ratings {
   text-align: center;
   width: 40px;
 }
+
+/* column layout */
+
+@media (min-width: 576px) {
+  .card-columns {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-columns {
+    column-count: 3;
+  }
+}
+
+h5.card-title,
+.rating {
+  white-space: nowrap;
+}
+
+.auto-size,
+textarea.card-text {
+  resize: none;
+  overflow: hidden;
+  height: 29px;
+}

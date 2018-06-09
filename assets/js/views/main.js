@@ -16,6 +16,24 @@ export default class MainView {
 
     $('time').timeago();
 
+    // if timer is running then update it every second
+    let countdown = $('#timer').data('remaining');
+    if (countdown) {
+      this.timer = setInterval(() => {
+        var minutes = Math.floor(countdown / 60);
+        var seconds = countdown % 60;
+        $('#timer').text(`${minutes}:${seconds} remaining`);
+        if (countdown <= 0) {
+          clearInterval(this.timer);
+          $('#timer')
+            .text(`Complete Experiment`)
+            .removeAttr('disabled')
+            .removeClass('btn-light')
+            .addClass('btn-success');
+        } else countdown--;
+      }, 1000);
+    }
+
     // enable base tinyMCE instance
     tinymce.init({
       mode: 'none',
@@ -52,5 +70,6 @@ export default class MainView {
 
   unmount() {
     // This will be executed when the document unloads...
+    clearInterval(this.timer);
   }
 }

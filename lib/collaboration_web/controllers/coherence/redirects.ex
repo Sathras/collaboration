@@ -63,4 +63,7 @@ defmodule Coherence.Redirects do
 
   def registration_create(conn, _),
     do: redirect(conn, to: session_path(conn, :new))
+
+  def session_delete(conn, _),
+    do: redirect(conn, to: user_path(conn, :complete))
 end

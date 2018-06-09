@@ -1,18 +1,7 @@
 <center>
   <div class="card bg-light text-center" style="max-width: 320px;">
     <div class="card-body">
-      <h3 class="card-title"><%= dgettext "coherence", "Sign In" %></h3>
-      <p class="mb-0"><%= dgettext "coherence", "using" %></p>
-      <div class="social-buttons" data-toggle="tooltip" data-placement="bottom"
-        title="<%= gettext "coming soon..." %>">
-        <a href="#" class="btn btn-fb disabled">
-          <i class="fab fa-facebook-f"></i> Facebook
-        </a>
-        <a href="#" class="btn btn-tw disabled">
-          <i class="fab fa-twitter"></i> Twitter
-        </a>
-      </div>
-      or
+      <h3 class="card-title">Administration</h3>
       <%= form_for @conn, session_path(@conn, :create), [as: :session], fn f  -> %>
         <% login_field = Coherence.Config.login_field %>
         <div class="form-group">
@@ -61,12 +50,7 @@
         <% end %>
         <div class="form-group">
           <%= submit dgettext("coherence", "Sign In"), class: "btn btn-primary" %>
-          <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
         </div>
-        <hr>
-        <p class="mb-0">New here?
-          <b><%= CollaborationWeb.Coherence.ViewHelpers.register_link(@conn) %></b>
-        </p>
       <% end %>
     </div>
   </div>

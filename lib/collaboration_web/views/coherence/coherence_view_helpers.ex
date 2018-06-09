@@ -16,61 +16,7 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   @register_link dgettext("coherence", "Join Us")
   @invite_link dgettext("coherence", "Invite Someone")
   @confirm_link dgettext("coherence", "Confirm Account")
-  @signin_link dgettext("coherence", "Sign In")
   @settings_link dgettext("coherence", "Settings")
-
-  @doc """
-  Create coherence template links.
-
-  Generates links if the appropriate option is installed. This function
-  can be used to:
-
-  * create links for the new session page `:new_session`
-  * create links for your layout template `:layout`
-  """
-  @spec coherence_links(conn, atom) :: tuple
-  def coherence_links(conn, :layout) do
-    if Coherence.logged_in?(conn) do
-      current_user = Coherence.current_user(conn)
-      user_schema = Coherence.Config.user_schema()
-
-      [
-        nav_item(
-          conn,
-          "",
-          CollaborationWeb.Router.Helpers.user_path(conn, :index),
-          icon: "fas fa-users",
-          tooltip: "Users",
-          show: current_user.admin
-        ),
-        nav_item(
-          conn,
-          "",
-          coherence_path(@helpers, :registration_path, conn, :edit),
-          icon: "fas fa-cog",
-          tooltip: "Settings",
-          show: user_schema.registerable?
-        ),
-        nav_item(
-          conn,
-          "",
-          coherence_path(@helpers, :session_path, conn, :delete),
-          active: false,
-          method: :delete,
-          icon: "fas fa-power-off",
-          tooltip: "Sign Out"
-        )
-      ]
-      |> List.flatten()
-    else
-      nav_item(
-        conn,
-        @signin_link,
-        coherence_path(@helpers, :session_path, conn, :new),
-        icon: "fas fa-sign-in-alt mr-1"
-      )
-    end
-  end
 
   @doc """
   Helper to avoid compile warnings when options are disabled.

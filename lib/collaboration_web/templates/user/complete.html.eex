@@ -1,0 +1,17 @@
+<% IO.inspect @conn %>
+<div class="text-center">
+  <h2>Completed</h2>
+  <p class="lead">We thank you for your participation!</p>
+  <%= if Map.has_key?(@conn.params, "surveycode") do %>
+    <p>
+      Please continue to the final step of the study, our survey.<br>
+      You will require to enter the following code on the website you will reach
+      by clicking the button below:
+      <mark class='font-weight-bold'><%= @conn.params["surveycode"] %></mark>
+    </p>
+    <a class="btn btn-primary" href="http://www.google.com">To Survey</a>
+  <% else %>
+    <p>This website can now be closed.</p>
+  <% end %>
+</div>
+

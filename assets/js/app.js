@@ -3,7 +3,7 @@ import 'phoenix_html';
 import Turbolinks from 'turbolinks';
 
 // Import local files
-import { configPublicChannel } from './socket';
+import './socket';
 import { configTimeago } from './utils/functions';
 import loadView from './views/loader';
 
@@ -29,7 +29,6 @@ function handleDocumentUnload() {
 
 // Configuration
 configTimeago();
-configPublicChannel();
 
 // initialize TurboLinks
 document.addEventListener('turbolinks:load', handleDOMContentLoaded);

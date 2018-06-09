@@ -1,0 +1,24 @@
+<h2 class="text-center"><%= @topic.title %></h2>
+<div class="row card-group">
+  <div class="<%= if @current_user, do: "col-lg-7", else: "col" %>">
+    <%= raw @topic.desc %>
+  </div>
+  <div class="<%= if @current_user, do: "col-lg-5", else: "d-none" %>">
+    <%= if @changeset, do:
+      render IdeaView, "form.html",
+        conn: @conn,
+        changeset: @changeset
+    %>
+  </div>
+  <hr class="mt-0"/>
+</div>
+<div id="ideas" class="card-columns">
+  <%= for i <- @ideas do %>
+    <%= render IdeaView, "idea.html",
+      action_delete: topic_idea_path(@conn, :delete, @topic.id, i.id),
+      admin: admin?(@conn),
+      user_id: user_id(@conn),
+      idea: i
+    %>
+  <% end %>
+</div>

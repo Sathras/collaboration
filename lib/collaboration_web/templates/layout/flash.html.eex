@@ -1,0 +1,12 @@
+<%= if @msg do %>
+  <div
+    class="alert alert-dismissible alert-<%= flash_color(@type) %> fade show text-center"
+    role="alert"
+  >
+    <i class="float-left mr-2 fas <%= flash_icon(@type) %>"></i>
+    <span><%= @msg %></span>
+    <button type="button" class="close" data-dismiss="alert">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>

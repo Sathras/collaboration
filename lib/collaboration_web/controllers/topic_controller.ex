@@ -3,12 +3,20 @@ defmodule CollaborationWeb.TopicController do
 
   import CollaborationWeb.ViewHelpers, only: [admin?: 1]
 
+  def home(conn, _) do
+    if current_user(conn), do: redirect(conn, to: topic_path(conn, :index)),
+    else: redirect(conn, to: user_path(conn, :start))
+  end
+
   def index(conn, _) do
     render conn, "index.html", topics: list_topics(admin?(conn))
   end
 
-  def show(conn, %{"id" => id}) do
-    redirect conn, to: topic_idea_path(conn, :index, id)
+  def show(conn, %{"id" => id} = params) do
+    render conn, "show.html",
+      changeset: Map.get(params, :idea_changeset, change_idea()),
+      ideas: load_ideas(id, current_user(conn)),
+      topic: get_topic!(id)
   end
 
   def new(conn, _), do: render(conn, "new.html", changeset: change_topic())
@@ -40,13 +48,5 @@ defmodule CollaborationWeb.TopicController do
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
     end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    get_topic!(id) |> delete_topic
-
-    conn
-    |> put_flash(:info, "Topic deleted successfully.")
-    |> redirect(to: topic_path(conn, :index))
   end
 end

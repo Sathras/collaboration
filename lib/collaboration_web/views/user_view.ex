@@ -4,7 +4,7 @@ defmodule CollaborationWeb.UserView do
   def toggle_class(user, flag) do
     cond do
       flag === :admin && user.admin -> "text-primary fas fa-user-plus"
-      flag === :owner && user.owner -> "text-success fas fa-user-plus"
+      flag === :peer && user.peer -> "text-success fas fa-user-plus"
       true -> "text-muted fas fa-user"
     end
   end
@@ -12,7 +12,7 @@ defmodule CollaborationWeb.UserView do
   def toggle_title(user, flag) do
     cond do
       flag === :admin && user.admin -> "Admin"
-      flag === :owner && user.owner -> "Owner"
+      flag === :peer && user.peer -> "Peer"
       true -> "Normal User"
     end
   end
@@ -35,7 +35,7 @@ defmodule CollaborationWeb.UserView do
       name: u.name,
       email: u.email,
       admin: u.admin,
-      owner: u.owner,
+      peer: u.peer,
       condition: u.condition,
       created: NaiveDateTime.to_iso8601(u.inserted_at) <> "Z"
     }

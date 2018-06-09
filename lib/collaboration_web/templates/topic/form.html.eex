@@ -33,13 +33,6 @@
       </div>
       <div class="col text-center">
         <div class="form-group">
-          <%= checkbox f, :open, class: "checkbox" %>
-          <%= label f, :open, class: "control-label" %>
-          <%= error_tag f, :open %>
-        </div>
-      </div>
-      <div class="col text-center">
-        <div class="form-group">
           <%= checkbox f, :featured, class: "checkbox" %>
           <%= label f, :featured, class: "control-label" %>
           <%= error_tag f, :featured %>

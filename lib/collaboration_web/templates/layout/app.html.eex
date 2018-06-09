@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="A collaboration tool">
     <meta name="author" content="Alexander Fuchsberger">
-    <%= tag :meta, name: "token", content: Map.get @conn.assigns, :user_token, "" %>
+    <%= tag :meta, name: "user_token", content: Map.get @conn.assigns, :user_token, "" %>
+    <%= tag :meta, name: "user_id", content: user_id(@conn) %>
 
     <title>Idea Nexus</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
@@ -25,7 +26,6 @@
     </script>
     <!-- End Google Analytics -->
 
-
     <script>
       window.admin = <%= admin?(@conn) %>;
       window.user = <%= if user?(@conn),
@@ -37,43 +37,84 @@
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="/topics"><i class="far fa-lightbulb mr-1"></i>Idea Nexus</a>
-        <button
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          class="navbar-toggler"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          type="button"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div
-          class="collapse navbar-collapse"
-          id="navbarSupportedContent"
-        >
-          <ul id="nav-topics" class="navbar-nav mr-auto">
-            <%= for t <- @conn.assigns.nav_topics do %>
-              <%= nav_item @conn, t.short_title,
-                topic_idea_path(@conn, :index, t.id),
-                topic_id: t.id,
-                popover: t.short_desc
-              %>
-            <% end %>
-          </ul>
-          <ul class="navbar-nav">
-            <%= CollaborationWeb.Coherence.ViewHelpers.coherence_links(@conn, :layout) %>
-          </ul>
+        <a class="navbar-brand" href="<%= topic_path(@conn, :home) %>">
+          <i class="far fa-lightbulb mr-1"></i>Idea Nexus
+        </a>
+        <%= if @current_user do %>
+          <button
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            class="navbar-toggler"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            type="button"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        <% end %>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <%= if @current_user do %>
+            <ul id="nav-topics" class="navbar-nav mr-auto">
+              <%= for t <- @conn.assigns.nav_topics do %>
+                <%= nav_item @conn, t.short_title,
+                  topic_path(@conn, :show, t.id),
+                  topic_id: t.id,
+                  popover: t.short_desc
+                %>
+              <% end %>
+            </ul>
+          <% end %>
+          <%= if user?(@conn) do %>
+            <ul class="navbar-nav">
+              <%= if admin?(@conn) do %>
+                <li>
+                  <a class="nav-link" href="<%= user_path @conn, :index %>">
+                    <i class="fas fa-users"></i>
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" data-toggle="tooltip" title="Settings"
+                    href="<%= registration_path @conn, :edit %>"
+                  >
+                    <i class="fas fa-cog"></i>
+                  </a>
+                </li>
+                <li>
+                  <%= link raw("<i class=\"fas fa-power-off\"></i>"),
+                    to: session_path(@conn, :delete),
+                    class: "nav-link",
+                    data_toggle: "tooltip",
+                    method: "delete",
+                    title: "Sign Out"
+                  %>
+                </li>
+              <% else %>
+                <li><%= timer_button(@conn) %></li>
+                <li>
+                  <%= link raw("<i class=\"fas fa-power-off\"></i> Abort"),
+                    class: "btn btn-outline-danger ml-2",
+                    to: session_path(@conn, :delete),
+                    data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
+                    method: "delete"
+                  %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
         </div>
       </div>
     </nav>
     <div class="container">
-      <%= flash_messages(@conn) %>
+      <%= render "flash.html", type: :info, msg: get_flash(@conn, :info) %>
+      <%= render "flash.html", type: :error, msg: get_flash(@conn, :error) %>
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
     </div>
-    <%= Drab.Client.run(@conn) %>
+    <%= if Map.has_key?(@conn.assigns, :topic),
+      do: Drab.Client.run(@conn, user_id: user_id(@conn), topic_id: @topic.id),
+      else: Drab.Client.run(@conn, user_id: user_id(@conn))
+    %>
   </body>
 </html>

@@ -1,16 +1,37 @@
-.starrating > input {
-  display: none;
-} /* Remove radio buttons */
-
-.starrating > label {
-  margin-bottom: 0;
-  color: #222222; /* Start color when not clicked */
+/* fake rating if nothing else */
+.rating.base1 .fa-star:nth-child(-n + 2),
+.rating.base2 .fa-star:nth-child(-n + 3),
+.rating.base3 .fa-star:nth-child(-n + 4),
+.rating.base4 .fa-star:nth-child(-n + 5),
+.rating.base5 .fa-star:nth-child(-n + 6) {
+  color: orange;
 }
 
-.starrating > input:checked ~ label {
-  color: #ffca08;
-} /* Set yellow color when star checked */
+.rating.base0 > .fa-star {
+  color: gray;
+}
 
-.starrating > input:hover ~ label {
-  color: #ffca08;
-} /* Set yellow color when star hover */
+/* if i have a rating, prefer that (in blue) */
+.rating.my1 .fa-star,
+.rating.my2 .fa-star,
+.rating.my3 .fa-star,
+.rating.my4 .fa-star,
+.rating.my5 .fa-star {
+  color: black !important;
+}
+
+.rating.my1 .fa-star:nth-child(-n + 2),
+.rating.my2 .fa-star:nth-child(-n + 3),
+.rating.my3 .fa-star:nth-child(-n + 4),
+.rating.my4 .fa-star:nth-child(-n + 5),
+.rating.my5 .fa-star:nth-child(-n + 6) {
+  color: blue !important;
+}
+
+/* if hovered, that take even higher priority */
+.rating.rateable:hover {
+  color: black !important;
+}
+.rating.rateable .fa-star:hover {
+  color: red !important;
+}

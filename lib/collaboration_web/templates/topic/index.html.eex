@@ -1,0 +1,61 @@
+<%= newTopicLink(@conn) %>
+<h2><%= gettext "Listing Topics" %></h2>
+
+<table id="topics" class="table table-sm table-striped" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th class="text-center">Ideas</th>
+      <%= if admin?(@conn) do %>
+      <th class="icon-cell">
+        <i class="fas fa-eye" data-toggle="tooltip" title="Published / Hidden"></i>
+      </th>
+      <th class="icon-cell" >
+        <i class="fas fa-star" data-toggle="tooltip" title="Featured in menubar"></i>
+      </th>
+      <th class="icon-cell" >
+        <i class="fas fa-pencil-alt" data-toggle="tooltip" title="Edit"></i>
+      </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+<%= for t <- @conn.assigns.topics do %>
+  <%= unless !admin?(@conn) && !t.published do %>
+    <tr>
+      <td>
+        <a href="<%= topic_path(@conn, :show, t.id) %>">
+          <strong><%= t.title %></strong>
+        </a>
+      </td>
+      <td class="text-center"><strong><%= t.idea_count %></strong></td>
+      <%= if admin?(@conn) do %>
+        <td class="icon-cell">
+          <i class="fas
+            fa-<%= if t.published, do: "eye", else: "eye-slash text-muted" %>"
+            drab-click="toggle(<%= t.id %>)"
+            data-param="published"
+            data-value="<%= t.published %>"
+          ></i>
+        </td>
+        <td class="icon-cell">
+          <i class="fas fa-star text-<%= if t.featured, do: "primary", else: "muted" %>"
+            drab-click="toggle(<%= t.id %>)"
+            data-param="featured"
+            data-value="<%= t.featured %>"
+          ></i>
+        </td>
+        <td class="icon-cell">
+          <a href="<%= topic_path @conn, :edit, t.id %>">
+            <i class="text-dark fas fa-pencil-alt"></i>
+          </a>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <td colspan="5"><%= raw(t.short_desc) %></td>
+    </tr>
+  <% end %>
+<% end %>
+  </tbody>
+</table>

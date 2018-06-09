@@ -21,6 +21,7 @@ defmodule CollaborationWeb do
     quote do
       use Phoenix.Controller, namespace: CollaborationWeb
       import Plug.Conn
+      import Collaboration.Coherence.Schemas
       import Collaboration.Contributions
       import CollaborationWeb.Router.Helpers
       import CollaborationWeb.Gettext

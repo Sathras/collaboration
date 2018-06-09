@@ -5,8 +5,10 @@ defmodule Collaboration.Repo.Migrations.Coherence do
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :admin, :boolean, null: false, default: false
-      add :owner, :boolean, null: false, default: false
+      add :peer, :boolean, null: false, default: false
       add :condition, :integer
+      add :completed, :boolean, null: false, default: false
+      add :feedback_sequence, :integer
       add :name, :string
       add :email, :string
       add :confirmation_token, :string

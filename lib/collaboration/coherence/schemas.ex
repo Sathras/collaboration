@@ -1,9 +1,6 @@
 defmodule Collaboration.Coherence.Schemas do
   use Coherence.Config
-
   import Ecto.Query
-  import Collaboration.Repo, only: [paginate: 2]
-
   alias Phoenix.View
   alias Collaboration.Repo
   alias CollaborationWeb.UserView
@@ -11,38 +8,30 @@ defmodule Collaboration.Coherence.Schemas do
   @user_schema Config.user_schema()
   @repo Config.repo()
 
-  def list_users(params \\ %{}) do
-    # prepare params
-    condition = Map.get(params, :condition, "0")
-    search = Map.get(params, :search, :nil)
-
-    # basic query
-    query = from(u in @user_schema,
-      select: map(u, [:admin, :owner, :email, :id, :inserted_at, :name]),
+  def list_users() do
+    from(u in @user_schema,
+      select: map(u, [:admin, :peer, :email, :id, :inserted_at, :name]),
       order_by: u.inserted_at
-    )
-
-    # optionally filter results by condition
-    query = if condition !== "0",
-      do: query |> where([u], u.condition == ^condition),
-      else: query
-
-    # optionally filter results by search term
-    query = if search,
-      do: query |> where([u],
-        ilike(u.email, ^"%#{String.replace(search, "%", "\\%")}%") or
-        ilike(u.name, ^"%#{String.replace(search, "%", "\\%")}%")),
-      else: query
-
-    paginate(query, params)
+    ) |> Repo.all()
   end
 
   def select_user_ids(types, user_id \\ nil) do
     query = from(u in @user_schema, select: u.id)
-    query = if types[:admins], do: or_where(query, admin: true), else: query
-    query = if types[:owners], do: or_where(query, owner: true), else: query
+    query = if Enum.member?(types, :admins), do: or_where(query, admin: true), else: query
+    query = if Enum.member?(types, :peers), do: or_where(query, peer: true), else: query
     query = if user_id, do: or_where(query, id: ^user_id), else: query
     Repo.all(query)
+  end
+
+  def select_random_user(condition, user_id) do
+    query = from u in @user_schema, order_by: fragment("RANDOM()"), limit: 1
+    case condition do
+      3 -> from(u in query, where: u.id != ^user_id and u.peer)
+      4 -> from(u in query, where: u.id != ^user_id and u.admin)
+      _ -> query
+    end
+    |> Repo.all()
+    |> List.first()
   end
 
   def list_user(page_size, page_number, search_term) do
@@ -80,17 +69,6 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.get!(@user_schema, id)
   end
 
-  def get_random_feedback_user() do
-    from(
-      u in @user_schema,
-      where: u.feedback,
-      order_by: fragment("RANDOM()"),
-      limit: 1
-    )
-    |> @repo.all()
-    |> List.first()
-  end
-
   def get_user_by_email(email) do
     @repo.get_by(@user_schema, email: email)
   end
@@ -101,6 +79,10 @@ defmodule Collaboration.Coherence.Schemas do
 
   def change_user(struct, params, changeset_variation) do
     @user_schema.changeset(struct, params, changeset_variation)
+  end
+
+  def change_user(:experiment, params) do
+    @user_schema.changeset(@user_schema.__struct__, params, :experiment)
   end
 
   def change_user(struct, params) do
@@ -117,6 +99,10 @@ defmodule Collaboration.Coherence.Schemas do
 
   def create_user(params) do
     @repo.insert(change_user(params))
+  end
+
+  def create_user_for_experiment(params) do
+    @repo.insert(change_user(:experiment, params))
   end
 
   def create_user!(params) do
@@ -137,6 +123,10 @@ defmodule Collaboration.Coherence.Schemas do
 
   def update_user!(user, params) do
     @repo.update!(change_user(user, params))
+  end
+
+  def increase_feedback_sequence(_user) do
+
   end
 
   Enum.each(

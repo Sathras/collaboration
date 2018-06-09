@@ -8,14 +8,12 @@ defmodule Collaboration.Repo.Migrations.Contributions do
       add :short_desc, :text
       add :desc, :text
       add :featured, :boolean, default: false, null: false
-      add :open, :boolean, default: true, null: false
       add :published, :boolean, default: false, null: false
       timestamps()
     end
 
     create table(:ideas) do
-      add :title, :string
-      add :desc, :text
+      add :text, :text
       add :fake_rating, :float
       add :fake_raters, :integer, default: 0
       add :topic_id, references(:topics, on_delete: :delete_all)
