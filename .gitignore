@@ -1,5 +1,4 @@
 # App artifacts
-/.c9
 /_build
 /deps
 /tmp
@@ -13,9 +12,9 @@ assets/npm-debug.log
 assets/package-lock.json
 mix.lock
 
-# Since we are building assets from web/static,
-# we ignore priv/static. You may want to comment
-# this depending on your deployment strategy.
-/priv/static
+# fix to allow phx.digest to work properly
+/priv/static/**/*
+!/priv/static/.keep
 
+# do not commit releases
 /.deliver/releases/
