@@ -6,4 +6,4 @@ BUILD_AT="/home/dev/app_build"
 
 PRODUCTION_HOSTS="production" 
 PRODUCTION_USER="deploy" 
-DELIVER_TO="/home/deploy/collaboration" 
+DELIVER_TO="/home/deploy/apps" 
