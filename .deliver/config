@@ -6,7 +6,7 @@ APP="collaboration"
 
 BUILD_HOST="production"
 BUILD_USER="deploy"
-BUILD_AT="/home/app_build"
+BUILD_AT="/home/deploy/build"
 
 PRODUCTION_HOSTS="production" 
 PRODUCTION_USER="deploy" 
