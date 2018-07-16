@@ -13,21 +13,22 @@ use Mix.Config
 # which you typically run after static files are built.
 
 config :collaboration, CollaborationWeb.Endpoint,
-  http: [port: System.get_env("PORT") || 4003],
-  url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 443],
+  http: [port: 4003],
+  url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
+  code_reloader: false,
   version: Application.spec(:collaboration, :vsn)
 
 config :collaboration, CollaborationWeb.Endpoint,
-  secret_key_base: System.get_env("APP_SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
-  hostname: System.get_env("APP_DB_HOSTNAME"),
-  username: System.get_env("APP_DB_USERNAME"),
-  password: System.get_env("APP_DB_PASSWORD"),
-  database: "collaboration",
+  hostname: System.get_env("DB_HOSTNAME"),
+  username: System.get_env("DB_USERNAME"),
+  password: System.get_env("DB_PASSWORD"),
+  database: "collaboration_prod",
   pool_size: 20
 
 # This line appears further down. Do not forget to uncomment it!
