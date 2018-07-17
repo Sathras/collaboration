@@ -17,7 +17,7 @@ config :collaboration, CollaborationWeb.Endpoint,
   url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
-  code_reloader: false,
+  code_reloader: true,
   version: Application.spec(:collaboration, :vsn)
 
 config :collaboration, CollaborationWeb.Endpoint,
