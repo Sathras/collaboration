@@ -1,13 +1,31 @@
 APP="collaboration"
 
-# BUILD_HOST="localhost"
-# BUILD_USER="dev"
-# BUILD_AT="/home/dev/app_build"
-
 BUILD_HOST="production"
 BUILD_USER="deploy"
-BUILD_AT="/home/deploy/build"
+BUILD_AT="/tmp/edeliver/$APP/builds"
 
-PRODUCTION_HOSTS="production" 
-PRODUCTION_USER="deploy" 
-DELIVER_TO="/home/deploy/apps" 
+RELEASE_DIR="/tmp/edeliver/$APP/builds/_build/prod/rel/$APP"
+
+# prevent re-installing node modules; this defaults to "."
+GIT_CLEAN_PATHS="_build rel priv/static"
+
+PRODUCTION_HOSTS="production"
+PRODUCTION_USER="deploy"
+DELIVER_TO="/home/deploy"
+
+pre_erlang_clean_compile() {
+  status "Running phoenix.digest" # log output prepended with "----->"
+  __sync_remote " # runs the commands on the build host
+    # [ -f ~/.profile ] && source ~/.profile # load profile (optional)
+    source ~/.profile
+    # echo \$PATH # check if rbenv is in the path
+    set -e # fail if any command fails (recommended)
+    cd '$BUILD_AT/assets'
+    npm install 
+    ./node_modules/brunch/bin/brunch build --production 
+    # run your custom task
+    cd '$BUILD_AT'
+    mkdir -p priv/static # required by the phoenix.digest task
+    APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
+  "
+}
