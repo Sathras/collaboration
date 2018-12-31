@@ -8,7 +8,7 @@
       <%= case action_name(@conn) do
         :new ->
           render IdeaView, "form.html",
-            action: topic_idea_path(@conn, :create, @topic.id),
+            action: Routes.topic_idea_path(@conn, :create, @topic.id),
             admin: admin?(@conn),
             cancel: false,
             changeset: Map.get(@conn.assigns, :changeset),
@@ -16,9 +16,9 @@
 
         :edit ->
           render IdeaView, "form.html",
-            action: topic_idea_path(@conn, :update, @topic.id, idea_id(@conn)),
+            action: Routes.topic_idea_path(@conn, :update, @topic.id, idea_id(@conn)),
             admin: admin?(@conn),
-            cancel: topic_idea_path(@conn, :show, @topic.id, idea_id(@conn)),
+            cancel: Routes.topic_idea_path(@conn, :show, @topic.id, idea_id(@conn)),
             changeset: Map.get(@conn.assigns, :changeset),
             topic_id: @topic.id
 

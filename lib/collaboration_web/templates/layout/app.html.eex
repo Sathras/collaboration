@@ -11,8 +11,7 @@
 
     <title>Idea Nexus</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
-    <link rel="icon" type="image/x-icon" href="<%= static_path(@conn, "/images/favicon.ico") %>" >
+    <link rel="icon" type="image/x-icon" href="<%= Routes.static_path(@conn, "/images/favicon.ico") %>" >
 
     <!-- Google Analytics -->
     <script>
@@ -32,12 +31,12 @@
         do: raw("\"#{Coherence.current_user(@conn).id}\""), else: false %>;
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <script type="text/javascript" src="<%= Routes.static_url(@conn, "/js/app.js") %>"></script>
   </head>
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="<%= topic_path(@conn, :home) %>">
+        <a class="navbar-brand" href="<%= Routes.topic_path(@conn, :home) %>">
           <i class="far fa-lightbulb mr-1"></i>Idea Nexus
         </a>
         <%= if @current_user do %>
@@ -58,7 +57,7 @@
             <ul id="nav-topics" class="navbar-nav mr-auto">
               <%= for t <- @conn.assigns.nav_topics do %>
                 <%= nav_item @conn, t.short_title,
-                  topic_path(@conn, :show, t.id),
+                  Routes.topic_path(@conn, :show, t.id),
                   topic_id: t.id,
                   popover: t.short_desc
                 %>
@@ -69,20 +68,20 @@
             <ul class="navbar-nav">
               <%= if admin?(@conn) do %>
                 <li>
-                  <a class="nav-link" href="<%= user_path @conn, :index %>">
+                  <a class="nav-link" href="<%= Routes.user_path @conn, :index %>">
                     <i class="fas fa-users"></i>
                   </a>
                 </li>
                 <li>
                   <a class="nav-link" data-toggle="tooltip" title="Settings"
-                    href="<%= registration_path @conn, :edit %>"
+                    href="<%= Routes.registration_path @conn, :edit %>"
                   >
                     <i class="fas fa-cog"></i>
                   </a>
                 </li>
                 <li>
                   <%= link raw("<i class=\"fas fa-power-off\"></i>"),
-                    to: session_path(@conn, :delete),
+                    to: Routes.session_path(@conn, :delete),
                     class: "nav-link",
                     data_toggle: "tooltip",
                     method: "delete",
@@ -94,7 +93,7 @@
                 <li>
                   <%= link raw("<i class=\"fas fa-power-off\"></i> Abort"),
                     class: "btn btn-outline-danger ml-2",
-                    to: session_path(@conn, :delete),
+                    to: Routes.session_path(@conn, :delete),
                     data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
                     method: "delete"
                   %>

@@ -16,7 +16,7 @@ defmodule CollaborationWeb.TopicView do
   end
   def newTopicLink(conn) do
     if admin?(conn), do: link gettext("New Topic"),
-      to: topic_path(conn, :new),
+      to: Routes.topic_path(conn, :new),
       class: "float-right btn btn-outline-dark"
   end
 end

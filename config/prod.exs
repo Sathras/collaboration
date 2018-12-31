@@ -17,7 +17,7 @@ config :collaboration, CollaborationWeb.Endpoint,
   url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
-  code_reloader: true,
+  code_reloader: false,
   version: Application.spec(:collaboration, :vsn)
 
 config :collaboration, CollaborationWeb.Endpoint,
@@ -26,10 +26,10 @@ config :collaboration, CollaborationWeb.Endpoint,
 config :collaboration, Collaboration.Repo,
   adapter: Ecto.Adapters.Postgres,
   hostname: System.get_env("DB_HOSTNAME"),
-  username: System.get_env("DB_USERNAME"),
+  username: System.get_env("DB_USERNA~ME"),
   password: System.get_env("DB_PASSWORD"),
   database: "collaboration_prod",
-  pool_size: 20
+  pool_size: 1
 
 # This line appears further down. Do not forget to uncomment it!
 config :phoenix, :serve_endpoints, true

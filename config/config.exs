@@ -60,5 +60,5 @@ config :coherence, CollaborationWeb.Coherence.Mailer,
 
 # %% End Coherence Configuration %%
 
-config :phoenix, :template_engines,
-  drab: Drab.Live.Engine
+config :phoenix, :json_library, Jason
+config :phoenix, :template_engines, drab: Drab.Live.Engine

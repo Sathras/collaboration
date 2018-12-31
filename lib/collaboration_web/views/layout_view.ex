@@ -107,7 +107,7 @@ defmodule CollaborationWeb.LayoutView do
         id: "timer",
         class: "btn btn-success",
         data_confirm: "Are you sure? This will move you to the survey!",
-        to: user_path(conn, :finish)
+        to: Routes.user_path(conn, :finish)
     else
       minutes = Integer.floor_div(countdown, 60)
       seconds = Integer.mod(countdown, 60)
@@ -117,7 +117,7 @@ defmodule CollaborationWeb.LayoutView do
         data_confirm: "Are you sure? This will move you to the survey!",
         data_remaining: countdown,
         disabled: true,
-        to: user_path(conn, :finish)
+        to: Routes.user_path(conn, :finish)
     end
   end
 end

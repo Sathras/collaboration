@@ -15,7 +15,7 @@
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
     <%= render IdeaView, "idea.html",
-      action_delete: topic_idea_path(@conn, :delete, @topic.id, i.id),
+      action_delete: Routes.topic_idea_path(@conn, :delete, @topic.id, i.id),
       admin: admin?(@conn),
       user_id: user_id(@conn),
       idea: i

@@ -1,5 +1,10 @@
 # Changelog
 
+### 2.2.0
+ * updated all NPM and mix packages to latest versions
+ * replaced brunch with webpack (phoenix 1.4 upgrade)
+ * reduced pool size (to 1 connection) to minimze memory usage
+
 ### 2.1.1
  * fixed feedback loop (will go to next feedback now and so on until 10th feedback, then restart loop)
  * fixed missing like count badge when being the first one to like a comment with no previous fake likes

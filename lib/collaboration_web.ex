@@ -23,9 +23,10 @@ defmodule CollaborationWeb do
       import Plug.Conn
       import Collaboration.Coherence.Schemas
       import Collaboration.Contributions
-      import CollaborationWeb.Router.Helpers
       import CollaborationWeb.Gettext
       import Coherence, only: [current_user: 1]
+
+      alias CollaborationWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -55,12 +56,12 @@ defmodule CollaborationWeb do
       use Phoenix.HTML
       use PhoenixHtmlSanitizer, :full_html
 
-      import CollaborationWeb.Router.Helpers
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
       import CollaborationWeb.Gettext
       import Coherence, only: [current_user: 1]
 
+      alias CollaborationWeb.Router.Helpers, as: Routes
       alias CollaborationWeb.TopicView
       alias CollaborationWeb.IdeaView
       alias CollaborationWeb.CommentView

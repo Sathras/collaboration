@@ -1,4 +1,4 @@
-<%= form_for @changeset, topic_idea_path(@conn, :create, topic_id(@conn)),
+<%= form_for @changeset, Routes.topic_idea_path(@conn, :create, topic_id(@conn)),
   [id: "idea-form"], fn f -> %>
 <div class="card mb-3 position-sticky">
   <h5 class="card-header text-center">New Idea</h5>
@@ -56,7 +56,7 @@
         </div>
       <% end %>
       <%= if edit?(@changeset), do: link "Cancel",
-        to: topic_path(@conn, :show, @topic_id),
+        to: Routes.topic_path(@conn, :show, @topic_id),
         class: "btn btn-secondary"
       %>
       <button class="btn btn-primary">

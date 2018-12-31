@@ -10,9 +10,6 @@ defmodule CollaborationWeb.UserSocket do
   ## Channels
   channel("user:*", CollaborationWeb.UserChannel)
 
-  ## Transports
-  transport(:websocket, Phoenix.Transports.WebSocket)
-
   # connecting with user token
   def connect(%{"user_token" => token}, socket) do
     case Token.verify(socket, "user socket", token, max_age: @max_age) do

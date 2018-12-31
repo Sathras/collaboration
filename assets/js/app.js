@@ -1,4 +1,8 @@
 /* global $, ga */
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import css from '../css/app.css';
+
 import 'phoenix_html';
 import Turbolinks from 'turbolinks';
 

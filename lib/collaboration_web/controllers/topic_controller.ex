@@ -4,8 +4,9 @@ defmodule CollaborationWeb.TopicController do
   import CollaborationWeb.ViewHelpers, only: [admin?: 1]
 
   def home(conn, _) do
-    if current_user(conn), do: redirect(conn, to: topic_path(conn, :index)),
-    else: redirect(conn, to: user_path(conn, :start))
+    if current_user(conn),
+      do: redirect(conn, to: Routes.topic_path(conn, :index)),
+      else: redirect(conn, to: Routes.user_path(conn, :start))
   end
 
   def index(conn, _) do
@@ -31,7 +32,7 @@ defmodule CollaborationWeb.TopicController do
       {:ok, topic} ->
         conn
         |> put_flash(:info, "Topic created successfully.")
-        |> redirect(to: topic_path(conn, :show, topic))
+        |> redirect(to: Routes.topic_path(conn, :show, topic))
 
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -43,7 +44,7 @@ defmodule CollaborationWeb.TopicController do
       {:ok, topic} ->
         conn
         |> put_flash(:info, "Topic updated successfully.")
-        |> redirect(to: topic_path(conn, :show, topic))
+        |> redirect(to: Routes.topic_path(conn, :show, topic))
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)

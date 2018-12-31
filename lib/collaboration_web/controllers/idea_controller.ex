@@ -50,7 +50,7 @@ defmodule CollaborationWeb.IdeaController do
 
         conn
         |> put_flash(:info, "Idea created successfully.")
-        |> redirect(to: topic_path(conn, :show, topic_id ))
+        |> redirect(to: Routes.topic_path(conn, :show, topic_id ))
 
       {:error, changeset} ->
         conn
@@ -61,6 +61,6 @@ defmodule CollaborationWeb.IdeaController do
 
   def delete(conn, %{"id" => id, "topic_id" => topic_id}) do
     delete_idea(id)
-    redirect conn, to: topic_path(conn, :show, topic_id )
+    redirect conn, to: Routes.topic_path(conn, :show, topic_id )
   end
 end

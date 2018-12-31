@@ -35,7 +35,7 @@ defmodule CollaborationWeb.UserController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: Routes.user_path(conn, :index))
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
@@ -54,6 +54,6 @@ defmodule CollaborationWeb.UserController do
     end
     conn
     |> Coherence.Controller.logout_user
-    |> redirect(to: user_path(conn, :complete, surveycode: surveycode))
+    |> redirect(to: Routes.user_path(conn, :complete, surveycode: surveycode))
   end
 end

@@ -24,7 +24,7 @@
   <%= unless !admin?(@conn) && !t.published do %>
     <tr>
       <td>
-        <a href="<%= topic_path(@conn, :show, t.id) %>">
+        <a href="<%= Routes.topic_path(@conn, :show, t.id) %>">
           <strong><%= t.title %></strong>
         </a>
       </td>
@@ -46,7 +46,7 @@
           ></i>
         </td>
         <td class="icon-cell">
-          <a href="<%= topic_path @conn, :edit, t.id %>">
+          <a href="<%= Routes.topic_path @conn, :edit, t.id %>">
             <i class="text-dark fas fa-pencil-alt"></i>
           </a>
         </td>

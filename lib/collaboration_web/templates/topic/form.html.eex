@@ -59,7 +59,7 @@
   </div>
 
   <p class="text-center">
-    <%= link "Back", to: topic_path(@conn, :index) %>
+    <%= link "Back", to: Routes.topic_path(@conn, :index) %>
     <%= submit "Submit", class: " ml-2 btn btn-primary" %>
   </p>
 <% end %>
