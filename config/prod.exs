@@ -25,7 +25,7 @@ config :collaboration, CollaborationWeb.Endpoint,
 
 config :collaboration, Collaboration.Repo,
   hostname: System.get_env("DB_HOSTNAME"),
-  username: System.get_env("DB_USERNA~ME"),
+  username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
   database: "collaboration_prod",
   pool_size: 5
