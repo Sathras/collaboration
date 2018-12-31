@@ -1,9 +1,11 @@
 defmodule CollaborationWeb.UserSocket do
   use Phoenix.Socket
   use Drab.Socket
-  alias Phoenix.Token
+
   import Coherence.Config, only: [rememberable_cookie_expire_hours: 0]
   import Collaboration.Coherence.Schemas, only: [is_admin?: 1]
+
+  alias Phoenix.Token
 
   @max_age rememberable_cookie_expire_hours() * 60 * 60 || ( 2 * 24 * 60 * 60 )
 
@@ -23,7 +25,8 @@ defmodule CollaborationWeb.UserSocket do
   end
 
   # connecting without user token
-  def connect(%{}, socket), do: {:ok, socket}
+  def connect(_params, socket), do: {:ok, socket}
+  def connect(_params, socket, _), do: {:ok, socket}
 
   # identify socket
   def id(socket), do: if user?(socket), do: "user:#{user_id(socket)}", else: nil

@@ -1,5 +1,6 @@
-/* global $, tinymce */
-import 'timeago';
+import $ from 'jquery'
+import 'timeago'
+import 'bootstrap'
 
 export default class MainView {
   mount() {

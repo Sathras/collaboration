@@ -1,5 +1,5 @@
-/* global $, Drab */
-import { Socket } from 'phoenix';
+import $ from 'jquery'
+import { Socket } from 'phoenix'
 
 // get user variables from tags
 const user_id = $('meta[name=user_id]').attr('content');

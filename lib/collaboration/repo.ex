@@ -1,6 +1,10 @@
 defmodule Collaboration.Repo do
-  use Ecto.Repo, otp_app: :collaboration
-  use Scrivener, page_size: 1000
+  use Ecto.Repo,
+    adapter: Ecto.Adapters.Postgres,
+    otp_app: :collaboration
+
+  use Scrivener,
+    page_size: 1000
 
   @doc """
   Dynamically loads the repository url from the

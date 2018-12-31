@@ -24,7 +24,6 @@ config :collaboration, CollaborationWeb.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 config :collaboration, Collaboration.Repo,
-  adapter: Ecto.Adapters.Postgres,
   hostname: System.get_env("DB_HOSTNAME"),
   username: System.get_env("DB_USERNA~ME"),
   password: System.get_env("DB_PASSWORD"),

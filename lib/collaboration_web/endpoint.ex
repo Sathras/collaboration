@@ -1,7 +1,6 @@
 defmodule CollaborationWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :collaboration
 
-  socket("/socket", CollaborationWeb.UserSocket)
   socket "/socket", CollaborationWeb.UserSocket,
     websocket: true # or list of options
     # longpoll: [check_origin: ...]
@@ -32,7 +31,7 @@ defmodule CollaborationWeb.Endpoint do
     Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
-    json_decoder: Poison
+    json_decoder: Jason
   )
 
   plug(Plug.MethodOverride)

@@ -1,6 +1,7 @@
-/* global tinymce, jQuery */
+import $ from 'jquery'
+
 export function configTimeago() {
-  jQuery.timeago.settings.strings = {
+  $.timeago.settings.strings = {
     prefixAgo: null,
     prefixFromNow: null,
     suffixAgo: 'ago',

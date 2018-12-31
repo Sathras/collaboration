@@ -75,6 +75,16 @@ defmodule Collaboration.Coherence.User do
     |> validate_coherence(params)
   end
 
+  def changeset(model, params, :registration) do
+    model
+    |> cast(params, [:name, :email] ++ coherence_fields())
+    |> feedback_condition()
+    |> validate_required([:name, :email])
+    |> validate_format(:email, ~r/@/)
+    |> unique_constraint(:email)
+    |> validate_coherence(params)
+  end
+
   def changeset(model, params, :experiment) do
     model
     |> cast(params, [:name, :passcode] ++ coherence_fields())
