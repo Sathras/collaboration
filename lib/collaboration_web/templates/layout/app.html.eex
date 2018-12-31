@@ -32,7 +32,7 @@
         do: raw("\"#{Coherence.current_user(@conn).id}\""), else: false %>;
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-    <script type="text/javascript" src="<%= Routes.static_url(@conn, "/js/app.js") %>"></script>
+    <script src="<%= Routes.static_url(@conn, "/js/app.js") %>"></script>
   </head>
   <body data-js-view-name="<%= js_view_name(@conn, @view_template) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
