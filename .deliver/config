@@ -26,6 +26,6 @@ pre_erlang_clean_compile() {
     # run your custom task
     cd '$BUILD_AT'
     mkdir -p priv/static # required by the phoenix.digest task
-    APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
+    APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phx.digest $SILENCE
   "
 }
