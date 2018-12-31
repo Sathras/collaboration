@@ -21,8 +21,8 @@ pre_erlang_clean_compile() {
     # echo \$PATH # check if rbenv is in the path
     set -e # fail if any command fails (recommended)
     cd '$BUILD_AT/assets'
-    npm install 
-    ./node_modules/brunch/bin/brunch build --production 
+    npm install
+    webpack --mode production
     # run your custom task
     cd '$BUILD_AT'
     mkdir -p priv/static # required by the phoenix.digest task

@@ -28,7 +28,7 @@ config :collaboration, Collaboration.Repo,
   username: System.get_env("DB_USERNA~ME"),
   password: System.get_env("DB_PASSWORD"),
   database: "collaboration_prod",
-  pool_size: 1
+  pool_size: 5
 
 # This line appears further down. Do not forget to uncomment it!
 config :phoenix, :serve_endpoints, true
