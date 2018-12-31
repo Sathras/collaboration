@@ -14,7 +14,7 @@ PRODUCTION_USER="deploy"
 DELIVER_TO="/home/deploy"
 
 pre_erlang_clean_compile() {
-  status "Running phoenix.digest" # log output prepended with "----->"
+  status "Running phx.digest" # log output prepended with "----->"
   __sync_remote " # runs the commands on the build host
     # [ -f ~/.profile ] && source ~/.profile # load profile (optional)
     source ~/.profile
