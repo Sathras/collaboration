@@ -48,7 +48,7 @@ defmodule Collaboration.Mixfile do
       {:drab, "~> 0.10.0"},
       {:phoenix_html_sanitizer, "~> 1.1"},
       {:edeliver, "~> 1.6"},
-      {:distillery, "~> 2.0", warn_missing: false},
+      {:distillery, "~> 2.0"},
     ]
   end
 
