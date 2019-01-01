@@ -47,8 +47,8 @@ defmodule Collaboration.Mixfile do
       {:coherence, git: "https://github.com/appprova/coherence.git", branch: "upgrade-to-phoenix-1.4"},
       {:drab, "~> 0.10.0"},
       {:phoenix_html_sanitizer, "~> 1.1"},
-      {:edeliver, "~> 1.6"},
-      {:distillery, "~> 2.0"},
+      {:edeliver, "~> 1.5"},
+      {:distillery, "~> 1.5"},
     ]
   end
 
