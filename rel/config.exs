@@ -49,7 +49,9 @@ end
 release :collaboration do
   set version: current_version(:collaboration)
   set applications: [
-    :runtime_tools
+    :coherence,
+    :runtime_tools,
+    :scrivener_ecto
   ]
 end
 
