@@ -4,7 +4,7 @@ defmodule Collaboration.Mixfile do
   def project do
     [
       app: :collaboration,
-      version: "2.2.0",
+      version: "2.3.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -47,7 +47,7 @@ defmodule Collaboration.Mixfile do
       {:coherence, git: "https://github.com/appprova/coherence.git", branch: "upgrade-to-phoenix-1.4"},
       {:drab, "~> 0.10.0"},
       {:phoenix_html_sanitizer, "~> 1.1"},
-      {:edeliver, ">= 1.6.0"},
+      {:edeliver, "~> 1.6"},
       {:distillery, "~> 2.0", warn_missing: false},
     ]
   end
