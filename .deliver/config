@@ -10,11 +10,13 @@ START_DEPLOY=true
 CLEAN_DEPLOY=true
 
 # prevent re-installing node modules; this defaults to "."
-GIT_CLEAN_PATHS="_build rel priv/static"
+# GIT_CLEAN_PATHS="_build rel priv/static"
 
 PRODUCTION_HOSTS="production"
 PRODUCTION_USER="deploy"
 DELIVER_TO="/home/deploy"
+
+START_DEPLOY=true
 
 pre_erlang_clean_compile() {
   status "Running npm install"

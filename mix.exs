@@ -33,6 +33,7 @@ defmodule Collaboration.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # phoenix
       {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
@@ -44,11 +45,14 @@ defmodule Collaboration.Mixfile do
       {:gettext, "~> 0.16"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 1.0"},
+      # addons
+      {:comeonin, "~> 4.1"},
+      {:bcrypt_elixir, "~> 1.1"},
       {:coherence, git: "https://github.com/appprova/coherence.git", branch: "upgrade-to-phoenix-1.4"},
       {:drab, "~> 0.10.0"},
       {:phoenix_html_sanitizer, "~> 1.1"},
       {:edeliver, "~> 1.6"},
-      {:distillery, "~> 2.0"},
+      {:distillery, "~> 2.0"}
     ]
   end
 
