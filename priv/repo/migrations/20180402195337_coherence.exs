@@ -27,7 +27,6 @@ defmodule Collaboration.Repo.Migrations.Coherence do
       add :current_sign_in_ip, :string
       add :last_sign_in_ip, :string
       add :unlock_token, :string
-      add :username, :string, null: false
       timestamps()
     end
 
