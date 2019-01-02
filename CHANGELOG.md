@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.3.1
+ * fixed port number in email links
+
 ### 2.2.0
  * updated all NPM and mix packages to latest versions
  * replaced brunch with webpack (phoenix 1.4 upgrade)
