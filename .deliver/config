@@ -6,6 +6,7 @@ BUILD_HOST="production"
 BUILD_USER="deploy"
 BUILD_AT="/tmp/edeliver/$APP/builds"
 
+AUTO_VERSION=commit-count-master
 START_DEPLOY=true
 CLEAN_DEPLOY=true
 
@@ -16,7 +17,6 @@ PRODUCTION_HOSTS="production"
 PRODUCTION_USER="deploy"
 DELIVER_TO="/home/deploy"
 
-START_DEPLOY=true
 
 pre_erlang_clean_compile() {
   status "Running npm install"
