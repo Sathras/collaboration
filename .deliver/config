@@ -6,7 +6,7 @@ BUILD_HOST="production"
 BUILD_USER="deploy"
 BUILD_AT="/tmp/edeliver/$APP/builds"
 
-AUTO_VERSION=commit-count-master
+AUTO_VERSION=commit-count-branch
 START_DEPLOY=true
 CLEAN_DEPLOY=true
 
