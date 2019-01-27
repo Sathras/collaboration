@@ -26,7 +26,13 @@ defmodule CollaborationWeb.UserController do
     end
   end
 
-  def index(conn, _), do: render conn, "index.html", users: list_users()
+  def index(conn, _) do
+    render conn, "index.html", users: list_users()
+  end
+
+  def participants(conn, _) do
+    render conn, "participants.html", users: list_participants()
+  end
 
   # toggle admin flag
   def update(conn, %{"id" => id}) do

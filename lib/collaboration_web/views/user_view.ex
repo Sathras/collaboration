@@ -1,6 +1,18 @@
 defmodule CollaborationWeb.UserView do
   use CollaborationWeb, :view
 
+  def participants_link(conn) do
+    link "Participants",
+      to: Routes.user_path(conn, :participants),
+      class: "btn btn-primary"
+  end
+
+  def users_link(conn) do
+    link "Users",
+      to: Routes.user_path(conn, :index),
+      class: "btn btn-primary"
+  end
+
   def toggle_class(user, flag) do
     cond do
       flag === :admin && user.admin -> "text-primary fas fa-user-plus"

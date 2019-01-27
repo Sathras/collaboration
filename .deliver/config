@@ -6,17 +6,13 @@ BUILD_HOST="production"
 BUILD_USER="deploy"
 BUILD_AT="/tmp/edeliver/$APP/builds"
 
-AUTO_VERSION=commit-count-branch
-START_DEPLOY=true
-CLEAN_DEPLOY=true
-
-# prevent re-installing node modules; this defaults to "."
-# GIT_CLEAN_PATHS="_build rel priv/static"
+# TODO: test if automated, if so delete next 2 lines, otherwise uncomment
+# START_DEPLOY=true
+# CLEAN_DEPLOY=true
 
 PRODUCTION_HOSTS="production"
 PRODUCTION_USER="deploy"
 DELIVER_TO="/home/deploy"
-
 
 pre_erlang_clean_compile() {
   status "Running npm install"

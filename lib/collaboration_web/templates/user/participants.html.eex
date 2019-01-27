@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between mb-2">
-  <h2 class="mb-0">Listing Users</h2>
-  <%= participants_link(@conn) %>
+  <h2 class="mb-0">Listing Participants</h2>
+  <%= users_link(@conn) %>
 </div>
 <table
   id="users"
@@ -13,8 +13,7 @@
       <th>Name</th>
       <th>Email</th>
       <th>Joined</th>
-      <th><i class="fas fa-user"></i></th>
-      <th><i class="fas fa-user"></i></th>
+      <th>Condition</th>
     </tr>
   </thead>
   <tbody>
@@ -23,8 +22,7 @@
       <td><%= u.name %></td>
       <td><%= u.email %></td>
       <td><time datetime="<%= date(u.inserted_at) %>"></time></td>
-      <td class='admin'><%= toggle_icon(u, :admin) %></td>
-      <td class='peer'><%= toggle_icon(u, :peer) %></td>
+      <td><%= u.condition %></td>
     </tr>
   <% end %>
   </tbody>

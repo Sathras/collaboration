@@ -52,7 +52,8 @@ defmodule CollaborationWeb.Router do
     resources "/topics", TopicController, only: [:new, :create, :edit, :update] do
       resources "/ideas", IdeaController, only: [:delete]
     end
-    resources("/users", UserController, only: [:index, :update])
+    resources "/users",  UserController, only: [:index, :update]
+    get "/participants", UserController, :participants
   end
 
   scope "/", CollaborationWeb do

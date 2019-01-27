@@ -8,11 +8,21 @@ defmodule Collaboration.Coherence.Schemas do
   @user_schema Config.user_schema()
   @repo Config.repo()
 
+  def list_participants() do
+    from( u in @user_schema,
+      select: map(u, [:condition, :email, :inserted_at, :name]),
+      order_by: u.inserted_at,
+      where: u.admin == false and u.peer == false,
+      limit: 2000
+    ) |> Repo.all()
+  end
+
   def list_users() do
-    from(u in @user_schema,
+    from( u in @user_schema,
       select: map(u, [:admin, :peer, :email, :id, :inserted_at, :name]),
       order_by: u.inserted_at,
-      limit: 1000
+      where: u.admin or u.peer,
+      limit: 100
     ) |> Repo.all()
   end
 

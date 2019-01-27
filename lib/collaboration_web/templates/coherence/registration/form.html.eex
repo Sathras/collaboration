@@ -116,18 +116,8 @@
           <%= link dgettext("coherence", "Cancel"), to: Coherence.Config.logged_out_url("/"), class: "btn" %>
         </div>
       <% end %>
-      <%= if is_nil(@changeset.data.id) do %>
-        <p class="mb-0"><%= dgettext "coherence", "or sign in via:" %></p>
-        <div class="social-buttons" data-toggle="tooltip" data-placement="bottom"
-          title="<%= gettext "coming soon..." %>">
-          <a href="#" class="btn btn-fb disabled">
-            <i class="fab fa-facebook-f"></i> Facebook
-          </a>
-          <a href="#" class="btn btn-tw disabled">
-            <i class="fab fa-twitter"></i> Twitter
-          </a>
-        </div>
-      <% else %>
+
+      <% if not is_nil(@changeset.data.id) do %>
         <small>
           <%= link to: registration_path(@conn, :delete), method: :delete,
             data: [confirm: dgettext("coherence", "Are you sure?")], class: "text-danger" do

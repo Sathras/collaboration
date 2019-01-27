@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.3.2
+ * removed login via facebook or google placeholders
+ * separated participants from users in admin list view
+
 ### 2.3.1
  * fixed port number in email links
 
