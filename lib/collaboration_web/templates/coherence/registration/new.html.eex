@@ -1,7 +1,0 @@
-<%= render "form.html",
-  action: registration_path(@conn, :create),
-  changeset: @changeset,
-  heading: dgettext("coherence", "Register Account"),
-  label: dgettext("coherence", "Register"),
-  required: [required: ""]
-%>

@@ -74,13 +74,6 @@
                   </a>
                 </li>
                 <li>
-                  <a class="nav-link" data-toggle="tooltip" title="Settings"
-                    href="<%= Routes.registration_path @conn, :edit %>"
-                  >
-                    <i class="fas fa-cog"></i>
-                  </a>
-                </li>
-                <li>
                   <%= link raw("<i class=\"fas fa-power-off\"></i>"),
                     to: Routes.session_path(@conn, :delete),
                     class: "nav-link",

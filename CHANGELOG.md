@@ -6,6 +6,7 @@
  * allows for eight conditions now
  * switched from binary ids to int ids for better performance
  * removed unlock, active and confirmation mechanics (unnecessary)
+ * removed default registration mechanism
 
 ### 2.3.1
  * fixed port number in email links

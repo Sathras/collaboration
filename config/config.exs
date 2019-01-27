@@ -52,7 +52,6 @@ config :coherence,
   user_token: true,
   opts: [
     :rememberable,
-    :registerable,
     :invitable,
     :authenticatable,
     :recoverable,
