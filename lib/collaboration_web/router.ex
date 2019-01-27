@@ -73,7 +73,7 @@ defmodule CollaborationWeb.Router do
     get "/", TopicController, :home
     get "/complete", UserController, :complete
 
-    get "/start", UserController, :start
+    get "/start", UserController, :new
     post "/start", UserController, :create
   end
 end

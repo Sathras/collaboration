@@ -99,7 +99,7 @@ defmodule CollaborationWeb.LayoutView do
 
   def timer_button(conn) do
     user = current_user(conn)
-    started = user.confirmed_at
+    started = user.inserted_at
     now = NaiveDateTime.utc_now()
     countdown = NaiveDateTime.diff(started, now) + 60 * 1 # 10 minutes from start
     if countdown <= 0 do

@@ -3,27 +3,27 @@ defmodule CollaborationWeb.UserController do
 
   import Collaboration.Coherence.Schemas
 
-  def start(conn, _) do
-    render conn, "start.html", changeset: change_user(:experiment, %{})
-  end
-
   def complete(conn, _), do: render conn, "complete.html"
 
-  def create(conn, %{"user" => params }) do
-    case create_user_for_experiment(params) do
+  def create(conn, %{"user" => user_params }) do
+    case create_participant(user_params) do
       {:ok, user} ->
-        {:ok, user} = Coherence.ConfirmableService.confirm!(user)
         params = %{
           "remember" => false,
-          "session" => %{"email" => user.email, "password" => "password"}
+          "session" => %{
+            "email" => user.email,
+            "password" => Application.fetch_env!(:collaboration, :password)
+          }
         }
         Coherence.SessionController.create(conn, params)
 
       {:error, changeset} ->
-        conn
-        |> put_flash(:error, "Your passcode seems to be invalid.")
-        |> render("start.html", changeset: changeset)
+        render conn, "new.html", changeset: changeset
     end
+  end
+
+  def new(conn, _params) do
+    render conn, "new.html", changeset: change_participant()
   end
 
   def index(conn, _) do

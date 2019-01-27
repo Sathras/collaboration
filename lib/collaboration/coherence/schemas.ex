@@ -2,6 +2,8 @@ defmodule Collaboration.Coherence.Schemas do
   use Coherence.Config
   import Ecto.Query
   alias Phoenix.View
+
+  alias Collaboration.Coherence.User
   alias Collaboration.Repo
   alias CollaborationWeb.UserView
 
@@ -12,7 +14,7 @@ defmodule Collaboration.Coherence.Schemas do
     from( u in @user_schema,
       select: map(u, [:condition, :email, :inserted_at, :name]),
       order_by: u.inserted_at,
-      where: u.admin == false and u.peer == false,
+      where: u.condition > 0,
       limit: 2000
     ) |> Repo.all()
   end
@@ -21,7 +23,7 @@ defmodule Collaboration.Coherence.Schemas do
     from( u in @user_schema,
       select: map(u, [:admin, :peer, :email, :id, :inserted_at, :name]),
       order_by: u.inserted_at,
-      where: u.admin or u.peer,
+      where: u.condition == 0,
       limit: 100
     ) |> Repo.all()
   end
@@ -69,12 +71,12 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.one from(u in @user_schema, select: u.admin, where: u.id == ^id)
   end
 
-  def change_user(struct, params, changeset_variation) do
-    @user_schema.changeset(struct, params, changeset_variation)
+  def change_participant() do
+    User.changeset(%User{}, %{}, :experiment)
   end
 
-  def change_user(:experiment, params) do
-    @user_schema.changeset(@user_schema.__struct__, params, :experiment)
+  def change_user(struct, params, changeset_variation) do
+    @user_schema.changeset(struct, params, changeset_variation)
   end
 
   def change_user(struct, params) do
@@ -93,8 +95,8 @@ defmodule Collaboration.Coherence.Schemas do
     @repo.insert(change_user(params))
   end
 
-  def create_user_for_experiment(params) do
-    @repo.insert(change_user(:experiment, params))
+  def create_participant(params) do
+    User.changeset(%User{}, params, :experiment) |> Repo.insert()
   end
 
   def create_user!(params) do

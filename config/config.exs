@@ -9,7 +9,9 @@ use Mix.Config
 config :collaboration,
   ecto_repos: [Collaboration.Repo],
   env: Mix.env,
-  generators: [binary_id: true]
+  # own configuration
+  passcode: "orange",          # passcode required for experiment (lower case)
+  password: "Z%mK9Gh4M9Bbn#Y5" # default password for participant users
 
 # Configures the endpoint
 config :collaboration, CollaborationWeb.Endpoint,
@@ -45,20 +47,16 @@ config :coherence,
   router: CollaborationWeb.Router,
   messages_backend: CollaborationWeb.Coherence.Messages,
   logged_out_url: "/sessions/new",
-  user_active_field: true,
   email_from_name: "fuchsberger.us",
   email_from_email: "noreply@fuchsberger.us",
   user_token: true,
   opts: [
-    :confirmable,
     :rememberable,
     :registerable,
     :invitable,
     :authenticatable,
     :recoverable,
-    :lockable,
-    :trackable,
-    :unlockable_with_token
+    :trackable
   ]
 
 config :coherence, CollaborationWeb.Coherence.Mailer,

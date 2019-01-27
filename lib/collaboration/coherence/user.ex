@@ -7,8 +7,8 @@ defmodule Collaboration.Coherence.User do
   alias Collaboration.Contributions.Idea
   alias Collaboration.Contributions.Rating
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  @passcode Application.fetch_env!(:collaboration, :passcode)
+  @password Application.fetch_env!(:collaboration, :password)
 
   schema "users" do
     timestamps()
@@ -18,7 +18,7 @@ defmodule Collaboration.Coherence.User do
     field :peer, :boolean, default: false
     field :name, :string
     field :email, :string
-    field :condition, :integer
+    field :condition, :integer, default: 0
     field :completed, :boolean, default: false
     field :feedback_sequence, :integer, default: 0
 
@@ -35,12 +35,52 @@ defmodule Collaboration.Coherence.User do
 
   def changeset(model, params \\ %{})
 
+  # create admin user (via invitation or seed file)
+  def changeset(model, %{ :name => _, :email => _ } = params ) do
+    model
+    |> cast(params, [:name, :email] ++ coherence_fields())
+    |> validate_required([:name, :email])
+    |> validate_format(:email, ~r/@/)
+    |> put_change(:admin, true)
+    |> put_change(:password, @password)
+    |> put_change(:password_confirmation, @password)
+    |> unique_constraint(:email)
+    |> validate_coherence(params)
+  end
+
+  # create peer user (via seed file)
+  def changeset(model, %{ :name => _, :peer => peer_id } = params ) do
+    model
+    |> cast(params, [:name] ++ coherence_fields())
+    |> validate_required([:name])
+    |> put_change(:peer, true)
+    |> put_change(:email, "#{peer_id}@peer")
+    |> put_change(:password, @password)
+    |> put_change(:password_confirmation, @password)
+    |> unique_constraint(:email)
+    |> validate_coherence(params)
+  end
+
+  # create test user (via seed file)
+  def changeset(model, %{ :name => _, :condition => condition } = params ) do
+    model
+    |> cast(params, [:name, :condition] ++ coherence_fields())
+    |> validate_required([:name, :condition])
+    |> put_change(:email, "#{condition}@test")
+    |> put_change(:password, @password)
+    |> put_change(:password_confirmation, @password)
+    |> unique_constraint(:email)
+    |> validate_coherence(params)
+  end
+
+  # for toggling admin in user list
   def changeset(model, %{:admin => _admin} = params) do
     model
     |> cast(params, [:admin])
     |> validate_inclusion(:admin, [true, false])
   end
 
+  # for toggling peer in user list
   def changeset(model, %{:peer => _peer} = params) do
     model
     |> cast(params, [:peer])
@@ -59,43 +99,27 @@ defmodule Collaboration.Coherence.User do
     |> validate_inclusion(:feedback_sequence, 0..9)
   end
 
-  def changeset(model, %{:condition => _cond} = params) do
-    model
-    |> cast(params, [:condition])
-    |> validate_inclusion(:condition, 1..4)
-  end
-
   def changeset(model, params) do
     model
     |> cast(params, [:name, :email] ++ coherence_fields())
-    |> feedback_condition()
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> validate_coherence(params)
   end
 
-  def changeset(model, params, :registration) do
-    model
-    |> cast(params, [:name, :email] ++ coherence_fields())
-    |> feedback_condition()
-    |> validate_required([:name, :email])
-    |> validate_format(:email, ~r/@/)
-    |> unique_constraint(:email)
-    |> validate_coherence(params)
-  end
-
+  # create user for experiment ( via default registration )
   def changeset(model, params, :experiment) do
     model
     |> cast(params, [:name, :passcode] ++ coherence_fields())
     |> validate_required([:name, :passcode])
     |> validate_length(:name, min: 3, max: 30)
     |> put_change(:passcode, String.downcase(Map.get(params, "passcode", "")))
-    |> validate_inclusion(:passcode, ["orange"])
-    |> put_change(:email, random_string(10) <>"@fake.com")
-    |> put_change(:password,"password")
-    |> put_change(:password_confirmation,"password")
-    |> feedback_condition()
+    |> validate_inclusion(:passcode, [ @passcode ])
+    |> put_change(:email, random_string(10) <>"@participant")
+    |> put_change(:password, @password)
+    |> put_change(:password_confirmation, @password)
+    |> put_change(:condition, Enum.random(1..8))
     |> validate_coherence(params)
   end
 
@@ -103,12 +127,6 @@ defmodule Collaboration.Coherence.User do
     model
     |> cast(params, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(params)
-  end
-
-  def feedback_condition(model) do
-    if model.data.condition === nil,
-      do: put_change(model, :condition, Enum.random(1..4)),
-      else: model
   end
 
   defp random_string(length) do

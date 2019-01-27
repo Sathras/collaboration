@@ -6,7 +6,7 @@ defmodule CollaborationWeb.TopicController do
   def home(conn, _) do
     if current_user(conn),
       do: redirect(conn, to: Routes.topic_path(conn, :index)),
-      else: redirect(conn, to: Routes.user_path(conn, :start))
+      else: redirect(conn, to: Routes.user_path(conn, :new))
   end
 
   def index(conn, _) do

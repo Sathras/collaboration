@@ -21,56 +21,36 @@ defmodule CollaborationWeb.Coherence.Messages do
   ##################
   # Messages
 
-  def account_already_confirmed,
-    do: dgettext(@domain, "Account already confirmed.")
-
+  def account_already_confirmed, do: dgettext(@domain, "Account already confirmed.")
   def account_is_not_locked, do: dgettext(@domain, "Account is not locked.")
-
-  def account_updated_successfully,
-    do: dgettext(@domain, "Account updated successfully.")
-
+  def account_updated_successfully, do: dgettext(@domain, "Account updated successfully.")
+  def account_created_successfully, do: dgettext(@domain, "Account created successfully.")
   def already_confirmed, do: dgettext(@domain, "already confirmed")
   def already_locked, do: dgettext(@domain, "already locked")
   def already_logged_in, do: dgettext(@domain, "Already logged in.")
   def cant_be_blank, do: dgettext(@domain, "can't be blank")
   def cant_find_that_token, do: dgettext(@domain, "Can't find that token")
   def confirmation_email_sent, do: dgettext(@domain, "Confirmation email sent.")
-
-  def confirmation_token_expired,
-    do: dgettext(@domain, "Confirmation token expired.")
+  def confirmation_token_expired, do: dgettext(@domain, "Confirmation token expired.")
 
   def could_not_find_that_email_address,
     do: dgettext(@domain, "Could not find that email address")
 
   def forgot_your_password, do: dgettext(@domain, "Forgot your password?")
-
-  def http_authentication_required,
-    do: dgettext(@domain, "HTTP Authentication Required")
+  def http_authentication_required, do: dgettext(@domain, "HTTP Authentication Required")
 
   def incorrect_login_or_password(opts),
     do: dgettext(@domain, "Incorrect %{login_field} or password.", opts)
 
-  def invalid_current_password,
-    do: dgettext(@domain, "invalid current password")
+  def invalid_current_password, do: dgettext(@domain, "invalid current password")
 
   def invalid_invitation,
-    do:
-      dgettext(
-        @domain,
-        "Invalid Invitation. Please contact the site administrator."
-      )
+    do: dgettext(@domain, "Invalid Invitation. Please contact the site administrator.")
 
   def invalid_request, do: dgettext(@domain, "Invalid Request.")
-
-  def invalid_confirmation_token,
-    do: dgettext(@domain, "Invalid confirmation token.")
-
-  def invalid_email_or_password,
-    do: dgettext(@domain, "Invalid email or password.")
-
-  def invalid_invitation_token,
-    do: dgettext(@domain, "Invalid invitation token.")
-
+  def invalid_confirmation_token, do: dgettext(@domain, "Invalid confirmation token.")
+  def invalid_email_or_password, do: dgettext(@domain, "Invalid email or password.")
+  def invalid_invitation_token, do: dgettext(@domain, "Invalid invitation token.")
   def invalid_reset_token, do: dgettext(@domain, "Invalid reset token.")
   def invalid_unlock_token, do: dgettext(@domain, "Invalid unlock token.")
   def invitation_already_sent, do: dgettext(@domain, "Invitation already sent.")
@@ -78,20 +58,12 @@ defmodule CollaborationWeb.Coherence.Messages do
   def invite_someone, do: dgettext(@domain, "Invite Someone")
 
   def maximum_login_attempts_exceeded,
-    do:
-      dgettext(
-        @domain,
-        "Maximum Login attempts exceeded. Your account has been locked."
-      )
+    do: dgettext(@domain, "Maximum Login attempts exceeded. Your account has been locked.")
 
   def need_an_account, do: dgettext(@domain, "Need An Account?")
   def not_locked, do: dgettext(@domain, "not locked")
-
-  def password_reset_token_expired,
-    do: dgettext(@domain, "Password reset token expired.")
-
-  def password_updated_successfully,
-    do: dgettext(@domain, "Password updated successfully.")
+  def password_reset_token_expired, do: dgettext(@domain, "Password reset token expired.")
+  def password_updated_successfully, do: dgettext(@domain, "Password updated successfully.")
 
   def problem_confirming_user_account,
     do:
@@ -104,13 +76,10 @@ defmodule CollaborationWeb.Coherence.Messages do
     do: dgettext(@domain, "Registration created successfully.")
 
   def required, do: dgettext(@domain, "required")
-
-  def resend_confirmation_email,
-    do: dgettext(@domain, "Resend confirmation email")
+  def resend_confirmation_email, do: dgettext(@domain, "Resend confirmation email")
 
   def reset_email_sent,
-    do:
-      dgettext(@domain, "Reset email sent. Check your email for a reset link.")
+    do: dgettext(@domain, "Reset email sent. Check your email for a reset link.")
 
   def restricted_area, do: dgettext(@domain, "Restricted Area")
   def send_an_unlock_email, do: dgettext(@domain, "Send an unlock email")
@@ -119,31 +88,21 @@ defmodule CollaborationWeb.Coherence.Messages do
   def signed_in_successfully, do: dgettext(@domain, "Signed in successfully.")
 
   def too_many_failed_login_attempts,
-    do:
-      dgettext(
-        @domain,
-        "Too many failed login attempts. Account has been locked."
-      )
+    do: dgettext(@domain, "Too many failed login attempts. Account has been locked.")
 
   def unauthorized_ip_address, do: dgettext(@domain, "Unauthorized IP Address")
-
-  def unlock_instructions_sent,
-    do: dgettext(@domain, "Unlock Instructions sent.")
+  def unlock_instructions_sent, do: dgettext(@domain, "Unlock Instructions sent.")
 
   def user_account_confirmed_successfully,
     do: dgettext(@domain, "User account confirmed successfully.")
 
-  def user_already_has_an_account,
-    do: dgettext(@domain, "User already has an account!")
+  def user_already_has_an_account, do: dgettext(@domain, "User already has an account!")
 
   def you_must_confirm_your_account,
     do: dgettext(@domain, "You must confirm your account before you can login.")
 
-  def your_account_has_been_unlocked,
-    do: dgettext(@domain, "Your account has been unlocked")
-
-  def your_account_is_not_locked,
-    do: dgettext(@domain, "Your account is not locked.")
+  def your_account_has_been_unlocked, do: dgettext(@domain, "Your account has been unlocked")
+  def your_account_is_not_locked, do: dgettext(@domain, "Your account is not locked.")
 
   def verify_user_token(opts),
     do: dgettext(@domain, "Invalid %{user_token} error: %{error}", opts)
@@ -152,7 +111,7 @@ defmodule CollaborationWeb.Coherence.Messages do
     do:
       dgettext(
         @domain,
-        "You are using an invalid security token for this site! This security violation has been logged."
+        "You are using an invalid security token for this site! This security\nviolation has been logged.\n"
       )
 
   def mailer_required, do: dgettext(@domain, "Mailer configuration required!")

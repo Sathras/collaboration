@@ -6,8 +6,8 @@ defmodule Collaboration.Contributions.Comment do
     field :fake_likes, :integer, null: false, default: 0
     field :text, :string
     belongs_to :idea,       Collaboration.Contributions.Idea
-    belongs_to :user,       Collaboration.Coherence.User, type: :binary_id
-    belongs_to :recipient,  Collaboration.Coherence.User, type: :binary_id
+    belongs_to :user,       Collaboration.Coherence.User
+    belongs_to :recipient,  Collaboration.Coherence.User
 
     many_to_many :likes,   Collaboration.Coherence.User, join_through: "likes",
                            on_replace: :delete, on_delete: :delete_all

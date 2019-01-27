@@ -42,7 +42,7 @@
               <%= text_input f, :passcode,
                 aria_describedby: "passcode-help",
                 autocomplete: "off",
-                class: "form-control",
+                class: "form-control #{error_class(f, :passcode)}",
                 required: true,
                 length: 6,
                 placeholder: "Passcode"
@@ -63,7 +63,7 @@
               <%= text_input f, :name,
                 aria_describedby: "name-help",
                 autocomplete: "off",
-                class: "form-control",
+                class: "form-control #{error_class(f, :name)}",
                 required: true,
                 minlength: 3,
                 maxlength: 30,

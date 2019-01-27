@@ -7,15 +7,11 @@ defmodule Collaboration.Coherence.Rememberable do
 
   alias Coherence.Config
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
-
   schema "rememberables" do
-    field(:series_hash, :string)
-    field(:token_hash, :string)
-    field(:token_created_at, :naive_datetime)
-    belongs_to(:user, Config.user_schema(), type: :binary_id)
-
+    field :series_hash, :string
+    field :token_hash, :string
+    field :token_created_at, :naive_datetime
+    belongs_to :user, Config.user_schema()
     timestamps()
   end
 

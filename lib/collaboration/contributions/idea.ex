@@ -8,8 +8,8 @@ defmodule Collaboration.Contributions.Idea do
     field :fake_raters, :integer, default: 0
     has_many :comments, Collaboration.Contributions.Comment, on_delete: :delete_all
     has_many :ratings, Collaboration.Contributions.Rating, on_delete: :delete_all
-    belongs_to(:topic, Collaboration.Contributions.Topic)
-    belongs_to(:user, Collaboration.Coherence.User, type: :binary_id)
+    belongs_to :topic, Collaboration.Contributions.Topic
+    belongs_to :user, Collaboration.Coherence.User
     timestamps()
   end
 

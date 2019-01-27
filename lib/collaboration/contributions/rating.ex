@@ -3,9 +3,9 @@ defmodule Collaboration.Contributions.Rating do
   import Ecto.Changeset
 
   schema "ratings" do
-    field(:rating, :integer)
-    belongs_to(:idea, Collaboration.Contributions.Idea)
-    belongs_to(:user, Collaboration.Coherence.User, type: :binary_id)
+    field :rating, :integer
+    belongs_to :idea, Collaboration.Contributions.Idea
+    belongs_to :user, Collaboration.Coherence.User
   end
 
   @doc false
