@@ -18,22 +18,17 @@ export default class MainView {
 
     $('time').timeago();
 
-    // if timer is running then update it every second
+    // if experiment is in progress, enable "conclude" btn after timer runs out
     let countdown = $('#timer').data('remaining');
     if (countdown) {
-      this.timer = setInterval(() => {
-        var minutes = Math.floor(countdown / 60);
-        var seconds = countdown % 60;
-        $('#timer').text(`${minutes}:${seconds} remaining`);
-        if (countdown <= 0) {
-          clearInterval(this.timer);
-          $('#timer')
-            .text(`Complete Experiment`)
-            .removeAttr('disabled')
-            .removeClass('btn-light')
-            .addClass('btn-success');
-        } else countdown--;
-      }, 1000);
+      this.timer = setTimeout(() => {
+        clearInterval(this.timer);
+        $('#timer')
+          .text(`Complete Experiment`)
+          .removeAttr('disabled')
+          .removeClass('btn-light')
+          .addClass('btn-success');
+      }, countdown * 1000);
     }
 
     // enable base tinyMCE instance

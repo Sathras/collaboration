@@ -100,8 +100,12 @@ defmodule CollaborationWeb.LayoutView do
   def timer_button(conn) do
     started = current_user(conn).inserted_at
     now = NaiveDateTime.utc_now()
-    time = Application.fetch_env!(:collaboration, :minTime)
-    countdown = NaiveDateTime.diff(started, now) + time
+    minTime = Application.fetch_env!(:collaboration, :minTime)
+    countdown = NaiveDateTime.diff(started, now) + minTime
+
+    timeElement = content_tag :time, "",
+      datetime: NaiveDateTime.to_iso8601(
+        NaiveDateTime.add(started, minTime )) <> "Z"
 
     if countdown <= 0 do
       button "Complete Experiment",
@@ -110,9 +114,7 @@ defmodule CollaborationWeb.LayoutView do
         data_confirm: "Are you sure? This will move you to the survey!",
         to: Routes.user_path(conn, :finish)
     else
-      minutes = Integer.floor_div(countdown, 60)
-      seconds = Integer.mod(countdown, 60)
-      button "#{minutes}:#{seconds} remaining",
+      button timeElement,
         id: "timer",
         class: "btn btn-light",
         data_confirm: "Are you sure? This will move you to the survey!",
