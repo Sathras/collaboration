@@ -7,6 +7,8 @@
  * switched from binary ids to int ids for better performance
  * removed unlock, active and confirmation mechanics (unnecessary)
  * removed default registration mechanism
+ * by default: switched from client and server to serverside-only form validation. De-validation on input change now global.
+ * exeriment minTime now retrieved from config instead of hard-coded
 
 ### 2.3.1
  * fixed port number in email links

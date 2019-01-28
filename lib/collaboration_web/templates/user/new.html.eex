@@ -43,8 +43,6 @@
                 aria_describedby: "passcode-help",
                 autocomplete: "off",
                 class: "form-control #{error_class(f, :passcode)}",
-                required: true,
-                length: 6,
                 placeholder: "Passcode"
               %>
               <%= error_tag f.source, :passcode %>
@@ -64,9 +62,6 @@
                 aria_describedby: "name-help",
                 autocomplete: "off",
                 class: "form-control #{error_class(f, :name)}",
-                required: true,
-                minlength: 3,
-                maxlength: 30,
                 placeholder: "Name"
               %>
               <%= error_tag f.source, :name %>

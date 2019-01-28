@@ -10,8 +10,9 @@ config :collaboration,
   ecto_repos: [Collaboration.Repo],
   env: Mix.env,
   # own configuration
-  passcode: "orange",          # passcode required for experiment (lower case)
-  password: "Z%mK9Gh4M9Bbn#Y5" # default password for participant users
+  minTime: 10 * 60,             # minimal experiment time [sec]
+  passcode: "orange",           # passcode required for experiment (lower case)
+  password: "Z%mK9Gh4M9Bbn#Y5"  # default password for participant users
 
 # Configures the endpoint
 config :collaboration, CollaborationWeb.Endpoint,

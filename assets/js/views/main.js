@@ -3,8 +3,9 @@ import 'timeago'
 import 'bootstrap'
 
 export default class MainView {
+
+  // This will be executed whenever a new page is loaded
   mount() {
-    // This will be executed when the document loads...
 
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
@@ -67,10 +68,18 @@ export default class MainView {
       ],
       style_formats_merge: true
     });
+
+    // enable form validation removal on change
+    $('.form-control').change((e) => {
+      $(e.target)
+        .removeClass('is-valid is-invalid')
+        .siblings('.invalid-feedback').remove();
+    });
   }
 
   unmount() {
     // This will be executed when the document unloads...
     clearInterval(this.timer);
+    $( ".form-control" ).off();
   }
 }

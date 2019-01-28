@@ -98,10 +98,11 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def timer_button(conn) do
-    user = current_user(conn)
-    started = user.inserted_at
+    started = current_user(conn).inserted_at
     now = NaiveDateTime.utc_now()
-    countdown = NaiveDateTime.diff(started, now) + 60 * 1 # 10 minutes from start
+    time = Application.fetch_env!(:collaboration, :minTime)
+    countdown = NaiveDateTime.diff(started, now) + time
+
     if countdown <= 0 do
       button "Complete Experiment",
         id: "timer",
