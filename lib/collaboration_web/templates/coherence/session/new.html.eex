@@ -38,19 +38,22 @@
             <%= error_tag f, :password %>
           </div>
         </div>
-        <p class="small d-inline-flex justify-content-between w-100 mb-2">
-          <%= CollaborationWeb.Coherence.ViewHelpers.recover_link(@conn) %>
-          <%= CollaborationWeb.Coherence.ViewHelpers.confirmation_link(@conn) %>
-        </p>
+
         <%= if @remember do %>
           <div class="form-group mb-1">
             <input type="checkbox"  name="remember" id="remember">
             <label for="remember"><%= dgettext "coherence", "Remember Me?" %></label>
           </div>
         <% end %>
+
+        <p class="small w-100 mb-2">
+          <%= CollaborationWeb.Coherence.ViewHelpers.recover_link(@conn) %>
+        </p>
+
         <div class="form-group">
           <%= submit dgettext("coherence", "Sign In"), class: "btn btn-primary" %>
         </div>
+
       <% end %>
     </div>
   </div>

@@ -12,10 +12,8 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   @helpers CollaborationWeb.Router.Helpers
 
   @recover_link dgettext("coherence", "Forgot password?")
-  @unlock_link dgettext("coherence", "Send an unlock email")
   @register_link dgettext("coherence", "Join Us")
   @invite_link dgettext("coherence", "Invite Someone")
-  @confirm_link dgettext("coherence", "Confirm Account")
   @settings_link dgettext("coherence", "Settings")
 
   @doc """
@@ -52,17 +50,6 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   def register_link(conn, text \\ @register_link),
     do: link(text, to: coherence_path(@helpers, :registration_path, conn, :new))
 
-  @spec unlock_link(conn, module, false | String.t()) :: [any] | []
-  def unlock_link(_conn, _user_schema, false), do: []
-
-  def unlock_link(conn, _user_schema, text) do
-    if conn.assigns[:locked], do: [unlock_link(conn, text)], else: []
-  end
-
-  @spec unlock_link(conn, String.t()) :: tuple
-  def unlock_link(conn, text \\ @unlock_link),
-    do: link(text, to: coherence_path(@helpers, :unlock_path, conn, :new))
-
   @spec invitation_link(conn, String.t()) :: tuple
   def invitation_link(conn, text \\ @invite_link) do
     link(text, to: coherence_path(@helpers, :invitation_path, conn, :new))
@@ -79,18 +66,6 @@ defmodule CollaborationWeb.Coherence.ViewHelpers do
   def settings_link(conn, text \\ @settings_link) do
     to = coherence_path(@helpers, :registration_path, conn, :edit)
     if text, do: link(text, to: to), else: link(icon("fas fa-cog"), to: to)
-  end
-
-  @spec confirmation_link(conn, module, false | String.t()) :: [any] | []
-  def confirmation_link(_conn, _user_schema, false), do: []
-
-  def confirmation_link(conn, user_schema, text) do
-    if user_schema.confirmable?, do: [confirmation_link(conn, text)], else: []
-  end
-
-  @spec confirmation_link(conn, String.t()) :: tuple
-  def confirmation_link(conn, text \\ @confirm_link) do
-    link(text, to: coherence_path(@helpers, :confirmation_path, conn, :new))
   end
 
   @spec required_label(atom, String.t() | atom, Keyword.t()) :: tuple

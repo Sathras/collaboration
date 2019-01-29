@@ -11,6 +11,7 @@
  * exeriment minTime now retrieved from config instead of hard-coded
  * improved performance of timer and switched to timeago display to avoid displaying seconds on higher minutes
  * passcode and default experiment user password removed from version tracking
+ * added toggleable legend to topic list
 
 ### 2.3.1
  * fixed port number in email links

@@ -14,9 +14,4 @@ defmodule CollaborationWeb.TopicView do
       data_value: "#{topic.featured}",
       drab_click: "toggle"
   end
-  def newTopicLink(conn) do
-    if admin?(conn), do: link gettext("New Topic"),
-      to: Routes.topic_path(conn, :new),
-      class: "float-right btn btn-outline-dark"
-  end
 end

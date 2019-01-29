@@ -40,8 +40,8 @@ defmodule CollaborationWeb.Router do
   end
 
   scope "/" do
-    pipe_through(:protected)
-    coherence_routes(:protected)
+    pipe_through :protected
+    coherence_routes :protected
   end
 
   # admin routes first
