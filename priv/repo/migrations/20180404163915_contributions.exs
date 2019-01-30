@@ -8,7 +8,7 @@ defmodule Collaboration.Repo.Migrations.Contributions do
       add :short_desc, :text
       add :desc, :text
       add :featured, :boolean, default: false, null: false
-      add :published, :boolean, default: false, null: false
+      add :visible, :integer, default: 0
       timestamps()
     end
 

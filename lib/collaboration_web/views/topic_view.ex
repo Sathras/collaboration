@@ -5,13 +5,18 @@ defmodule CollaborationWeb.TopicView do
     if idea.my_idea?, do: content_tag(:u, idea.title), else: idea.title
   end
 
-  def iconFeatured(topic) do
-    class = if topic.featured, do: "text-primary", else: "text-muted"
-    content_tag :i, "",
-      class: "fas fa-star #{class}",
-      data_id: topic.id,
-      data_param: "featured",
-      data_value: "#{topic.featured}",
-      drab_click: "toggle"
+  def iconVisibility ( visibility ) do
+    class = case visibility do
+      3 -> "fas fa-eye"
+      2 -> "far fa-smile"
+      1 -> "far fa-frown"
+      _ -> "fas eye-slash text-muted"
+    end
+    content_tag :i, "", class: class
+  end
+
+  def iconFeatured ( featured ) do
+    color = if featured, do: "primary", else: "muted"
+    content_tag :i, "", class: "fas fa-star text-#{color}"
   end
 end

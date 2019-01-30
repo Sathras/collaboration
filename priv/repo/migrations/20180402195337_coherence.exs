@@ -5,7 +5,7 @@ defmodule Collaboration.Repo.Migrations.Coherence do
     create table(:users) do
       add :admin, :boolean, null: false, default: false
       add :peer, :boolean, null: false, default: false
-      add :condition, :integer
+      add :condition, :integer, default: 0, null: false
       add :completed, :boolean, null: false, default: false
       add :feedback_sequence, :integer
       add :name, :string
@@ -24,7 +24,7 @@ defmodule Collaboration.Repo.Migrations.Coherence do
 
     create unique_index(:users, [:email])
 
-    create table(:invitations, primary_key: false) do
+    create table(:invitations) do
       add :name, :string
       add :email, :string
       add :token, :string
@@ -34,7 +34,7 @@ defmodule Collaboration.Repo.Migrations.Coherence do
     create unique_index(:invitations, [:email])
     create index(:invitations, [:token])
 
-    create table(:rememberables, primary_key: false) do
+    create table(:rememberables) do
       add :series_hash, :string
       add :token_hash, :string
       add :token_created_at, :utc_datetime

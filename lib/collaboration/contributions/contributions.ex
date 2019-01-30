@@ -28,21 +28,29 @@ defmodule Collaboration.Contributions do
           short_title: t.short_title,
           short_desc: t.short_desc,
           featured: t.featured,
-          published: t.published,
+          visible: t.visible,
           idea_count: count(i.id)
         }
       )
 
-    query = if admin, do: query, else: from([t, i] in query, where: t.published)
+    query = if admin, do: query, else: from([t, i] in query, where: t.visible > 0)
     Repo.all(query)
   end
 
-  def get_topic_titles!() do
-    from(
-      t in Topic,
-      select: map(t, [:id, :short_title, :short_desc]),
-      where: t.published and t.featured
-    ) |> Repo.all()
+  def get_topic_titles!(condition) do
+    query = from t in Topic,
+      select: map(t, ~w(id short_title short_desc)a),
+      where: t.featured and t.visible > 0
+
+    query = cond do
+      Enum.member?([1,3,5,7], condition) -> where( query, [visible: 1] )
+      Enum.member?([2,4,6,8], condition) -> where( query, [visible: 2] )
+      true -> query
+    end
+
+    query
+    |> order_by([asc: :short_title])
+    |> Repo.all()
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)

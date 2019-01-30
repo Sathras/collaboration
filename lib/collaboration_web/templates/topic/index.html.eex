@@ -26,7 +26,7 @@
         <i class="fas fa-star text-primary"></i> linked in navbar and topic list (if visible)<br/>
         <i class="fas fa-star text-muted"></i> linked in topic list (if visible)<br/>
         <i class="fas fa-pencil-alt"></i> edit the topic<br/>
-        <i>Topics are sorted by title (topic list) and short title (navbar)</i>
+        <i>topics are sorted by title (topic list) or short title (navbar)</i>
       </div>
     </div>
   </div>
@@ -39,15 +39,15 @@
       <th>Title</th>
       <th class="text-center">Ideas</th>
       <%= if admin?(@conn) do %>
-      <th class="icon-cell">
-        <i class="fas fa-eye" data-toggle="tooltip" title="Published / Hidden"></i>
-      </th>
-      <th class="icon-cell" >
-        <i class="fas fa-star" data-toggle="tooltip" title="Featured in menubar"></i>
-      </th>
-      <th class="icon-cell" >
-        <i class="fas fa-pencil-alt" data-toggle="tooltip" title="Edit"></i>
-      </th>
+        <th class="icon-cell">
+          <i class="fas fa-eye"></i>
+        </th>
+        <th class="icon-cell" >
+          <i class="fas fa-star"></i>
+        </th>
+        <th class="icon-cell" >
+          <i class="fas fa-pencil-alt"></i>
+        </th>
       <% end %>
     </tr>
   </thead>
@@ -63,19 +63,10 @@
       <td class="text-center"><strong><%= t.idea_count %></strong></td>
       <%= if admin?(@conn) do %>
         <td class="icon-cell">
-          <i class="fas
-            fa-<%= if t.published, do: "eye", else: "eye-slash text-muted" %>"
-            drab-click="toggle(<%= t.id %>)"
-            data-param="published"
-            data-value="<%= t.published %>"
-          ></i>
+          <%= iconVisibility t.visible %>
         </td>
         <td class="icon-cell">
-          <i class="fas fa-star text-<%= if t.featured, do: "primary", else: "muted" %>"
-            drab-click="toggle(<%= t.id %>)"
-            data-param="featured"
-            data-value="<%= t.featured %>"
-          ></i>
+          <%= iconFeatured t.featured %>
         </td>
         <td class="icon-cell">
           <a href="<%= Routes.topic_path @conn, :edit, t.id %>">

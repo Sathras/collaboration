@@ -105,22 +105,6 @@ defmodule CollaborationWeb.TopicCommander do
     end
   end
 
-  defhandler toggle(socket, sender, topic_id) do
-    param = sender["data"]["param"]
-    value = !sender["data"]["value"]
-    case update_topic(get_topic!(topic_id), Map.put(%{}, param, value)) do
-      {:ok, _topic} ->
-        toggle = if param == "featured",
-          do: "text-primary text-muted",
-          else: "fa-eye fa-eye-slash text-muted"
-        socket
-        |> update!(:class, toggle: toggle, on: this(sender))
-        |> update!(attr: "data-value", set: value, on: this(sender))
-      {:error, _changeset} ->
-        socket |> exec_js("console.log('Something went wrong!');")
-    end
-  end
-
   defhandler update_fake_likes(socket, sender, comment_id) do
     elm = "#comment#{comment_id}"
     likes = socket |> select( data: "likes", from: elm )

@@ -42,8 +42,8 @@ defmodule Collaboration.Coherence.User do
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
     |> put_change(:admin, true)
-    |> put_change(:password, @password)
-    |> put_change(:password_confirmation, @password)
+    |> put_change(:password, "password")
+    |> put_change(:password_confirmation, "password")
     |> unique_constraint(:email)
     |> validate_coherence(params)
   end
