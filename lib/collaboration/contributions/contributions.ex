@@ -16,24 +16,26 @@ defmodule Collaboration.Contributions do
   alias CollaborationWeb.IdeaView
   alias CollaborationWeb.CommentView
 
-  def list_topics(admin \\ false) do
-    query =
-      from(
-        t in Topic,
-        left_join: i in assoc(t, :ideas),
-        group_by: t.id,
-        select: %{
-          id: t.id,
-          title: t.title,
-          short_title: t.short_title,
-          short_desc: t.short_desc,
-          featured: t.featured,
-          visible: t.visible,
-          idea_count: count(i.id)
-        }
-      )
+  def list_topics(condition) do
+    query = from t in Topic,
+      left_join: i in assoc(t, :ideas),
+      group_by: t.id,
+      select: %{
+        id: t.id,
+        title: t.title,
+        short_title: t.short_title,
+        short_desc: t.short_desc,
+        featured: t.featured,
+        visible: t.visible,
+        idea_count: count(i.id)
+      }
 
-    query = if admin, do: query, else: from([t, i] in query, where: t.visible > 0)
+    query = cond do
+      Enum.member?([1,3,5,7], condition) -> where( query, [visible: 1] )
+      Enum.member?([2,4,6,8], condition) -> where( query, [visible: 2] )
+      true -> query
+    end
+
     Repo.all(query)
   end
 

@@ -1,7 +1,7 @@
 defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
-  import CollaborationWeb.ViewHelpers, only: [admin?: 1]
+  import CollaborationWeb.ViewHelpers, only: [ admin?: 1, condition: 1 ]
 
   def home(conn, _) do
     if current_user(conn),
@@ -10,7 +10,7 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def index(conn, _) do
-    render conn, "index.html", topics: list_topics(admin?(conn))
+    render conn, "index.html", topics: list_topics(condition(conn))
   end
 
   def show(conn, %{"id" => id} = params) do

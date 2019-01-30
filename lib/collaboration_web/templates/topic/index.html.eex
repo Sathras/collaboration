@@ -52,8 +52,7 @@
     </tr>
   </thead>
   <tbody>
-<%= for t <- @conn.assigns.topics do %>
-  <%= unless !admin?(@conn) && !t.published do %>
+  <%= for t <- @conn.assigns.topics do %>
     <tr>
       <td>
         <a href="<%= Routes.topic_path(@conn, :show, t.id) %>">
@@ -79,6 +78,5 @@
       <td colspan="5"><%= raw(t.short_desc) %></td>
     </tr>
   <% end %>
-<% end %>
   </tbody>
 </table>

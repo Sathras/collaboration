@@ -12,6 +12,7 @@
  * improved performance of timer and switched to timeago display to avoid displaying seconds on higher minutes
  * passcode and default experiment user password removed from version tracking
  * added toggleable legend to topic list
+ * topics are now visible in both list and navbar based on user condition
 
 ### 2.3.1
  * fixed port number in email links
