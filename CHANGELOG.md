@@ -7,12 +7,14 @@
  * switched from binary ids to int ids for better performance
  * removed unlock, active and confirmation mechanics (unnecessary)
  * removed default registration mechanism
- * by default: switched from client and server to serverside-only form validation. De-validation on input change now global.
+ * by default: switched from client and server to serverside-only form validation. De-validation on input change happens now globally.
  * exeriment minTime now retrieved from config instead of hard-coded
  * improved performance of timer and switched to timeago display to avoid displaying seconds on higher minutes
  * passcode and default experiment user password removed from version tracking
  * added toggleable legend to topic list
  * topics are now visible in both list and navbar based on user condition
+ * to test a specific condition you can now start the experiment, naming the user:  *test_<condition>*
+ * removed testusers in seeds file, as they can now be created dynamically
 
 ### 2.3.1
  * fixed port number in email links

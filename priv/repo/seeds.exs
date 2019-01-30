@@ -9,36 +9,29 @@ defmodule Collaboration.Seeder do
   alias Collaboration.Contributions.{ Topic, Idea, Comment }
 
   def init do
-    admin "USF", "admin@fuchsberger.us"
-    admin "Alex", "alex@fuchsberger.us"
-    admin "Naif", "naifalawi@mail.usf.edu"
-    admin "Triparna", "tdevreede@usf.edu"
-    admin "GJ", "gdevreede@usf.edu"
+    # peer users will have the following email: <id>@peer
+    p1 = user "Shonna D.", "1@peer"
+    user "Derek R.", "2@peer"
+    user "Payel N.", "3@peer"
+    user "Megan V.", "4@peer"
+    user "Tim O.", "5@peer"
+    user "Lindsey K.", "6@peer"
+    user "Jeff B.", "7@peer"
+    user "Tina L.", "8@peer"
+    user "Beth L.", "9@peer"
+    user "Fahad K.", "10@peer"
+    user "Bailey Y.", "11@peer"
+    user "Rao P.", "12@peer"
+    user "George O.", "13@peer"
+    user "Kinsley R.", "14@peer"
+    user "Bindi P.", "15@peer"
 
-    p1 = peer "Shonna D.", 1
-    peer "Derek R.", 2
-    peer "Payel N.", 3
-    peer "Megan V.", 4
-    peer "Tim O.", 5
-    peer "Lindsey K.", 6
-    peer "Jeff B.", 7
-    peer "Tina L.", 8
-    peer "Beth L.", 9
-    peer "Fahad K.", 10
-    peer "Bailey Y.", 11
-    peer "Rao P.", 12
-    peer "George O.", 13
-    peer "Kinsley R.", 14
-    peer "Bindi P.", 15
-
-    test "Test 1", 1
-    test "Test 3", 3
-    test "Test 2", 2
-    test "Test 4", 4
-    test "Test 5", 5
-    test "Test 6", 6
-    test "Test 7", 7
-    test "Test 8", 8
+    # admin users will have a real email instead of an identifier:
+    user "USF", "admin@fuchsberger.us"
+    user "Alex", "alex@fuchsberger.us"
+    user "Naif", "naifalawi@mail.usf.edu"
+    user "Triparna", "tdevreede@usf.edu"
+    user "GJ", "gdevreede@usf.edu"
 
     t1 = topic %{
       title: "What are the solutions to illegal immigration in America?",
@@ -76,17 +69,8 @@ defmodule Collaboration.Seeder do
 
   end
 
-  defp admin(name, email) do
+  defp user(name, email) do
     User.changeset(%User{}, %{ name: name, email: email }) |> Repo.insert!()
-  end
-
-  defp peer(name, peer_id) do
-    User.changeset(%User{}, %{ name: name, peer: peer_id }) |> Repo.insert!()
-  end
-
-  defp test(name, condition) do
-    User.changeset(%User{}, %{ name: name, condition: condition })
-    |> Repo.insert!()
   end
 
   defp topic(params) do

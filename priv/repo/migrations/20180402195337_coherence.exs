@@ -1,10 +1,21 @@
 defmodule Collaboration.Repo.Migrations.Coherence do
+  @moduledoc """
+  users belong to a certain condition
+  0 admin and peer users
+  1 DI(L) F(L) BI(L)    DI = Direct Interaction
+  2 DI(L) F(H) BI(L)    F  = Friendliness
+  3 DI(H) F(L) BI(L)    BI = Bot Interaction
+  4 DI(H) F(H) BI(L)    L  = Low
+  5 DI(L) F(L) BI(H)    H  = High
+  6 DI(L) F(H) BI(H)
+  7 DI(H) F(L) BI(H)
+  8 DI(H) F(H) BI(H)
+  """
   use Ecto.Migration
 
   def change do
+
     create table(:users) do
-      add :admin, :boolean, null: false, default: false
-      add :peer, :boolean, null: false, default: false
       add :condition, :integer, default: 0, null: false
       add :completed, :boolean, null: false, default: false
       add :feedback_sequence, :integer

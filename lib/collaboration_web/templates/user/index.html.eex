@@ -13,8 +13,6 @@
       <th>Name</th>
       <th>Email</th>
       <th>Joined</th>
-      <th><i class="fas fa-user"></i></th>
-      <th><i class="fas fa-user"></i></th>
     </tr>
   </thead>
   <tbody>
@@ -23,8 +21,6 @@
       <td><%= u.name %></td>
       <td><%= u.email %></td>
       <td><time datetime="<%= date(u.inserted_at) %>"></time></td>
-      <td class='admin'><%= toggle_icon(u, :admin) %></td>
-      <td class='peer'><%= toggle_icon(u, :peer) %></td>
     </tr>
   <% end %>
   </tbody>

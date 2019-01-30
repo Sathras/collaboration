@@ -12,7 +12,7 @@ defmodule Collaboration.Coherence.Schemas do
 
   def list_participants() do
     from( u in @user_schema,
-      select: map(u, [:condition, :email, :inserted_at, :name]),
+      select: map(u, ~w(condition email name inserted_at)a),
       order_by: u.inserted_at,
       where: u.condition > 0,
       limit: 2000
@@ -21,7 +21,7 @@ defmodule Collaboration.Coherence.Schemas do
 
   def list_users() do
     from( u in @user_schema,
-      select: map(u, [:admin, :peer, :email, :id, :inserted_at, :name]),
+      select: map(u, ~w(id email name inserted_at)a),
       order_by: u.inserted_at,
       where: u.condition == 0,
       limit: 100
@@ -37,12 +37,10 @@ defmodule Collaboration.Coherence.Schemas do
   end
 
   def select_random_user(condition, user_id) do
-    query = from u in @user_schema, order_by: fragment("RANDOM()"), limit: 1
-    case condition do
-      3 -> from(u in query, where: u.id != ^user_id and u.peer)
-      4 -> from(u in query, where: u.id != ^user_id and u.admin)
-      _ -> query
-    end
+    query = from( u in @user_schema,
+      order_by: fragment("RANDOM()"),
+      where: u.id != ^user_id and u.condition == 0,
+      limit: 1)
     |> Repo.all()
     |> List.first()
   end

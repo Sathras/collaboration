@@ -14,8 +14,6 @@ defmodule Collaboration.Coherence.User do
     timestamps()
     coherence_schema()
 
-    field :admin, :boolean, default: false
-    field :peer, :boolean, default: false
     field :name, :string
     field :email, :string
     field :condition, :integer, default: 0
@@ -35,56 +33,16 @@ defmodule Collaboration.Coherence.User do
 
   def changeset(model, params \\ %{})
 
-  # create admin user (via invitation or seed file)
+  # create admin / peer user (via invitation or seed file)
   def changeset(model, %{ :name => _, :email => _ } = params ) do
     model
     |> cast(params, [:name, :email] ++ coherence_fields())
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
-    |> put_change(:admin, true)
     |> put_change(:password, "password")
     |> put_change(:password_confirmation, "password")
     |> unique_constraint(:email)
     |> validate_coherence(params)
-  end
-
-  # create peer user (via seed file)
-  def changeset(model, %{ :name => _, :peer => peer_id } = params ) do
-    model
-    |> cast(params, [:name] ++ coherence_fields())
-    |> validate_required([:name])
-    |> put_change(:peer, true)
-    |> put_change(:email, "#{peer_id}@peer")
-    |> put_change(:password, @password)
-    |> put_change(:password_confirmation, @password)
-    |> unique_constraint(:email)
-    |> validate_coherence(params)
-  end
-
-  # create test user (via seed file)
-  def changeset(model, %{ :name => _, :condition => condition } = params ) do
-    model
-    |> cast(params, [:name, :condition] ++ coherence_fields())
-    |> validate_required([:name, :condition])
-    |> put_change(:email, "#{condition}@test")
-    |> put_change(:password, @password)
-    |> put_change(:password_confirmation, @password)
-    |> unique_constraint(:email)
-    |> validate_coherence(params)
-  end
-
-  # for toggling admin in user list
-  def changeset(model, %{:admin => _admin} = params) do
-    model
-    |> cast(params, [:admin])
-    |> validate_inclusion(:admin, [true, false])
-  end
-
-  # for toggling peer in user list
-  def changeset(model, %{:peer => _peer} = params) do
-    model
-    |> cast(params, [:peer])
-    |> validate_inclusion(:peer, [true, false])
   end
 
   def changeset(model, %{:completed => _} = params) do
@@ -119,7 +77,7 @@ defmodule Collaboration.Coherence.User do
     |> put_change(:email, random_string(10) <>"@participant")
     |> put_change(:password, @password)
     |> put_change(:password_confirmation, @password)
-    |> put_change(:condition, Enum.random(1..8))
+    |> put_condition(params)
     |> validate_coherence(params)
   end
 
@@ -127,6 +85,20 @@ defmodule Collaboration.Coherence.User do
     model
     |> cast(params, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(params)
+  end
+
+  defp put_condition(model, params) do
+    case Map.get(params, "name") do
+      "*test_1*" -> put_change(model, :condition, 1)
+      "*test_2*" -> put_change(model, :condition, 2)
+      "*test_3*" -> put_change(model, :condition, 3)
+      "*test_4*" -> put_change(model, :condition, 4)
+      "*test_5*" -> put_change(model, :condition, 5)
+      "*test_6*" -> put_change(model, :condition, 6)
+      "*test_7*" -> put_change(model, :condition, 7)
+      "*test_8*" -> put_change(model, :condition, 8)
+      _ -> put_change(model, :condition, Enum.random(1..8))
+    end
   end
 
   defp random_string(length) do

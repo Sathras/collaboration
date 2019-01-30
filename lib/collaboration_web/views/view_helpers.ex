@@ -17,15 +17,14 @@ defmodule CollaborationWeb.ViewHelpers do
     )
   end
 
-  def condition(conn), do: user?(conn) && current_user(conn).condition
-
+  def authenticated?(conn), do: !!current_user(conn)
+  def condition(conn), do: current_user(conn) && current_user(conn).condition
   def date(datetime), do: NaiveDateTime.to_iso8601(datetime) <> "Z"
-
   def icon(class), do: content_tag(:i, "", class: class)
-
-  def user?(conn), do: !!current_user(conn)
-  def admin?(conn), do: user?(conn) && current_user(conn).admin
-  def user_id(conn), do: user?(conn) && current_user(conn).id
+  def participant?(conn),
+    do: current_user(conn) && current_user(conn).condition > 0
+  def admin?(conn), do: current_user(conn) && current_user(conn).condition == 0
+  def user_id(conn), do: current_user(conn) && current_user(conn).id
 
   def nav_text(text, icon \\ false) do
     text = if icon, do: [icon(icon), text], else: text

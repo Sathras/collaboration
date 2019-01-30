@@ -28,7 +28,7 @@
 
     <script>
       window.admin = <%= admin?(@conn) %>;
-      window.user = <%= if user?(@conn),
+      window.user = <%= if authenticated?(@conn),
         do: raw("\"#{Coherence.current_user(@conn).id}\""), else: false %>;
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
@@ -65,7 +65,7 @@
               <% end %>
             </ul>
           <% end %>
-          <%= if user?(@conn) do %>
+          <%= if authenticated?(@conn) do %>
             <ul class="navbar-nav">
               <%= if admin?(@conn) do %>
                 <li>

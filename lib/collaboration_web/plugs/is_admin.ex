@@ -6,9 +6,7 @@ defmodule CollaborationWeb.Plug.IsAdmin do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    user = Coherence.current_user(conn)
-
-    if user.admin do
+    if Coherence.current_user(conn).condition == 0 do
       conn
     else
       msg =
