@@ -28,16 +28,20 @@ defmodule Collaboration.Coherence.Schemas do
     ) |> Repo.all()
   end
 
-  def select_user_ids(types, user_id \\ nil) do
-    query = from(u in @user_schema, select: u.id)
-    query = if Enum.member?(types, :admins), do: or_where(query, admin: true), else: query
-    query = if Enum.member?(types, :peers), do: or_where(query, peer: true), else: query
-    query = if user_id, do: or_where(query, id: ^user_id), else: query
-    Repo.all(query)
+  def get_user_ids(self) do
+    Repo.all from( u in User, select: u.id, where: u.id == ^self)
   end
 
-  def select_random_user(condition, user_id) do
-    query = from( u in @user_schema,
+  def get_user_ids(self, :peers) do
+    Repo.all from(u in User,
+      select: u.id,
+      where: u.condition == 0,
+      or_where: u.id == ^self
+    )
+  end
+
+  def select_random_user(user_id) do
+    from( u in @user_schema,
       order_by: fragment("RANDOM()"),
       where: u.id != ^user_id and u.condition == 0,
       limit: 1)

@@ -87,8 +87,8 @@ defmodule CollaborationWeb.LayoutView do
 
   def ga_code() do
     if Application.get_env(:collaboration, :env) == :dev,
-      do: "UA-119119225-1",
-      else: "UA-119138942-1"
+      do: Application.fetch_env!(:collaboration, :ga_dev_code),
+      else: Application.fetch_env!(:collaboration, :ga_prod_code)
   end
 
   def remaining_seconds(user) do
@@ -99,13 +99,8 @@ defmodule CollaborationWeb.LayoutView do
 
   def timer_button(conn) do
     started = current_user(conn).inserted_at
-    now = NaiveDateTime.utc_now()
     minTime = Application.fetch_env!(:collaboration, :minTime)
-    countdown = NaiveDateTime.diff(started, now) + minTime
-
-    timeElement = content_tag :time, "",
-      datetime: NaiveDateTime.to_iso8601(
-        NaiveDateTime.add(started, minTime )) <> "Z"
+    countdown = NaiveDateTime.diff(started, NaiveDateTime.utc_now()) + minTime
 
     if countdown <= 0 do
       button "Complete Experiment",
@@ -114,6 +109,9 @@ defmodule CollaborationWeb.LayoutView do
         data_confirm: "Are you sure? This will move you to the survey!",
         to: Routes.user_path(conn, :finish)
     else
+      timeElement = content_tag :time, "",
+        datetime: date(NaiveDateTime.add(started, minTime ))
+
       button timeElement,
         id: "timer",
         class: "btn btn-light",

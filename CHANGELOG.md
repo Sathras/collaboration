@@ -3,12 +3,13 @@
 ### 2.3.2
  * removed login via facebook or google placeholders
  * separated participants from users in admin list view
+ * removed distinction between admin and peer users. both have condition = 0 now
  * allows for eight conditions now
  * switched from binary ids to int ids for better performance
  * removed unlock, active and confirmation mechanics (unnecessary)
  * removed default registration mechanism
  * by default: switched from client and server to serverside-only form validation. De-validation on input change happens now globally.
- * exeriment minTime now retrieved from config instead of hard-coded
+ * exeriment minTime and google analytics tracking code retrieved from config instead of hard-coded
  * improved performance of timer and switched to timeago display to avoid displaying seconds on higher minutes
  * passcode and default experiment user password removed from version tracking
  * added toggleable legend to topic list
@@ -51,6 +52,7 @@
  * Ideas now ordered by date (DESC)
  * Form fields automaticaly size themselves if the content becomes larger (available when posting comments or editing ideas)
  * Users that gracefully complete the experiment will be flaged as completed to separate them later from unfinished users
+ * participants can no longer access topics they are not meant to see
 
 ## 2.0.6
  * Own ideas (if normal user) or non-admin ideas (if admin) are now displayed cursive in idealist to better identify them among pregenerated ideas.

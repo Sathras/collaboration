@@ -10,11 +10,13 @@ config :collaboration,
   ecto_repos: [Collaboration.Repo],
   env: Mix.env,
   # own configuration
-  bi_low_minTime: 45,           # BI(L) min time (40 sec -> 15 per experiment)
-  bi_low_maxTime: 65,           # BI(L) max time (60 sec -> 10 per experiment)
-  bi_high_minTime: 4 * 60,      # BI(H) min time (4 min -> 2 per experiment)
-  bi_high_maxTime: 5 * 60,      # BI(H) max time (5 min -> 2 per experiment)
-  minTime: 10 * 60,             # minimal experiment time [sec]
+  bi_low_minTime: 45,             # BI(L) min time (40 sec -> 15 per experiment)
+  bi_low_maxTime: 65,             # BI(L) max time (60 sec -> 10 per experiment)
+  bi_high_minTime: 4 * 60,        # BI(H) min time (4 min -> 2 per experiment)
+  bi_high_maxTime: 5 * 60,        # BI(H) max time (5 min -> 2 per experiment)
+  ga_dev_code: "UA-119119225-1",  # Google Analytics Dev Code
+  ga_prod_code: "UA-119138942-1", # Google Analytics Production Code
+  minTime: 10 * 60,               # minimal experiment time [sec]
   passcode: System.get_env("PASSCODE"), # passcode required for experiment
   password: System.get_env("PASSWORD_DEFAULT")  # experiment user password
 

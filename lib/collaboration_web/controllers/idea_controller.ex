@@ -29,7 +29,7 @@ defmodule CollaborationWeb.IdeaController do
               9 -> "10. Automated Feedback"
             end
             # create automated feedback
-            random_user = select_random_user(user.condition, user.id)
+            random_user = select_random_user(user.id)
             case create_comment(random_user, user, idea, %{text: feedback}) do
               {:ok, comment} ->
                 # broadcast back to user

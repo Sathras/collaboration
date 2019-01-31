@@ -1,7 +1,7 @@
 defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
-  import CollaborationWeb.ViewHelpers, only: [ admin?: 1, condition: 1 ]
+  import CollaborationWeb.ViewHelpers, only: [ condition: 1 ]
 
   def home(conn, _) do
     if current_user(conn),
@@ -14,10 +14,22 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def show(conn, %{"id" => id} = params) do
-    render conn, "show.html",
-      changeset: Map.get(params, :idea_changeset, change_idea()),
-      ideas: load_ideas(id, current_user(conn)),
-      topic: get_topic!(id)
+    topic = get_topic!(id)
+    user = current_user(conn)
+
+    if (topic.visible == 0 && user.condition != 0)
+    || (topic.visible == 1 && Enum.member?([2,4,6,8], user.condition))
+    || (topic.visible == 2 && Enum.member?([1,3,5,7], user.condition))
+    do
+      conn
+      |> put_flash(:error, "The given topic does not exist.")
+      |> redirect(to: Routes.topic_path(conn, :index))
+    else
+      render conn, "show.html",
+        changeset: Map.get(params, :idea_changeset, change_idea()),
+        ideas: load_ideas(id, current_user(conn)),
+        topic: topic
+    end
   end
 
   def new(conn, _), do: render(conn, "new.html", changeset: change_topic())

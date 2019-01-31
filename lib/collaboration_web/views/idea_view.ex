@@ -1,6 +1,6 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
-  import Collaboration.Coherence.Schemas, only: [select_user_ids: 2]
+  import Collaboration.Coherence.Schemas
 
   alias Phoenix.View
   alias CollaborationWeb.CommentView
@@ -57,11 +57,11 @@ defmodule CollaborationWeb.IdeaView do
     # filter comments to show only those from appropriate condition
     valid_authors = cond do
       !u -> []
-      u.condition === 1 -> select_user_ids([], u.id)
-      true -> select_user_ids([:admins, :peers], u.id)
-      # u.condition === 2 -> select_user_ids([:admins, :peers], u.id)
-      # u.condition === 3 -> select_user_ids([:admins, :peers], u.id)
-      # u.condition === 4 -> select_user_ids([:admins, :peers], u.id)
+      u.condition === 1 -> get_user_ids u.id
+      true -> get_user_ids u.id, :peers
+      # u.condition === 2 -> get_user_ids(u.id, :peers)
+      # u.condition === 3 -> get_user_ids(u.id, :peers)
+      # u.condition === 4 -> get_user_ids(u.id, :peers)
     end
 
     comments = i.comments

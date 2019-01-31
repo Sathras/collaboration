@@ -75,9 +75,8 @@ defmodule Collaboration.Contributions do
   # gets list of ideas to a specific topic
   def load_ideas(topic_id, user) do
 
-    # only show own ideas, admin ideas and peer ideas
-    user_id = if user && !user.admin, do: user.id, else: nil
-    valid_authors = select_user_ids([:admins, :peers], user_id)
+    # only show own ideas and peer ideas
+    valid_authors = get_user_ids(user && user.id, :peers)
 
     user_query = from u in User
     rating_query = from r in Rating
