@@ -1,34 +1,28 @@
 defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
-  import CollaborationWeb.ViewHelpers, only: [ condition: 1 ]
-
-  def home(conn, _) do
-    if current_user(conn),
-      do: redirect(conn, to: Routes.topic_path(conn, :index)),
-      else: redirect(conn, to: Routes.user_path(conn, :new))
-  end
-
   def index(conn, _) do
-    render conn, "index.html", topics: list_topics(condition(conn))
+    render conn, "index.html", topics: list_topics()
   end
 
-  def show(conn, %{"id" => id} = params) do
-    topic = get_topic!(id)
+  def show(conn, params) do
     user = current_user(conn)
+    cond do
+      !user ->
+        redirect conn, to: Routes.user_path(conn, :new)
 
-    if (topic.visible == 0 && user.condition != 0)
-    || (topic.visible == 1 && Enum.member?([2,4,6,8], user.condition))
-    || (topic.visible == 2 && Enum.member?([1,3,5,7], user.condition))
-    do
-      conn
-      |> put_flash(:error, "The given topic does not exist.")
-      |> redirect(to: Routes.topic_path(conn, :index))
-    else
-      render conn, "show.html",
-        changeset: Map.get(params, :idea_changeset, change_idea()),
-        ideas: load_ideas(id, current_user(conn)),
-        topic: topic
+      true ->
+        case get_published_topic!() do
+          nil ->
+            conn
+            |> send_resp(404, "No topic is currently published.")
+            |> halt()
+          topic ->
+            render conn, "show.html",
+              changeset: Map.get(params, :idea_changeset, change_idea()),
+              ideas: load_ideas(topic.id, user),
+              topic: topic
+        end
     end
   end
 
@@ -39,12 +33,23 @@ defmodule CollaborationWeb.TopicController do
     render(conn, "edit.html", changeset: change_topic(topic), topic: topic)
   end
 
+  def feature(conn, %{"id" => id}) do
+    case feature_topic(id) do
+      {:ok, _topic} ->
+        redirect(conn, to: Routes.topic_path(conn, :index))
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:info, "Topic cannot be featured.")
+        |> redirect(to: Routes.topic_path(conn, :index))
+    end
+  end
+
   def create(conn, %{"topic" => params}) do
     case create_topic(params) do
-      {:ok, topic} ->
+      {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic created successfully.")
-        |> redirect(to: Routes.topic_path(conn, :show, topic))
+        |> redirect(to: Routes.topic_path(conn, :index))
 
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -53,10 +58,10 @@ defmodule CollaborationWeb.TopicController do
 
   def update(conn, %{"id" => id, "topic" => params}) do
     case update_topic(get_topic!(id), params) do
-      {:ok, topic} ->
+      {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic updated successfully.")
-        |> redirect(to: Routes.topic_path(conn, :show, topic))
+        |> redirect(to: Routes.topic_path(conn, :index))
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)

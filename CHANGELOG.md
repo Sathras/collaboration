@@ -4,18 +4,20 @@
  * removed login via facebook or google placeholders
  * separated participants from users in admin list view
  * removed distinction between admin and peer users. both have condition = 0 now
+ * removed topic short-desc, topic short-title and visibility
  * allows for eight conditions now
  * switched from binary ids to int ids for better performance
- * removed unlock, active and confirmation mechanics (unnecessary)
- * removed default registration mechanism
+ * removed default registration, unlock, active and confirmation mechanics (unnecessary)
  * by default: switched from client and server to serverside-only form validation. De-validation on input change happens now globally.
- * exeriment minTime and google analytics tracking code retrieved from config instead of hard-coded
+ * exeriment minTime, google analytics tracking code, and survey codes retrieved from config instead of hard-coded
  * improved performance of timer and switched to timeago display to avoid displaying seconds on higher minutes
  * passcode and default experiment user password removed from version tracking
  * added toggleable legend to topic list
- * topics are now visible in both list and navbar based on user condition
  * to test a specific condition you can now start the experiment, naming the user:  *test_<condition>*
  * removed testusers in seeds file, as they can now be created dynamically
+ * participants can no longer access topics they are not meant to see
+ * topics can no longer be directly edited via the topic overview page
+ * only one topic can be featured at a time now, main navbar item leads to featured topic
 
 ### 2.3.1
  * fixed port number in email links
@@ -52,7 +54,6 @@
  * Ideas now ordered by date (DESC)
  * Form fields automaticaly size themselves if the content becomes larger (available when posting comments or editing ideas)
  * Users that gracefully complete the experiment will be flaged as completed to separate them later from unfinished users
- * participants can no longer access topics they are not meant to see
 
 ## 2.0.6
  * Own ideas (if normal user) or non-admin ideas (if admin) are now displayed cursive in idealist to better identify them among pregenerated ideas.

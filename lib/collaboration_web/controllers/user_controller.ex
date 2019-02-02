@@ -8,6 +8,9 @@ defmodule CollaborationWeb.UserController do
   def create(conn, %{"user" => user_params }) do
     case create_participant(user_params) do
       {:ok, user} ->
+
+        # TODO: Start worker that autonomiously adds ideas and comments
+
         params = %{
           "remember" => false,
           "session" => %{
@@ -23,7 +26,11 @@ defmodule CollaborationWeb.UserController do
   end
 
   def new(conn, _params) do
-    render conn, "new.html", changeset: change_participant()
+    if current_user(conn) do
+      redirect(conn, to: Routes.topic_path(conn, :show))
+    else
+      render conn, "new.html", changeset: change_participant()
+    end
   end
 
   def index(conn, _) do
@@ -34,32 +41,15 @@ defmodule CollaborationWeb.UserController do
     render conn, "participants.html", users: list_participants()
   end
 
-  # toggle admin flag
-  def update(conn, %{"id" => id}) do
-    user = get_user!(id)
-    case update_user(user, %{ admin: !user.admin }) do
-      {:ok, _user} ->
-        conn
-        |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: Routes.user_path(conn, :index))
-
-      {:error, changeset} ->
-        render(conn, "edit.html", changeset: changeset)
-    end
-  end
-
   # finish experiment gracefully
   def finish(conn, _) do
     user = current_user(conn)
     update_user(user, %{completed: true})
-    surveycode = case user.condition do
-      1 -> "condition 1 code"
-      2 -> "condition 2 code"
-      3 -> "condition 3 code"
-      4 -> "condition 4 code"
-    end
+
     conn
     |> Coherence.Controller.logout_user
-    |> redirect(to: Routes.user_path(conn, :complete, surveycode: surveycode))
+    |> redirect(to: Routes.user_path(conn, :complete,
+      surveycode: Application.fetch_env!(:collaboration, :survey_codes)[user.condition]
+    ))
   end
 end

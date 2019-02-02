@@ -3,12 +3,12 @@
     <div class="d-flex flex-wrap justify-content-around">
       <h5 class="card-title mb-1"><%= @idea.author %></h5>
       <div class="rating
-        <%= if @user_id && @user_id !== @idea.user_id, do: "rateable" %>
+        <%= if @user.id != @idea.user_id, do: "rateable" %>
         <%= base_rating(@idea.rating, @idea.raters) %>
         <%= if @idea.my_rating, do: "my#{@idea.my_rating}" %>
       ">
         <strong><%= if @idea.raters > 0, do: @idea.rating %></strong>
-        <%= if !@user_id || @user_id === @idea.user_id do %>
+        <%= if @user.id != @idea.user_id do %>
           <i class='fas fa-star'>
           </i><i class='fas fa-star'>
           </i><i class='fas fa-star'>
@@ -31,12 +31,12 @@
       </div>
     </div>
     <small class="font-italic">
-      <%= if @idea.user_id == @user_id || @admin do %>
+      <%= if @idea.user_id == @user.id || @user.condition == 0 do %>
         <div class="float-right ml-1">
           <i class="fas fa-pencil-alt" drab-click="edit(<%= @idea.id %>)"></i>
-          <%= if @admin, do:
+          <%= if @user.condition == 0, do:
             link icon("far fa-trash-alt"),
-              to: @action_delete,
+              to: Routes.idea_path(@conn, :delete, id: @idea.id),
               data: [confirm: "Are you sure?"],
               class: "delete-link text-danger",
               method: "delete"
@@ -48,24 +48,18 @@
     <hr class="mt-1">
     <p class="card-text"><%= @idea.text %></p>
   </div>
-  <%= if @user_id do %>
-    <ul class="comments list-group list-group-flush">
-      <%= for c <- @idea.comments do %>
-        <%= render CommentView, "comment.html",
-          admin: @admin,
-          comment: c,
-          user_id: @user_id
-        %>
-      <% end %>
-    </ul>
-    <div class="card-footer">
-      <textarea
-        class="auto-size form-control form-control-sm"
-        onkeyup="auto_grow(this)"
-        drab-options="debounce(200)"
-        drab-keyup="submit_feedback(<%= @idea.id %>)"
-        placeholder="Leave feedback..."
-      ></textarea>
-    </div>
-  <% end %>
+  <ul class="comments list-group list-group-flush">
+    <%= for c <- @idea.comments do %>
+      <%= render CommentView, "comment.html", comment: c, user: @user %>
+    <% end %>
+  </ul>
+  <div class="card-footer">
+    <textarea
+      class="auto-size form-control form-control-sm"
+      onkeyup="auto_grow(this)"
+      drab-options="debounce(200)"
+      drab-keyup="submit_feedback(<%= @idea.id %>)"
+      placeholder="Leave feedback..."
+    ></textarea>
+  </div>
 </div>

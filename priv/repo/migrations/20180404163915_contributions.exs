@@ -4,11 +4,8 @@ defmodule Collaboration.Repo.Migrations.Contributions do
   def change do
     create table(:topics) do
       add :title, :string
-      add :short_title, :string
-      add :short_desc, :text
       add :desc, :text
       add :featured, :boolean, default: false, null: false
-      add :visible, :integer, default: 0
       timestamps()
     end
 

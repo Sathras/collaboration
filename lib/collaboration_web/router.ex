@@ -19,7 +19,6 @@ defmodule CollaborationWeb.Router do
     plug(:put_secure_browser_headers)
     plug(Coherence.Authentication.Session, protected: true, login: true)
     plug(Coherence.Authentication.Token, source: :params, param: "auth_token")
-    plug(CollaborationWeb.Plug.LoadTopics)
   end
 
   pipeline :protected_admin do
@@ -31,7 +30,6 @@ defmodule CollaborationWeb.Router do
     plug(Coherence.Authentication.Session, protected: true, login: true)
     plug(Coherence.Authentication.Token, source: :params, param: "auth_token")
     plug CollaborationWeb.Plug.IsAdmin
-    plug(CollaborationWeb.Plug.LoadTopics)
   end
 
   scope "/" do
@@ -49,10 +47,11 @@ defmodule CollaborationWeb.Router do
     pipe_through(:protected_admin)
 
     # add protected resources below
-    resources "/topics", TopicController, only: [:new, :create, :edit, :update] do
-      resources "/ideas", IdeaController, only: [:delete]
-    end
+    resources "/topics", TopicController,
+      only: [:index, :new, :create, :edit, :update]
+    delete "/", IdeaController, :delete
     resources "/users",  UserController, only: [:index, :update]
+    post "/feature/:id", TopicController, :feature
     get "/participants", UserController, :participants
   end
 
@@ -60,9 +59,7 @@ defmodule CollaborationWeb.Router do
     pipe_through(:protected)
 
     # add protected resources below
-    resources "/topics", TopicController, only: [:index, :show] do
-      resources "/ideas", IdeaController, only: [:create]
-    end
+    post "/", IdeaController, :create
     post "/complete", UserController, :finish
   end
 
@@ -70,7 +67,7 @@ defmodule CollaborationWeb.Router do
     pipe_through(:browser)
 
     # add public resources below
-    get "/", TopicController, :home
+    get "/", TopicController, :show
     get "/complete", UserController, :complete
 
     get "/start", UserController, :new

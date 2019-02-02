@@ -8,52 +8,16 @@
     </button>
   </div>
 <% end %>
-<div class="row">
-  <div class="col-md-5">
-    <div class="form-group">
-      <%= label f, :title, class: "control-label" %>
-      <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
-      <%= error_tag f, :title %>
-    </div>
-    <div class="form-group">
-      <%= label f, :short_title, class: "control-label" %>
-      <%= text_input f, :short_title, class: "form-control #{error_class f, :short_title}" %>
-      <%= error_tag f, :short_title %>
-      <small class="form-text text-muted">
-        <%= gettext "This is the title of the topic as it appears in the navigation." %>
-      </small>
-    </div>
-    <div class="row">
-      <div class="col text-center">
-        <div class="form-group">
-          <%= checkbox f, :published, class: "checkbox" %>
-          <%= label f, :published, class: "control-label" %>
-          <%= error_tag f, :published %>
-        </div>
-      </div>
-      <div class="col text-center">
-        <div class="form-group">
-          <%= checkbox f, :featured, class: "checkbox" %>
-          <%= label f, :featured, class: "control-label" %>
-          <%= error_tag f, :featured %>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-7">
-    <div class="form-group">
-      <%= label f, :short_desc, class: "control-label" %>
-      <small class="form-text text-muted mb-1">
-        <%= gettext "This is the short description, as it appears in the topic list." %><br>
-      </small>
-      <%= textarea f, :short_desc, class: "form-control #{error_class f, :short_desc}" %>
-      <%= error_tag f, :short_desc %>
-    </div>
-  </div>
-</div>
 
   <div class="form-group">
-    <%= label f, :desc, class: "control-label" %>
+    <%= label f, :title, class: "font-weight-bold control-label" %>
+
+    <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
+    <%= error_tag f, :title %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :desc, class: "control-label font-weight-bold" %>
     <%= textarea f, :desc, class: "form-control #{error_class f, :desc}" %>
     <%= error_tag f, :desc %>
   </div>

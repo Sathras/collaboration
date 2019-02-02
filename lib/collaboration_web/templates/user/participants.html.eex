@@ -1,7 +1,3 @@
-<div class="d-flex justify-content-between mb-2">
-  <h2 class="mb-0">Listing Participants</h2>
-  <%= users_link(@conn) %>
-</div>
 <table
   id="users"
   class="table table-sm table-hover nowrap"

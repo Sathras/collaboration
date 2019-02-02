@@ -16,51 +16,34 @@ defmodule Collaboration.Contributions do
   alias CollaborationWeb.IdeaView
   alias CollaborationWeb.CommentView
 
-  def list_topics(condition) do
-    query = from t in Topic,
+  def list_topics do
+    from( t in Topic,
       left_join: i in assoc(t, :ideas),
       group_by: t.id,
       select: %{
         id: t.id,
         title: t.title,
-        short_title: t.short_title,
-        short_desc: t.short_desc,
         featured: t.featured,
-        visible: t.visible,
         idea_count: count(i.id)
       }
-
-    query = cond do
-      Enum.member?([1,3,5,7], condition) -> where( query, [visible: 1] )
-      Enum.member?([2,4,6,8], condition) -> where( query, [visible: 2] )
-      true -> query
-    end
-
-    Repo.all(query)
-  end
-
-  def get_topic_titles!(condition) do
-    query = from t in Topic,
-      select: map(t, ~w(id short_title short_desc)a),
-      where: t.featured and t.visible > 0
-
-    query = cond do
-      Enum.member?([1,3,5,7], condition) -> where( query, [visible: 1] )
-      Enum.member?([2,4,6,8], condition) -> where( query, [visible: 2] )
-      true -> query
-    end
-
-    query
-    |> order_by([asc: :short_title])
-    |> Repo.all()
+    )|> Repo.all()
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)
+
+  def get_published_topic!, do: Repo.one from(t in Topic, where: t.featured)
 
   def create_topic(attrs \\ %{}) do
     %Topic{}
     |> Topic.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def feature_topic(id) do
+    Repo.update_all Topic, set: [featured: false]
+    get_topic!(id)
+    |> change(featured: true)
+    |> Repo.update()
   end
 
   def update_topic(%Topic{} = topic, attrs) do

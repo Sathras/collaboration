@@ -5,20 +5,13 @@
   </div>
   <div class="<%= if @current_user, do: "col-lg-5", else: "d-none" %>">
     <%= if @changeset, do:
-      render IdeaView, "form.html",
-        conn: @conn,
-        changeset: @changeset
+      render IdeaView, "form.html", conn: @conn, changeset: @changeset
     %>
   </div>
   <hr class="mt-0"/>
 </div>
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
-    <%= render IdeaView, "idea.html",
-      action_delete: Routes.topic_idea_path(@conn, :delete, @topic.id, i.id),
-      admin: admin?(@conn),
-      user_id: user_id(@conn),
-      idea: i
-    %>
+    <%= render IdeaView, "idea.html", conn: @conn, user: @current_user, idea: i %>
   <% end %>
 </div>

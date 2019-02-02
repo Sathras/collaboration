@@ -16,7 +16,7 @@
   <p class="mb-0">
     <%= @comment.text %>
     <span>
-      <%= if @comment.user_id !== @user_id || @admin do %>
+      <%= if @comment.user_id !== @user.id do %>
         <i class="text-primary far fa-thumbs-up"></i>
       <% end %>
       <%= if @admin do %>
@@ -34,12 +34,12 @@
           <%= @comment.likes %>
         </span>
       <% end %>
-      <%= if @user_id && @comment.user_id !== @user_id do %>
+      <%= if @comment.user_id !== @user.id do %>
         <small class='text-primary' drab-click='like(<%= @comment.id %>)'>
           <%= if @comment.liked, do: "Unlike", else: "Like" %>
         </small>
       <% end %>
-      <%= if @admin do %>
+      <%= if @user.condition == 0 do %>
         <i class="float-right text-danger fas fa-trash-alt"
           drab-click="delete_comment(<%= @comment.id %>)"
         ></i>

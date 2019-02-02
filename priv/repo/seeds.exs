@@ -6,7 +6,7 @@ defmodule Collaboration.Seeder do
   import Ecto.Changeset, only: [put_assoc: 3]
   alias Collaboration.Repo
   alias Collaboration.Coherence.User
-  alias Collaboration.Contributions.{ Topic, Idea, Comment }
+  alias Collaboration.Contributions.{ Topic, Idea }
 
   def init do
     # peer users will have the following email: <id>@peer
@@ -35,12 +35,7 @@ defmodule Collaboration.Seeder do
 
     t1 = topic %{
       title: "What are the solutions to illegal immigration in America?",
-      short_title: "Illegal Imigration",
-      visible: 1,
       featured: true,
-      short_desc: "<p>With over 11 million immigrants in the United States
-        illegally (as of 2012), the issue of illegal immigration continues to
-        divide Americans.</p>",
       desc: "
         <p>With over 11 million immigrants in the United States illegally (as of
           2012), the issue of illegal immigration continues to divide Americans.</p>
@@ -50,15 +45,6 @@ defmodule Collaboration.Seeder do
           by crossing the US border without proper documentation or by overstaying
           their visas should be deported and not rewarded with a path to citizenship
           and access to social services.</p>"
-    }
-
-    topic %{
-      title: "2. Topic (published, not featured)",
-      short_title: "Topic 3",
-      visible: 2,
-      featured: false,
-      short_desc: "<p>This topic is not featured. Thus it only appears in the topic list.</p>",
-      desc: "<p>This topic is not featured. Thus it only appears in the topic list.</p>"
     }
 
     idea %{

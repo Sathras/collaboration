@@ -1,81 +1,39 @@
-
-
-<div class="d-flex justify-content-end mb-2 ">
-  <h3 class="flex-fill"><%= gettext "Listing Topics" %></h3>
-  <%= if admin?(@conn) do %>
-    <a class="btn btn-outline-dark mr-1" data-toggle="collapse" href="#topicLegend" role="button" aria-expanded="false" aria-controls="topicLegend">
-      <i class="fas fa-question"></i> Help
-    </a>
-    <a class="btn btn-outline-dark" href="<%= Routes.topic_path(@conn, :new) %>">
-      <i class="fas fa-plus-square"></i> New Topic
-    </a>
-  <% end %>
+<div class="d-flex flex-wrap justify-content-around mb-2">
+  <span>
+    <i class="fas fa-star text-primary"></i> currently featured topic<br/>
+  </span>
+  <span>
+    <i class="fas fa-star text-muted"></i> topic only visible to admins<br/>
+  </span>
+  <span>
+    <i class="fas fa-pencil-alt"></i> edit the topic
+  </span>
 </div>
-
-<%= if admin?(@conn) do %>
-  <div class="collapse" id="topicLegend">
-  <div  class="card mb-2">
-    <div class="card-body row">
-      <div class="col-sm">
-        <i class="fas fa-eye"></i> visible to all users<br/>
-        <i class="far fa-smile"></i> visible to conditions 2,4,6,8, admins<br/>
-        <i class="far fa-frown"></i> visible to conditions 1,3,5,7, admins<br/>
-        <i class="fas fa-eye-slash text-muted"></i> visible to admins only<br/>
-      </div>
-      <div class="col-sm">
-        <i class="fas fa-star text-primary"></i> linked in navbar and topic list (if visible)<br/>
-        <i class="fas fa-star text-muted"></i> linked in topic list (if visible)<br/>
-        <i class="fas fa-pencil-alt"></i> edit the topic<br/>
-        <i>topics are sorted by title (topic list) or short title (navbar)</i>
-      </div>
-    </div>
-  </div>
-  </div>
-<% end %>
 
 <table id="topics" class="table table-sm table-striped" cellspacing="0" cellpadding="0">
   <thead>
     <tr>
       <th>Title</th>
       <th class="text-center">Ideas</th>
-      <%= if admin?(@conn) do %>
         <th class="icon-cell">
           <i class="fas fa-eye"></i>
         </th>
         <th class="icon-cell" >
-          <i class="fas fa-star"></i>
-        </th>
-        <th class="icon-cell" >
           <i class="fas fa-pencil-alt"></i>
         </th>
-      <% end %>
     </tr>
   </thead>
   <tbody>
-  <%= for t <- @conn.assigns.topics do %>
+  <%= for t <- @topics do %>
     <tr>
-      <td>
-        <a href="<%= Routes.topic_path(@conn, :show, t.id) %>">
-          <strong><%= t.title %></strong>
+      <td><%= t.title %></td>
+      <td class="text-center"><strong><%= t.idea_count %></strong></td>
+      <td class="icon-cell"><%= iconFeatured @conn, t %></td>
+      <td class="icon-cell">
+        <a href="<%= Routes.topic_path @conn, :edit, t.id %>">
+          <i class="text-dark fas fa-pencil-alt"></i>
         </a>
       </td>
-      <td class="text-center"><strong><%= t.idea_count %></strong></td>
-      <%= if admin?(@conn) do %>
-        <td class="icon-cell">
-          <%= iconVisibility t.visible %>
-        </td>
-        <td class="icon-cell">
-          <%= iconFeatured t.featured %>
-        </td>
-        <td class="icon-cell">
-          <a href="<%= Routes.topic_path @conn, :edit, t.id %>">
-            <i class="text-dark fas fa-pencil-alt"></i>
-          </a>
-        </td>
-      <% end %>
-    </tr>
-    <tr>
-      <td colspan="5"><%= raw(t.short_desc) %></td>
     </tr>
   <% end %>
   </tbody>

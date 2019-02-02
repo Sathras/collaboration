@@ -97,6 +97,37 @@ defmodule CollaborationWeb.LayoutView do
     NaiveDateTime.diff(started, now) + 60 * 10
   end
 
+  def abort_button(conn) do
+    link raw("<i class=\"fas fa-power-off\"></i> Abort"),
+      class: "btn btn-outline-danger ml-2",
+      to: Routes.session_path(conn, :delete),
+      data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
+      method: "delete"
+  end
+
+  def logout_button(conn) do
+    link content_tag(:i, "", class: "fas fa-power-off"),
+      to: Routes.session_path(conn, :delete),
+      class: "nav-link text-light",
+      data_toggle: "tooltip",
+      method: "delete",
+      title: "Sign Out"
+  end
+
+  def home_button(conn) do
+    text = raw("<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus")
+
+    if current_user(conn) do
+      link text,
+        to: Routes.topic_path(conn, :show),
+        class: "navbar-brand d-none d-md-block"
+    else
+      link text,
+        to: Routes.user_path(conn, :new),
+        class: "navbar-brand"
+    end
+  end
+
   def timer_button(conn) do
     started = current_user(conn).inserted_at
     minTime = Application.fetch_env!(:collaboration, :minTime)

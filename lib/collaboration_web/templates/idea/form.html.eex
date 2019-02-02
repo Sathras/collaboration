@@ -1,18 +1,16 @@
-<%= form_for @changeset, Routes.topic_idea_path(@conn, :create, topic_id(@conn)),
-  [id: "idea-form"], fn f -> %>
+<%= form_for @changeset, Routes.idea_path(@conn, :create), [ id: "idea-form"], fn f -> %>
 <div class="card mb-3 position-sticky">
   <h5 class="card-header text-center">New Idea</h5>
-  <div class="card-body p-0">
+  <div class="card-body p-0 text-center">
     <%= textarea f, :text,
-      class: "form-control border-0",
-      maxlength: 1200,
-      minlength: 40,
-      style: "min-height:125px;",
-      placeholder: "Please describe your idea here",
-      required: true
+      class: "form-control #{error_class(f, :text)}",
+      style: "min-height:125px; border-radius:0;",
+      placeholder: "Please describe your idea here"
     %>
+    <%= error_tag(f, :text) %>
   </div>
   <div class="card-footer">
+
     <div class="form-inline d-flex justify-content-around">
       <%= if admin?(@conn) do %>
         <div class="input-group mr-1">
