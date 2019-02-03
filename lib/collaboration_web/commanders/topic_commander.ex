@@ -40,11 +40,10 @@ defmodule CollaborationWeb.TopicCommander do
 
   defhandler like(socket, sender, comment_id) do
     elm = "#comment#{comment_id}"
-    liked = socket |> select( data: "liked", from: elm )
     likes = socket |> select( data: "likes", from: elm )
-    user = get_user!(socket.assigns.user_id)
-    if liked do
-      if unlike_comment(user, comment_id) do
+
+    if select(socket, data: "liked", from: elm ) do
+      if unlike_comment(socket.assigns.user, comment_id) do
         if likes === 0, do:
           socket |> insert(class: "d-none", into: elm <> " span.likes")
         socket
@@ -54,7 +53,7 @@ defmodule CollaborationWeb.TopicCommander do
         |> execute("val(#{likes})", on: elm <> " input")
       end
     else
-      if like_comment(user, comment_id) do
+      if like_comment(socket.assigns.user, comment_id) do
         socket
         |> update(data: "liked", set: true, on: elm)
         |> update(:text, set: "Unlike", on: this(sender))
@@ -67,15 +66,12 @@ defmodule CollaborationWeb.TopicCommander do
 
   defhandler rate(socket, sender, idea_id) do
     rating = sender["data"]["rating"]
-    user = get_user!(socket.assigns.user_id)
+    user = socket.assigns.user
     if rate_idea!(user, idea_id, rating) do
 
       idea = render_to_string IdeaView, "idea.html",
-        action_delete: socket |> select(attr: "href", from: "#idea#{idea_id} .delete-link"),
-        action_edit: socket |> select(attr: "href", from: "#idea#{idea_id} .edit-link"),
-        admin: user.admin,
         idea: load_idea(idea_id, user),
-        user_id: user.id
+        user: user
 
       socket
       |> execute(replaceWith: idea, on: "#idea#{idea_id}")
@@ -85,13 +81,17 @@ defmodule CollaborationWeb.TopicCommander do
 
   defhandler submit_feedback(socket, sender, idea_id) do
     if sender["event"]["keyCode"] === 13 do
-      user = get_user!(socket.assigns.user_id)
-      case create_comment(user, idea_id, %{text: sender["value"]}) do
+      user = socket.assigns.user
+      comment = %{
+        text: sender["value"],
+        user_id: user.id,
+        idea_id: idea_id
+      }
+      case create_comment(comment) do
         {:ok, comment} ->
           comment = render_to_string CommentView, "comment.html",
-            admin: user.admin,
             comment: load_comment(comment.id, user),
-            user_id: user.id
+            user: user
           socket
           |> insert(comment, append: "#idea#{idea_id} .comments")
           |> delete(class: "is-invalid", from: this(sender))

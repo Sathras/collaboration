@@ -6,12 +6,12 @@ defmodule Collaboration.Seeder do
   import Ecto.Changeset, only: [put_assoc: 3]
   alias Collaboration.Repo
   alias Collaboration.Coherence.User
-  alias Collaboration.Contributions.{ Topic, Idea }
+  alias Collaboration.Contributions.{ Topic, Idea, Comment }
 
   def init do
     # peer users will have the following email: <id>@peer
-    p1 = user "Shonna D.", "1@peer"
-    user "Derek R.", "2@peer"
+    u1 = user "Shonna D.", "1@peer"
+    u2 = user "Derek R.", "2@peer"
     user "Payel N.", "3@peer"
     user "Megan V.", "4@peer"
     user "Tim O.", "5@peer"
@@ -47,12 +47,20 @@ defmodule Collaboration.Seeder do
           and access to social services.</p>"
     }
 
-    idea %{
+    i1 = idea %{
       text: "I strongly advocate for immigration reform that focuses on enforcement and upholding the rule of law, including elimination of enforcement waivers that have been abused by previous and current Administrations. To be clear, any immigration reform proposal must first guarantee that our immigration laws are enforced both at the border and within the United States. I remain opposed to amnesty, as I always have been. I do not support a special pathway to citizenship that rewards those who have broken our immigration laws.",
       fake_raters: 5,
-      fake_rating: 4.3
-    }, t1, p1
+      fake_rating: 4.3,
+      c1: -300, c2: -300, c3: -300, c4: -300,
+      c5: -300, c6: -300, c7: -300, c8: -300
+    }, t1, u1
 
+    comment %{
+      text: "This is a auto comment",
+      fake_likes: 2,
+      c1: -200, c2: -200, c3: -200, c4: -200,
+      c5: -200, c6: -200, c7: -200, c8: -200
+    }, i1, u2
   end
 
   defp user(name, email) do
@@ -70,12 +78,12 @@ defmodule Collaboration.Seeder do
     |> Repo.insert!()
   end
 
-  # defp comment(params, idea, user) do
-  #   Comment.changeset(%Comment{}, params)
-  #   |> put_assoc(:idea, idea)
-  #   |> put_assoc(:user, user)
-  #   |> Repo.insert!()
-  # end
+  defp comment(params, idea, user) do
+    Comment.changeset(%Comment{}, params)
+    |> put_assoc(:idea, idea)
+    |> put_assoc(:user, user)
+    |> Repo.insert!()
+  end
 end
 
 Collaboration.Seeder.init()

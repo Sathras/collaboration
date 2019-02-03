@@ -58,7 +58,7 @@ defmodule Collaboration.Coherence.Schemas do
   end
 
   def get_user(id) do
-    @repo.get(@user_schema, id)
+    @repo.get(User, id)
   end
 
   def get_user!(id) do

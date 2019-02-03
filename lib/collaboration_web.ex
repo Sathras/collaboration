@@ -82,8 +82,7 @@ defmodule CollaborationWeb do
       import CollaborationWeb.Gettext
       import CollaborationWeb.ErrorHelpers
 
-      import CollaborationWeb.UserSocket,
-        only: [user?: 1, admin?: 1, user_id: 1]
+      import CollaborationWeb.UserSocket, only: [user?: 1]
     end
   end
 

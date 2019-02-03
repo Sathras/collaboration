@@ -7,7 +7,6 @@
     <meta name="description" content="A collaboration tool">
     <meta name="author" content="Alexander Fuchsberger">
     <%= tag :meta, name: "user_token", content: Map.get @conn.assigns, :user_token, "" %>
-    <%= tag :meta, name: "user_id", content: user_id(@conn) %>
 
     <title>Idea Nexus</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
@@ -68,8 +67,8 @@
     </div>
 
     <%= if Map.has_key?(@conn.assigns, :topic),
-      do: Drab.Client.run(@conn, user_id: user_id(@conn), topic_id: @topic.id),
-      else: Drab.Client.run(@conn, user_id: user_id(@conn))
+      do: Drab.Client.run(@conn, user: current_user(@conn), topic_id: @topic.id),
+      else: Drab.Client.run(@conn, user: current_user(@conn))
     %>
   </body>
 </html>

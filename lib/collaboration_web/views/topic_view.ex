@@ -16,7 +16,6 @@ defmodule CollaborationWeb.TopicView do
   end
 
   def iconFeatured( conn, topic) do
-    IO.inspect conn
     if topic.featured do
       content_tag :i, "", class: "fas fa-star text-primary"
     else

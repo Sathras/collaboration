@@ -9,12 +9,8 @@ defmodule Collaboration.Contributions do
   alias Phoenix.View
   alias Collaboration.Repo
   alias Collaboration.Coherence.User
-  alias Collaboration.Contributions.Topic
-  alias Collaboration.Contributions.Idea
-  alias Collaboration.Contributions.Comment
-  alias Collaboration.Contributions.Rating
-  alias CollaborationWeb.IdeaView
-  alias CollaborationWeb.CommentView
+  alias Collaboration.Contributions.{ Topic, Idea, Comment, Rating }
+  alias CollaborationWeb.{ IdeaView, CommentView }
 
   def list_topics do
     from( t in Topic,
@@ -55,33 +51,42 @@ defmodule Collaboration.Contributions do
   def delete_topic(%Topic{} = topic), do: Repo.delete(topic)
   def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
 
-  # gets list of ideas to a specific topic
-  def load_ideas(topic_id, user) do
 
-    # only show own ideas and peer ideas
-    valid_authors = get_user_ids(user && user.id, :peers)
+  def idea_query(user) do
+    user_query = from u in User, select: u.name
 
-    user_query = from u in User
-    rating_query = from r in Rating
     comments_query = from c in Comment,
       order_by: c.inserted_at,
-      preload: [:likes, :user]
+      where: is_nil(c.recipient_id),        # show bot-to-bot comments
+      or_where: c.user_id == ^user.id,      # show own comments
+      or_where: c.recipient_id == ^user.id, # show bot-to-user comments (self)
+      preload: [:likes, user: ^user_query ]
 
-    ideas = from i in Idea,
+    from i in Idea,
       order_by: [desc: i.inserted_at],
       preload: [
-        user: ^user_query,
-        ratings: ^rating_query,
-        comments: ^comments_query
-      ],
-      where: i.topic_id == ^topic_id and i.user_id in ^valid_authors
-    View.render_many(Repo.all(ideas), IdeaView, "idea.json", user: user)
+        :ratings,
+        comments: ^comments_query,
+        user: ^user_query
+      ]
+  end
+
+  # gets list of ideas to a specific topic
+  def load_ideas(topic_id, user) do
+    condition = String.to_atom "c#{user.condition}"
+
+    idea_query(user)
+    |> where(topic_id: ^topic_id)
+    |> where([i], field(i, ^condition) != 0 or i.user_id == ^user.id)
+    |> Repo.all()
+    |> View.render_many(IdeaView, "idea.json", user: user)
   end
 
   # get idea with all details
-  def load_idea(id, user) do
-    idea = from i in Idea, preload: [:user, :ratings, comments: [:likes, :user]]
-    Repo.get(idea, id) |> View.render_one(IdeaView, "idea.json", user: user)
+  def load_idea(idea_id, user) do
+    idea_query(user)
+    |> Repo.get(idea_id)
+    |> View.render_one(IdeaView, "idea.json", user: user)
   end
 
   def get_idea!(id), do: Repo.get!(Idea, id)
@@ -158,31 +163,16 @@ defmodule Collaboration.Contributions do
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
-  def get_comment_details(comment), do: Repo.preload(comment, [:user, :likes])
 
   def render_comment(comment) do
-    View.render_one(
-      get_comment_details(comment),
-      CommentView,
-      "comment.json",
-      current_user: nil
-    )
+    comment
+    |> Repo.preload([:user, :likes])
+    |> View.render_one(CommentView, "comment.json", current_user: nil)
   end
 
-  def create_comment(author, idea_id, attrs) do
+  def create_comment(params) do
     %Comment{}
-    |> Comment.changeset(Map.put(attrs, :public, author.admin))
-    |> put_assoc(:user, author)
-    |> put_assoc(:idea, get_idea!(idea_id))
-    |> Repo.insert()
-  end
-
-  def create_comment(author, recipient, idea, attrs) do
-    %Comment{}
-    |> Comment.changeset(attrs)
-    |> put_assoc(:user, author)
-    |> put_assoc(:recipient, recipient)
-    |> put_assoc(:idea, idea)
+    |> Comment.changeset(params)
     |> Repo.insert()
   end
 

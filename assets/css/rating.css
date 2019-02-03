@@ -1,37 +1,48 @@
-/* fake rating if nothing else */
-.rating.base1 .fa-star:nth-child(-n + 2),
-.rating.base2 .fa-star:nth-child(-n + 3),
-.rating.base3 .fa-star:nth-child(-n + 4),
-.rating.base4 .fa-star:nth-child(-n + 5),
-.rating.base5 .fa-star:nth-child(-n + 6) {
+.ratings-wrapper span {
+  font-size: 12px;
+}
+
+.rating i {
   color: orange;
 }
 
-.rating.base0 > .fa-star {
-  color: gray;
+.user-rating {
+  z-index: 10;
 }
 
-/* if i have a rating, prefer that (in blue) */
-.rating.my1 .fa-star,
-.rating.my2 .fa-star,
-.rating.my3 .fa-star,
-.rating.my4 .fa-star,
-.rating.my5 .fa-star {
-  color: black !important;
+.user-rating small {
+  display: inline-block;
+  height:28px;
+  line-height:24px;
+  vertical-align: middle;
 }
 
-.rating.my1 .fa-star:nth-child(-n + 2),
-.rating.my2 .fa-star:nth-child(-n + 3),
-.rating.my3 .fa-star:nth-child(-n + 4),
-.rating.my4 .fa-star:nth-child(-n + 5),
-.rating.my5 .fa-star:nth-child(-n + 6) {
-  color: blue !important;
+.star-rating {
+  float: left;
+  padding: 0 10px;
 }
 
-/* if hovered, that take even higher priority */
-.rating.rateable:hover {
-  color: black !important;
+.star-rating:not(:checked) > input {
+  position:absolute;
+  top:-9999px;
 }
-.rating.rateable .fa-star:hover {
-  color: red !important;
+
+.star-rating:not(:checked) > label {
+  float:right;
+  color:#ccc;
+}
+
+.star-rating > input:checked ~ label {
+  color: blue;
+}
+.star-rating:not(:checked) > label:hover,
+.star-rating:not(:checked) > label:hover ~ label {
+  color: blue;
+}
+.star-rating > input:checked + label:hover,
+.star-rating > input:checked + label:hover ~ label,
+.star-rating > input:checked ~ label:hover,
+.star-rating > input:checked ~ label:hover ~ label,
+.star-rating > label:hover ~ input:checked ~ label {
+  color: blue;
 }

@@ -50,6 +50,13 @@ defmodule CollaborationWeb.IdeaView do
 
   def render("idea.json", %{idea: i, user: u}) do
 
+    created = if u.condition == 0 do
+      date i.inserted_at
+    else
+      condition = String.to_atom "c#{u.condition}"
+      date NaiveDateTime.add(u.inserted_at, Map.get(i, condition))
+    end
+
     my_rating = if u, do: Enum.find(i.ratings, & &1.user_id === u.id), else: nil
     my_rating = if my_rating, do: Map.get(my_rating, :rating), else: nil
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
@@ -70,14 +77,29 @@ defmodule CollaborationWeb.IdeaView do
 
     %{
       id: i.id,
-      author: i.user.name,
+      author: i.user,
       comments: comments,
-      created: NaiveDateTime.to_iso8601(i.inserted_at) <> "Z",
+      created: created,
       my_rating: my_rating,
       rating: rating,
       raters: raters,
       text: i.text,
       user_id: i.user_id
     }
+  end
+
+  def star(value, idea) do
+    input = content_tag :input, "",
+      id: "star#{value}",
+      type: "radio",
+      name: "rate",
+      checked: value == idea.my_rating,
+      value: value
+
+    label = content_tag :label, content_tag(:i, "", class: "fas fa-star"),
+      data_rating: value,
+      drab_click: "rate(#{idea.id})"
+
+    [ input, label ]
   end
 end

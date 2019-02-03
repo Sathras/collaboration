@@ -18,6 +18,8 @@
  * participants can no longer access topics they are not meant to see
  * topics can no longer be directly edited via the topic overview page
  * only one topic can be featured at a time now, main navbar item leads to featured topic
+ * comments and idea posted time now looks relative to start of experiment (for experiment users)
+ * improved rating mechanism. also shows now own rating in separated space (blue star). If not rated yet, it shows a Rate tag for more intuitive handling.
 
 ### 2.3.1
  * fixed port number in email links

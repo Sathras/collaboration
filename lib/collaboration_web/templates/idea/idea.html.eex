@@ -1,38 +1,37 @@
 <div id="idea<%= @idea.id %>" class="card">
   <div class="card-body">
-    <div class="d-flex flex-wrap justify-content-around">
-      <h5 class="card-title mb-1"><%= @idea.author %></h5>
-      <div class="rating
-        <%= if @user.id != @idea.user_id, do: "rateable" %>
-        <%= base_rating(@idea.rating, @idea.raters) %>
-        <%= if @idea.my_rating, do: "my#{@idea.my_rating}" %>
-      ">
-        <strong><%= if @idea.raters > 0, do: @idea.rating %></strong>
-        <%= if @user.id != @idea.user_id do %>
-          <i class='fas fa-star'>
-          </i><i class='fas fa-star'>
-          </i><i class='fas fa-star'>
-          </i><i class='fas fa-star'>
-          </i><i class='fas fa-star'>
-          </i>
-        <% else %>
-          <i class='fas fa-star' data-rating="1" drab-click="rate(<%= @idea.id %>)">
-          </i><i class='fas fa-star' data-rating="2" drab-click="rate(<%= @idea.id %>)">
-          </i><i class='fas fa-star' data-rating="3" drab-click="rate(<%= @idea.id %>)">
-          </i><i class='fas fa-star' data-rating="4" drab-click="rate(<%= @idea.id %>)">
-          </i><i class='fas fa-star' data-rating="5" drab-click="rate(<%= @idea.id %>)">
-          </i>
-        <% end %>
-        <%= if @idea.raters > 0 do %>
-          <span data-toggle="tooltip" data-placement="right" title="Raters">
-            <i class='fas fa-users mr-1 ml-2'></i><%= @idea.raters %>
-          </span>
-        <% end %>
+    <%= if @user.id != @idea.user_id do %>
+      <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
+        <div class="star-rating" style="display:none;">
+          <i class="fas fa-minus-circle text-danger"></i> |
+          <%= star 5, @idea %>
+          <%= star 4, @idea %>
+          <%= star 3, @idea %>
+          <%= star 2, @idea %>
+          <%= star 1, @idea %>
+        </div>
+        <div class="rating">
+          <i class='fas fa-star'></i>
+          <strong><%= @idea.rating %></strong><span>/5</span>
+        </div>
+        <div class="raters">
+          <i class='fas fa-user mr-1'></i><strong><%= @idea.raters %></strong>
+        </div>
+        <div class="user-rating pointer">
+          <i class='fas fa-star<%= if @idea.my_rating do " text-primary" end %>'></i>
+          <strong><%= @idea.my_rating %></strong>
+          <small
+            class='text-primary'
+            style='<%= if @idea.my_rating do "display:none;" end %>'
+          >Rate</small>
+        </div>
       </div>
-    </div>
-    <small class="font-italic">
+    <% end %>
+    <hr class="mt-1 mb-2">
+    <small class="font-italic d-flex justify-content-between mb-2">
+      <strong><%= @idea.author %></strong>
       <%= if @idea.user_id == @user.id || @user.condition == 0 do %>
-        <div class="float-right ml-1">
+        <div>
           <i class="fas fa-pencil-alt" drab-click="edit(<%= @idea.id %>)"></i>
           <%= if @user.condition == 0, do:
             link icon("far fa-trash-alt"),
@@ -45,7 +44,6 @@
       <% end %>
       <time datetime="<%= @idea.created %>"></time>
     </small>
-    <hr class="mt-1">
     <p class="card-text"><%= @idea.text %></p>
   </div>
   <ul class="comments list-group list-group-flush">

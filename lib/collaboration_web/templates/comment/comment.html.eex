@@ -5,10 +5,7 @@
   data-likes="<%= @comment.likes %>"
 >
   <p class='mb-1'>
-    <strong>
-      <%= @comment.author %>
-      <%= if @comment.admin do %><em class="text-muted">(Admin)</em><% end %>
-    </strong>
+    <strong><%= @comment.author %></strong>
     <small class="font-italic float-right">
       <time datetime="<%= @comment.created %>"></time>
     </small>
@@ -19,7 +16,7 @@
       <%= if @comment.user_id !== @user.id do %>
         <i class="text-primary far fa-thumbs-up"></i>
       <% end %>
-      <%= if @admin do %>
+      <%= if @user.condition == 0 do %>
         <input
           class="badge badge-pill badge-primary mr-1 d-inline border-0"
           drab-change="update_fake_likes(<%= @comment.id %>)"
