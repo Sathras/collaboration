@@ -65,9 +65,8 @@ defmodule CollaborationWeb.TopicCommander do
   end
 
   defhandler rate(socket, sender, idea_id) do
-    rating = sender["data"]["rating"]
     user = socket.assigns.user
-    if rate_idea!(user, idea_id, rating) do
+    if rate_idea!(sender["data"]["rating"], idea_id, user.id) do
 
       idea = render_to_string IdeaView, "idea.html",
         idea: load_idea(idea_id, user),
@@ -77,6 +76,11 @@ defmodule CollaborationWeb.TopicCommander do
       |> execute(replaceWith: idea, on: "#idea#{idea_id}")
       |> execute(:timeago, on: "#idea#{idea_id} time")
     end
+  end
+
+  defhandler unrate(socket, sender, idea_id) do
+    unrate_idea!(idea_id, socket.assigns.user.id)
+    exec_js(socket, "unrate(#{idea_id})")
   end
 
   defhandler submit_feedback(socket, sender, idea_id) do

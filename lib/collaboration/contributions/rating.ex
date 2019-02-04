@@ -10,9 +10,10 @@ defmodule Collaboration.Contributions.Rating do
 
   @doc false
   def changeset(rating, attrs) do
+    fields = ~w(rating idea_id user_id)a
     rating
-    |> cast(attrs, [:rating])
-    |> validate_required([:rating])
+    |> cast(attrs, fields)
+    |> validate_required(fields)
     |> validate_number(:rating, greater_than: 0, less_than: 6)
   end
 end

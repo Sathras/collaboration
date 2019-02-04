@@ -39,3 +39,16 @@ window.auto_grow = element => {
   element.style.height = '30px';
   element.style.height = element.scrollHeight + 'px';
 };
+
+window.unrate = ( id ) => {
+  if($(`#idea${id} .user-rating strong`).text() != ''){
+    const elm = `#idea${id} .raters strong`
+    let raters = parseInt($(elm).text())
+    $(elm).text(raters-1)
+  }
+
+  $(`#idea${id} .star-rating input`).removeAttr('checked');
+  $(`#idea${id} .user-rating strong`).text('');
+  $(`#idea${id} .user-rating small`).show();
+  $(`#idea${id} .user-rating`).siblings().toggle();
+}

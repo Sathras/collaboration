@@ -139,18 +139,21 @@ defmodule Collaboration.Contributions do
       )
       |> Repo.one!()
 
-  def rate_idea!(user, idea_id, value) do
-    case Repo.get_by(Rating, user_id: user.id, idea_id: idea_id) do
-      nil ->
-        %Rating{}
-        |> Rating.changeset(%{rating: value})
-        |> put_assoc(:idea, get_idea!(idea_id))
-        |> put_assoc(:user, user)
-        |> Repo.insert!()
+  def rate_idea!(rating, idea_id, user_id) do
+    case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
+      nil -> %Rating{}
+      rating -> rating
+    end
+    |> Rating.changeset(%{ rating: rating, idea_id: idea_id, user_id: user_id })
+    |> Repo.insert_or_update!()
+  end
+
+  def unrate_idea!(idea_id, user_id) do
+    case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
+      nil -> :error
       rating ->
-        rating
-        |> Rating.changeset(%{rating: value})
-        |> Repo.update!()
+        Repo.delete!(rating)
+        :ok
     end
   end
 

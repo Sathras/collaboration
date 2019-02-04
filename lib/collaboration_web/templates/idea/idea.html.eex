@@ -3,7 +3,8 @@
     <%= if @user.id != @idea.user_id do %>
       <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
         <div class="star-rating" style="display:none;">
-          <i class="fas fa-minus-circle text-danger"></i> |
+          <i class="fas fa-minus-circle text-danger"
+            drab-click="unrate(<%= @idea.id %>)"></i> |
           <%= star 5, @idea %>
           <%= star 4, @idea %>
           <%= star 3, @idea %>

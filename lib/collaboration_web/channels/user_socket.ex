@@ -3,7 +3,6 @@ defmodule CollaborationWeb.UserSocket do
   use Drab.Socket
 
   import Coherence.Config, only: [rememberable_cookie_expire_hours: 0]
-  import Collaboration.Coherence.Schemas, only: [is_admin?: 1]
 
   alias Phoenix.Token
 
