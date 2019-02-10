@@ -1,6 +1,5 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
-  import Collaboration.Coherence.Schemas
 
   alias Phoenix.View
   alias CollaborationWeb.CommentView
@@ -22,6 +21,10 @@ defmodule CollaborationWeb.IdeaView do
     if Map.has_key?(conn.params, "id"),
       do: Map.get(conn.params, "id") |> String.to_integer,
       else: nil
+  end
+
+  def idea_class(idea) do
+    if idea.remaining > 0, do: "idea d-none", else: "idea"
   end
 
   def topic_id(conn), do: Map.get(conn.params, "topic_id", conn.params["id"])
@@ -50,39 +53,32 @@ defmodule CollaborationWeb.IdeaView do
 
   def render("idea.json", %{idea: i, user: u}) do
 
-    created = if u.condition == 0 do
-      date i.inserted_at
-    else
-      condition = String.to_atom "c#{u.condition}"
-      date NaiveDateTime.add(u.inserted_at, Map.get(i, condition))
-    end
+    condition = String.to_atom "c#{u.condition}"
+    created = if u.condition == 0 || i.user_id == u.id,
+      do: i.inserted_at,
+      else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition))
+
+    remaining = NaiveDateTime.diff created, NaiveDateTime.utc_now()
 
     my_rating = if u, do: Enum.find(i.ratings, & &1.user_id === u.id), else: nil
     my_rating = if my_rating, do: Map.get(my_rating, :rating), else: nil
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    # filter comments to show only those from appropriate condition
-    valid_authors = cond do
-      !u -> []
-      u.condition === 1 -> get_user_ids u.id
-      true -> get_user_ids u.id, :peers
-      # u.condition === 2 -> get_user_ids(u.id, :peers)
-      # u.condition === 3 -> get_user_ids(u.id, :peers)
-      # u.condition === 4 -> get_user_ids(u.id, :peers)
-    end
+    time = NaiveDateTime.diff(NaiveDateTime.utc_now, u.inserted_at)
 
     comments = i.comments
-    |> Enum.filter(& &1.user_id in valid_authors)
     |> View.render_many(CommentView, "comment.json", user: u)
+    |> Enum.sort_by(fn(c) -> c.created end)
 
     %{
       id: i.id,
       author: i.user,
       comments: comments,
-      created: created,
+      created: date(created),
       my_rating: my_rating,
       rating: rating,
       raters: raters,
+      remaining: remaining,
       text: i.text,
       user_id: i.user_id
     }

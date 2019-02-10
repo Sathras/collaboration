@@ -1,4 +1,4 @@
-<div id="idea<%= @idea.id %>" class="card">
+<div id="idea<%= @idea.id %>" class="card <%= idea_class @idea %>" data-remaining="<%= @idea.remaining %>">
   <div class="card-body">
     <%= if @user.id != @idea.user_id do %>
       <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
@@ -45,7 +45,7 @@
       <% end %>
       <time datetime="<%= @idea.created %>"></time>
     </small>
-    <p class="card-text"><%= @idea.text %></p>
+    <p class="card-text text-justify"><%= @idea.text %></p>
   </div>
   <ul class="comments list-group list-group-flush">
     <%= for c <- @idea.comments do %>
@@ -59,6 +59,7 @@
       drab-options="debounce(200)"
       drab-keyup="submit_feedback(<%= @idea.id %>)"
       placeholder="Leave feedback..."
+      style="height:29px;"
     ></textarea>
   </div>
 </div>

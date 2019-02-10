@@ -3,10 +3,6 @@ defmodule CollaborationWeb.TopicCommander do
   alias CollaborationWeb.IdeaView
   alias CollaborationWeb.CommentView
 
-  defhandler delete_comment(socket, _sender, comment_id) do
-    if delete_comment!(comment_id), do: delete!(socket, "#comment#{comment_id}")
-  end
-
   defhandler edit(socket, sender, idea_id) do
     if "I" === select socket, prop: "nodeName", from: this(sender) do
       value = select socket, :text, from: "#idea#{idea_id} .card-text"
@@ -78,7 +74,7 @@ defmodule CollaborationWeb.TopicCommander do
     end
   end
 
-  defhandler unrate(socket, sender, idea_id) do
+  defhandler unrate(socket, _sender, idea_id) do
     unrate_idea!(idea_id, socket.assigns.user.id)
     exec_js(socket, "unrate(#{idea_id})")
   end
@@ -93,9 +89,11 @@ defmodule CollaborationWeb.TopicCommander do
       }
       case create_comment(comment) do
         {:ok, comment} ->
+
           comment = render_to_string CommentView, "comment.html",
             comment: load_comment(comment.id, user),
             user: user
+
           socket
           |> insert(comment, append: "#idea#{idea_id} .comments")
           |> delete(class: "is-invalid", from: this(sender))

@@ -33,14 +33,14 @@ defmodule Collaboration.Coherence.User do
 
   def changeset(model, params \\ %{})
 
-  # create admin / peer user (via invitation or seed file)
+  # create admin / peer user (via seed file)
   def changeset(model, %{ :name => _, :email => _ } = params ) do
     model
     |> cast(params, [:name, :email] ++ coherence_fields())
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
-    |> put_change(:password, "password")
-    |> put_change(:password_confirmation, "password")
+    |> put_change(:password, @password)
+    |> put_change(:password_confirmation, @password)
     |> unique_constraint(:email)
     |> validate_coherence(params)
   end

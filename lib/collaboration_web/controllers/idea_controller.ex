@@ -62,9 +62,4 @@ defmodule CollaborationWeb.IdeaController do
             topic: topic)
     end
   end
-
-  def delete(conn, %{ "id" => id }) do
-    delete_idea(id)
-    redirect conn, to: Routes.topic_path(conn, :show )
-  end
 end

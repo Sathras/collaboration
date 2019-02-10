@@ -1,18 +1,17 @@
 <li
   id="comment<%= @comment.id %>"
-  class="list-group-item pb-1 pt-1"
+  class="list-group-item pb-1 pt-2 <%= comment_class @comment %>"
   data-liked="<%= @comment.liked %>"
   data-likes="<%= @comment.likes %>"
+  data-remaining="<%= @comment.remaining %>"
 >
-  <p class='mb-1'>
-    <strong><%= @comment.author %></strong>
-    <small class="font-italic float-right">
-      <time datetime="<%= @comment.created %>"></time>
+  <p class="mb-0 text-justify">
+    <small>
+      <strong class="mr-1"><%= @comment.author %></strong><%= @comment.text %>
     </small>
   </p>
-  <p class="mb-0">
-    <%= @comment.text %>
-    <span>
+  <p class=' mb-1'>
+    <small>
       <%= if @comment.user_id !== @user.id do %>
         <i class="text-primary far fa-thumbs-up"></i>
       <% end %>
@@ -36,11 +35,7 @@
           <%= if @comment.liked, do: "Unlike", else: "Like" %>
         </small>
       <% end %>
-      <%= if @user.condition == 0 do %>
-        <i class="float-right text-danger fas fa-trash-alt"
-          drab-click="delete_comment(<%= @comment.id %>)"
-        ></i>
-      <% end %>
-    </span>
+      <time class="font-italic float-right" datetime="<%= @comment.created %>"></time>
+    </small>
   </p>
 </li>

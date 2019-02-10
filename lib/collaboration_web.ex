@@ -33,7 +33,6 @@ defmodule CollaborationWeb do
   def commander do
     quote do
       use Drab.Commander, modules: [Drab.Element, Drab.Live, Drab.Query]
-      import Collaboration.Coherence.Schemas
       import Collaboration.Contributions
       import Phoenix.HTML, only: [safe_to_string: 1, raw: 1]
     end
