@@ -1,6 +1,12 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
+  def user_condition(conn) do
+    if conn.assigns.current_user,
+      do: conn.assigns.current_user.condition,
+      else: false
+  end
+
   @doc """
   Generates name for the JavaScript view we want to use
   in this combination of view/template.
@@ -95,6 +101,15 @@ defmodule CollaborationWeb.LayoutView do
     started = user.confirmed_at
     now = NaiveDateTime.utc_now()
     NaiveDateTime.diff(started, now) + 60 * 10
+  end
+
+  def time_passed(conn) do
+    if conn.assigns.current_user do
+      NaiveDateTime.diff NaiveDateTime.utc_now,
+        conn.assigns.current_user.inserted_at
+    else
+      false
+    end
   end
 
   def abort_button(conn) do

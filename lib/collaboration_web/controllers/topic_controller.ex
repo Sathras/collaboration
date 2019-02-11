@@ -18,9 +18,12 @@ defmodule CollaborationWeb.TopicController do
             |> send_resp(404, "No topic is currently published.")
             |> halt()
           topic ->
+            ideas = load_ideas(topic.id, user)
+
             render conn, "show.html",
               changeset: Map.get(params, :idea_changeset, change_idea()),
-              ideas: load_ideas(topic.id, user),
+              user_ideas: user_ideas(ideas, user.id),
+              ideas: ideas,
               topic: topic
         end
     end

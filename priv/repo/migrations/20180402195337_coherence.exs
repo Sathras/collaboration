@@ -23,8 +23,6 @@ defmodule Collaboration.Repo.Migrations.Coherence do
       add :email, :string
       add :remember_created_at, :utc_datetime
       add :password_hash, :string
-      add :reset_password_token, :string
-      add :reset_password_sent_at, :utc_datetime
       add :sign_in_count, :integer, default: 0
       add :last_sign_in_at, :utc_datetime
       add :current_sign_in_at, :utc_datetime
@@ -34,16 +32,6 @@ defmodule Collaboration.Repo.Migrations.Coherence do
     end
 
     create unique_index(:users, [:email])
-
-    create table(:invitations) do
-      add :name, :string
-      add :email, :string
-      add :token, :string
-      timestamps()
-    end
-
-    create unique_index(:invitations, [:email])
-    create index(:invitations, [:token])
 
     create table(:rememberables) do
       add :series_hash, :string

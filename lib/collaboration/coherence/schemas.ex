@@ -125,8 +125,7 @@ defmodule Collaboration.Coherence.Schemas do
 
   end
 
-  Enum.each(
-    [Collaboration.Coherence.Invitation, Collaboration.Coherence.Rememberable],
+  Enum.each([Collaboration.Coherence.Rememberable],
     fn module ->
       name =
         module

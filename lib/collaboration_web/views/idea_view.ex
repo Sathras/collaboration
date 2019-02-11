@@ -64,8 +64,6 @@ defmodule CollaborationWeb.IdeaView do
     my_rating = if my_rating, do: Map.get(my_rating, :rating), else: nil
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    time = NaiveDateTime.diff(NaiveDateTime.utc_now, u.inserted_at)
-
     comments = i.comments
     |> View.render_many(CommentView, "comment.json", user: u)
     |> Enum.sort_by(fn(c) -> c.created end)

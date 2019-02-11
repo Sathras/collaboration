@@ -15,3 +15,8 @@
     <%= render IdeaView, "idea.html", conn: @conn, user: @current_user, idea: i %>
   <% end %>
 </div>
+<script>
+  window.respond_to = [<%= for {idea_id, remaining } <- @user_ideas do %>
+    [<%= idea_id %>, <%= remaining %>],
+  <% end %>]
+</script>

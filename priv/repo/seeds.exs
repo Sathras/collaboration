@@ -10,9 +10,6 @@ defmodule Collaboration.Seeder do
 
   def init do
 
-    # create an admin user
-    user "Admin", "admin@admin"
-
     # peer users will have the following email: <id>@peer
     u1 = user "chemistrynerd1994", "1@peer"
     u2 = user "islandthyme", "2@peer"
@@ -24,6 +21,9 @@ defmodule Collaboration.Seeder do
     u8 = user "JustBrad", "8@peer"
     u9 = user "i_v_a_n", "9@peer"
     u10 = user "mattncheese", "10@peer"
+
+    # create an admin user
+    user "Admin", "admin@admin"
 
     t1 = topic %{
       title: "How can USF improve its Parking and Transportation Services?",
@@ -241,6 +241,18 @@ defmodule Collaboration.Seeder do
       fake_likes: 2,
       c1: 0, c2: 0, c3: 0, c4: 0, c5: 540, c6: 0, c7: 540, c8: 0
     }, i8, u6
+
+    comment %{
+      text: "It seems to me that a lot of reserved spots are not being used while so many S permit holders are unable to find spots while those remain vacant in front of them which is just DISGUSTING!! I think the student body and parking services should meet and work out a layout of designated parking spaces for students, employees and visitors that  is actually not nonsense!",
+      fake_likes: 2,
+      c1: 0, c2: 0, c3: 0, c4: 0, c5: 540, c6: 0, c7: 540, c8: 0
+    }, i8, u6
+
+    comment %{
+      text: "Fake comment 1. This should never appear but is needed for bot-to-user like",
+      fake_likes: 0,
+      c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0, c7: 0, c8: 0
+    }, i1, u1
   end
 
   defp user(name, email) do

@@ -1,23 +1,23 @@
 <div id="idea<%= @idea.id %>" class="card <%= idea_class @idea %>" data-remaining="<%= @idea.remaining %>">
   <div class="card-body">
-    <%= if @user.id != @idea.user_id do %>
-      <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
-        <div class="star-rating" style="display:none;">
-          <i class="fas fa-minus-circle text-danger"
-            drab-click="unrate(<%= @idea.id %>)"></i> |
-          <%= star 5, @idea %>
-          <%= star 4, @idea %>
-          <%= star 3, @idea %>
-          <%= star 2, @idea %>
-          <%= star 1, @idea %>
-        </div>
-        <div class="rating">
-          <i class='fas fa-star'></i>
-          <strong><%= @idea.rating %></strong><span>/5</span>
-        </div>
-        <div class="raters">
-          <i class='fas fa-user mr-1'></i><strong><%= @idea.raters %></strong>
-        </div>
+    <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
+      <div class="star-rating" style="display:none;">
+        <i class="fas fa-minus-circle text-danger"
+          drab-click="unrate(<%= @idea.id %>)"></i> |
+        <%= star 5, @idea %>
+        <%= star 4, @idea %>
+        <%= star 3, @idea %>
+        <%= star 2, @idea %>
+        <%= star 1, @idea %>
+      </div>
+      <div class="rating">
+        <i class='fas fa-star'></i>
+        <strong><%= @idea.rating %></strong><span>/5</span>
+      </div>
+      <div class="raters">
+        <i class='fas fa-user mr-1'></i><strong><%= @idea.raters %></strong>
+      </div>
+      <%= if @user.id != @idea.user_id do %>
         <div class="user-rating pointer">
           <i class='fas fa-star<%= if @idea.my_rating do " text-primary" end %>'></i>
           <strong><%= @idea.my_rating %></strong>
@@ -26,21 +26,14 @@
             style='<%= if @idea.my_rating do "display:none;" end %>'
           >Rate</small>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
     <hr class="mt-1 mb-2">
     <small class="font-italic d-flex justify-content-between mb-2">
       <strong><%= @idea.author %></strong>
       <%= if @idea.user_id == @user.id || @user.condition == 0 do %>
         <div>
           <i class="fas fa-pencil-alt" drab-click="edit(<%= @idea.id %>)"></i>
-          <%= if @user.condition == 0, do:
-            link icon("far fa-trash-alt"),
-              to: Routes.idea_path(@conn, :delete, id: @idea.id),
-              data: [confirm: "Are you sure?"],
-              class: "delete-link text-danger",
-              method: "delete"
-          %>
         </div>
       <% end %>
       <time datetime="<%= @idea.created %>"></time>

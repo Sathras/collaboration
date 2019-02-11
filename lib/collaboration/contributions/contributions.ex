@@ -4,7 +4,6 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset
   import Ecto.Query, warn: false
-  import Collaboration.Coherence.Schemas
 
   alias Phoenix.View
   alias Collaboration.Repo
@@ -51,14 +50,11 @@ defmodule Collaboration.Contributions do
   def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
 
   def idea_query(user) do
-
-    condition = String.to_atom "c#{user.condition}"
     user_query = from u in User, select: u.name
-    time = NaiveDateTime.diff(NaiveDateTime.utc_now, user.inserted_at)
 
-    comments_query = from c in Comment,
-      where: field(c, ^condition) != 0 or c.user_id == ^user.id,
-      preload: [:likes, user: ^user_query ]
+    comments_query = from(c in Comment)
+    |> get_where(user)
+    |> preload([:likes, user: ^user_query])
 
     from i in Idea,
       preload: [
@@ -70,11 +66,9 @@ defmodule Collaboration.Contributions do
 
   # gets list of ideas to a specific topic
   def load_ideas(topic_id, user) do
-    condition = String.to_atom "c#{user.condition}"
-
     idea_query(user)
     |> where(topic_id: ^topic_id)
-    |> where([i], field(i, ^condition) != 0 or i.user_id == ^user.id)
+    |> get_where(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
     |> Enum.sort_by(fn(i) -> i.created end, &>=/2)
@@ -123,6 +117,12 @@ defmodule Collaboration.Contributions do
     end
   end
 
+  def user_ideas(ideas, user_id) do
+    ideas
+    |> Enum.filter(fn i -> i.user_id == user_id end)
+    |> Enum.map(fn i -> {i.id, i.remaining} end)
+  end
+
   def load_comment(comment_id, user) do
     user_query = from u in User, select: u.name
     from(c in Comment, preload: [:likes, user: ^user_query])
@@ -157,5 +157,16 @@ defmodule Collaboration.Contributions do
     |> change()
     |> put_assoc(:likes, List.delete(comment.likes, user))
     |> Repo.update()
+  end
+
+  # if admin or peer user, show all ideas from admins or peer users or current
+  # if experiment user, show all ideas for current condition and user ideas
+  defp get_where(changeset, user) do
+    if user.condition > 0 do
+      condition = String.to_atom "c#{user.condition}"
+      where changeset, [i], field(i, ^condition) != 0 or i.user_id == ^user.id
+    else
+      where changeset, [i], i.user_id <= 11 or i.user_id == ^user.id
+    end
   end
 end

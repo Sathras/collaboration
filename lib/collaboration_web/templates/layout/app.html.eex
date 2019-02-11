@@ -26,9 +26,8 @@
     <!-- End Google Analytics -->
 
     <script>
-      window.admin = <%= admin?(@conn) %>;
-      window.user = <%= if authenticated?(@conn),
-        do: raw("\"#{Coherence.current_user(@conn).id}\""), else: false %>;
+      window.condition = <%= user_condition(@conn) %>;
+      window.time_passed = <%= time_passed(@conn) %>;
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

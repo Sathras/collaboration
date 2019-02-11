@@ -54,11 +54,13 @@ defmodule CollaborationWeb.IdeaController do
         |> redirect(to: Routes.topic_path(conn, :show))
 
       {:error, changeset} ->
+        ideas = load_ideas(topic.id, user)
         conn
         |> put_view(CollaborationWeb.TopicView)
         |> render(:show,
             changeset: changeset,
-            ideas: load_ideas(topic.id, user),
+            ideas: ideas,
+            user_ideas: user_ideas(ideas, user.id),
             topic: topic)
     end
   end
