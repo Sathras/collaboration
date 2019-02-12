@@ -4,9 +4,10 @@ import MainView from '../main'
 export default class View extends MainView {
 
   comment(id, cid, author, text, delay){
-    console.log("Test")
+
     var date = new Date()
     date = new Date(date.getTime() + delay * 1000 )
+    date = date.toISOString()
     const comment = `<li id="comment${cid}" class="list-group-item pb-1 pt-2 comment" data-liked="false" data-likes="0" data-remaining="0">
     <p class="mb-0 text-justify">
       <small><strong class="mr-1">${author}</strong>${text}</small>
@@ -15,24 +16,38 @@ export default class View extends MainView {
       <small>
         <i class="text-primary far fa-thumbs-up"></i>
         <span class="likes badge badge-pill badge-primary mr-1 d-none">0</span>
-        <small class="text-primary" drab-click="like(${cid})" drab="click:like(${cid})" drab-id="d31">Like</small>
-        <time class="font-italic float-right" datetime="${date.toISOString()}"></time>
+        <small class="text-primary" drab-click="like(${cid})" drab="click:like(${cid})">Like</small>
+        <time class="font-italic float-right" datetime="${date}"></time>
       </small>
     </p>
   </li>`;
 
-    $(`#idea${id} .comments`).append(comment)
+    switch($(`#idea${id} .comment`).length){
+      case 0:
+      case 1:
+        $(`#idea${id} .comments`).append(comment)
+        break;
+      default:
+        let done = false
+        $(`#idea${id} .comment`).each(function(){
+          if(done) return false;
+          if($(this).find('time').attr('datetime') > date ){
+            $(this).before(comment)
+            done = true
+          }
+        });
+    }
     $(`#idea${id} .comments time`).timeago()
   }
 
   schedule_comment(idea_id, cid, author, text, delay){
-    delay = delay - window.time_passed
-
-    if(window.time_passed < delay)
+    if(window.time_passed < delay){
+      const View = this;
       setTimeout(
-        function(){ this.comment(idea_id, cid, author, text, delay)},
+        function(){ View.comment(idea_id, cid, author, text, delay)},
         1000 * (delay - window.time_passed)
       )
+    }
     else
       this.comment(idea_id, cid, author, text, delay)
   }
@@ -139,13 +154,13 @@ export default class View extends MainView {
 
       switch(window.condition){
         case 3:
-          this.schedule_comment(r1[0], 24, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
+          this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
         case 4:
-          this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
+          this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
         case 7:
-          this.schedule_comment(r1[0], 24, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
+          this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
         case 8:
-          this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
+          this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
           // if(r2) this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
       }
     }

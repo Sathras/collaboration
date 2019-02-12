@@ -10,15 +10,15 @@
         <%= star 2, @idea %>
         <%= star 1, @idea %>
       </div>
-      <div class="rating">
+      <div class="rating" title="Overall Rating" data-toggle="tooltip">
         <i class='fas fa-star'></i>
         <strong><%= @idea.rating %></strong><span>/5</span>
       </div>
-      <div class="raters">
+      <div class="raters" title="Raters" data-toggle="tooltip">
         <i class='fas fa-user mr-1'></i><strong><%= @idea.raters %></strong>
       </div>
       <%= if @user.id != @idea.user_id do %>
-        <div class="user-rating pointer">
+        <div class="user-rating pointer" title="My Rating" data-toggle="tooltip">
           <i class='fas fa-star<%= if @idea.my_rating do " text-primary" end %>'></i>
           <strong><%= @idea.my_rating %></strong>
           <small

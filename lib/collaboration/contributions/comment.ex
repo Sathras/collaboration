@@ -15,7 +15,6 @@ defmodule Collaboration.Contributions.Comment do
     field :c8, :integer, default: 0
     belongs_to :idea,       Collaboration.Contributions.Idea
     belongs_to :user,       Collaboration.Coherence.User
-    belongs_to :recipient,  Collaboration.Coherence.User
     many_to_many :likes,    Collaboration.Coherence.User, join_through: "likes",
                             on_replace: :delete, on_delete: :delete_all
     timestamps()

@@ -38,7 +38,6 @@ defmodule Collaboration.Repo.Migrations.Contributions do
       add :c7, :integer, default: 0, null: false
       add :c8, :integer, default: 0, null: false
       add :idea_id, references(:ideas, on_delete: :delete_all)
-      add :recipient_id, references(:users, on_delete: :delete_all)
       add :user_id, references(:users, on_delete: :delete_all)
       timestamps()
     end

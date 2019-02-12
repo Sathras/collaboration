@@ -248,8 +248,16 @@ defmodule Collaboration.Seeder do
       c1: 0, c2: 0, c3: 0, c4: 0, c5: 540, c6: 0, c7: 540, c8: 0
     }, i8, u6
 
+    # id 25
     comment %{
-      text: "Fake comment 1. This should never appear but is needed for bot-to-user like",
+      text: "Fake comment 1. This should never appear but is needed for bot-to-user likes",
+      fake_likes: 0,
+      c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0, c7: 0, c8: 0
+    }, i1, u1
+
+    # id 26
+    comment %{
+      text: "Fake comment 2. This should never appear but is needed for bot-to-user likes",
       fake_likes: 0,
       c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0, c7: 0, c8: 0
     }, i1, u1

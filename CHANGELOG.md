@@ -29,6 +29,7 @@
  * improved rating mechanism: shows now own rating in separated space (blue star). If not rated yet, it shows a Rate tag for more intuitive handling. Users can now also remove their rating from an idea.
  * fully finished delayed automated idea / comment / like / rating posting for specific conditions
  * bot-to-user comments now do not persist in the database but can now be liked
+ * fixed: bot-to-user comments are now inserted at the correct place
 
 
 ### 2.3.1
