@@ -21,7 +21,8 @@ defmodule CollaborationWeb.TopicController do
             ideas = load_ideas(topic.id, user)
 
             render conn, "show.html",
-              changeset: Map.get(params, :idea_changeset, change_idea()),
+              idea_changeset: Map.get(params, :idea_changeset, change_idea()),
+              comment_changeset: comment_changeset(),
               user_ideas: user_ideas(ideas, user.id),
               ideas: ideas,
               topic: topic

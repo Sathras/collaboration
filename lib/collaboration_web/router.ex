@@ -59,6 +59,8 @@ defmodule CollaborationWeb.Router do
     pipe_through(:protected)
 
     # add protected resources below
+    resources "/comments",  CommentController, only: [:create]
+
     post "/", IdeaController, :create
     post "/complete", UserController, :finish
   end

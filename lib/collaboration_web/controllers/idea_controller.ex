@@ -58,7 +58,8 @@ defmodule CollaborationWeb.IdeaController do
         conn
         |> put_view(CollaborationWeb.TopicView)
         |> render(:show,
-            changeset: changeset,
+            idea_changeset: changeset,
+            comment_changeset: comment_changeset(),
             ideas: ideas,
             user_ideas: user_ideas(ideas, user.id),
             topic: topic)

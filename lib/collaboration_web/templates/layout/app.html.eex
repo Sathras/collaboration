@@ -28,6 +28,8 @@
     <script>
       window.condition = <%= user_condition(@conn) %>;
       window.time_passed = <%= time_passed(@conn) %>;
+      window.user = JSON.parse("<%= get_user(@conn) %>".replace(/(&quot\;)/g,"\""));
+      console.log(window.user)
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

@@ -7,6 +7,10 @@ export default class MainView {
   // This will be executed whenever a new page is loaded
   mount() {
 
+    // scroll back to previous scroll position on page load
+    const pos = localStorage.getItem('scroll-pos', 0);
+    if (pos) $(window).scrollTop(pos)
+
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
     $('#nav-topics a').popover({
@@ -74,6 +78,10 @@ export default class MainView {
 
   unmount() {
     // This will be executed when the document unloads...
+
+    // reset scroll position
+    localStorage.setItem('scroll-pos', 0);
+
     clearInterval(this.timer);
     $( ".form-control" ).off();
   }

@@ -79,34 +79,6 @@ defmodule CollaborationWeb.TopicCommander do
     exec_js(socket, "unrate(#{idea_id})")
   end
 
-  defhandler submit_feedback(socket, sender, idea_id) do
-    if sender["event"]["keyCode"] === 13 do
-      user = socket.assigns.user
-      comment = %{
-        text: sender["value"],
-        user_id: user.id,
-        idea_id: idea_id
-      }
-      case create_comment(comment) do
-        {:ok, comment} ->
-
-          comment = render_to_string CommentView, "comment.html",
-            comment: load_comment(comment.id, user),
-            user: user
-
-          socket
-          |> insert(comment, append: "#idea#{idea_id} .comments")
-          |> delete(class: "is-invalid", from: this(sender))
-          |> execute("val('')", on: this(sender))
-          |> exec_js("$('#idea#{idea_id} .comments time:last').timeago();")
-
-        {:error, _changeset} ->
-          socket
-          |> insert(class: "is-invalid", into: this(sender))
-      end
-    end
-  end
-
   defhandler update_fake_likes(socket, sender, comment_id) do
     elm = "#comment#{comment_id}"
     likes = socket |> select( data: "likes", from: elm )

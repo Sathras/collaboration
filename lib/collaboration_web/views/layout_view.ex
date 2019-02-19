@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
+  import Collaboration.Contributions
+
   def user_condition(conn) do
     if conn.assigns.current_user,
       do: conn.assigns.current_user.condition,
@@ -165,6 +167,21 @@ defmodule CollaborationWeb.LayoutView do
         data_remaining: countdown,
         disabled: true,
         to: Routes.user_path(conn, :finish)
+    end
+  end
+
+  def get_user(conn) do
+    if conn.assigns.current_user do
+      Jason.encode!(
+        %{
+          condition: conn.assigns.current_user.condition,
+          ideas: get_user_ideas!(conn.assigns.current_user.id),
+          comments: get_user_comments!(conn.assigns.current_user.id)
+        },
+        escape: :javascript_safe
+      )
+    else
+      nil
     end
   end
 end

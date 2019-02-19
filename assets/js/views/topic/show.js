@@ -6,7 +6,7 @@ export default class View extends MainView {
   comment(id, cid, author, text, delay){
 
     var date = new Date()
-    date = new Date(date.getTime() + delay * 1000 )
+    date = new Date(date.getTime() + delay * 1000 - 1000 )
     date = date.toISOString()
     const comment = `<li id="comment${cid}" class="list-group-item pb-1 pt-2 comment" data-liked="false" data-likes="0" data-remaining="0">
     <p class="mb-0 text-justify">
@@ -25,19 +25,19 @@ export default class View extends MainView {
     switch($(`#idea${id} .comment`).length){
       case 0:
       case 1:
-        $(`#idea${id} .comments`).append(comment)
+        $(`#idea${id} .comments`).append(comment).find('time').timeago()
         break;
       default:
         let done = false
         $(`#idea${id} .comment`).each(function(){
           if(done) return false;
           if($(this).find('time').attr('datetime') > date ){
-            $(this).before(comment)
+            $(this).before(comment).find('time').timeago()
             done = true
           }
         });
     }
-    $(`#idea${id} .comments time`).timeago()
+    window.user.comments.push(cid);
   }
 
   schedule_comment(idea_id, cid, author, text, delay){
@@ -94,6 +94,26 @@ export default class View extends MainView {
   mount() {
     super.mount();
 
+    // enables to submit feedback with Enter, but not shift enter (new line)
+    $(".idea textarea").keypress(function (e) {
+      if(e.which == 13 && !e.shiftKey) {
+        // validate form
+        const txt = $(e.target).val()
+        if(txt.length < 10 || txt.length > 200){
+          $(e.target).addClass('is-invalid')
+          $(e.target).siblings('.invalid-feedback').text('Comment need to have between 10 and 200 characters.')
+          return false;
+        }
+
+        // create event handlers for saving scroll position
+        localStorage.setItem('scroll-pos', $(window).scrollTop());
+
+        $(this).closest("form").submit();
+        e.preventDefault();
+        return false;
+      }
+    });
+
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {
       $(e.currentTarget).siblings().toggle()
@@ -118,32 +138,20 @@ export default class View extends MainView {
     // enable delayed likes
     switch(window.condition){
       case 5:
+      case 7:
         this.schedule_like(12, 530)
-        this.schedule_like(13, 100)
-        this.schedule_like(14, 30)
+        this.schedule_like(13, 180)
+        this.schedule_like(18, 90)
         this.schedule_rating(6, 4.4, 75)
         this.schedule_rating(7, 4.7, 360)
         break
       case 6:
-        this.schedule_like(1, 530)
-        this.schedule_like(2, 100)
-        this.schedule_like(3, 30)
-        this.schedule_rating(1, 4.4, 75)
-        this.schedule_rating(2, 4.4, 360)
-        break
-      case 7:
-        this.schedule_like(12, 530)
-        this.schedule_like(13, 100)
-        this.schedule_like(14, 30)
-        this.schedule_rating(6, 4.4, 75)
-        this.schedule_rating(7, 4.7, 360)
-        break
       case 8:
         this.schedule_like(1, 530)
-        this.schedule_like(2, 100)
-        this.schedule_like(3, 30)
+        this.schedule_like(2, 180)
+        this.schedule_like(6, 90)
         this.schedule_rating(1, 4.4, 75)
-        this.schedule_rating(2, 4.4, 360)
+        this.schedule_rating(2, 4.7, 360)
     }
 
     // answer with a new comment to the first two user_ideas

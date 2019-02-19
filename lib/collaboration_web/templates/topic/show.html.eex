@@ -1,18 +1,19 @@
 <h2 class="text-center"><%= @topic.title %></h2>
 <div class="row card-group">
-  <div class="<%= if @current_user, do: "col-lg-7", else: "col" %>">
-    <%= raw @topic.desc %>
-  </div>
-  <div class="<%= if @current_user, do: "col-lg-5", else: "d-none" %>">
-    <%= if @changeset, do:
-      render IdeaView, "form.html", conn: @conn, changeset: @changeset
-    %>
+  <div class="col-lg-7"><%= raw @topic.desc %></div>
+  <div class="col-lg-5">
+    <%= render IdeaView, "form.html", conn: @conn, changeset: @idea_changeset %>
   </div>
   <hr class="mt-0"/>
 </div>
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
-    <%= render IdeaView, "idea.html", conn: @conn, user: @current_user, idea: i %>
+    <%= render IdeaView, "idea.html",
+      conn: @conn,
+      user: @current_user,
+      idea: i,
+      comment_changeset: @comment_changeset
+    %>
   <% end %>
 </div>
 <script>

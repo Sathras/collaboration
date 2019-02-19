@@ -46,13 +46,18 @@
     <% end %>
   </ul>
   <div class="card-footer">
-    <textarea
-      class="auto-size form-control form-control-sm"
-      onkeyup="auto_grow(this)"
-      drab-options="debounce(200)"
-      drab-keyup="submit_feedback(<%= @idea.id %>)"
-      placeholder="Leave feedback..."
-      style="height:29px;"
-    ></textarea>
+    <%= form_for @comment_changeset, Routes.comment_path(@conn, :create), fn f -> %>
+      <%= hidden_input f, :idea_id, id: nil, value: @idea.id %>
+      <%= textarea f, :text,
+        id: nil,
+        class: "auto-size form-control form-control-sm",
+        placeholder: "Leave feedback...",
+        onkeyup: "auto_grow(this)",
+        style: "height:29px;",
+        required: true,
+        pattern: ".{10,200}"
+      %>
+      <div class="invalid-feedback"></div>
+    <% end %>
   </div>
 </div>

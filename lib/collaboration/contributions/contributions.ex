@@ -83,6 +83,16 @@ defmodule Collaboration.Contributions do
 
   def get_idea!(id), do: Repo.get!(Idea, id)
 
+  def get_user_ideas!(user_id) do
+    from(i in Idea,
+      select: i.id,
+      where: i.user_id == ^user_id,
+      order_by: i.inserted_at,
+      limit: 2
+    )
+    |> Repo.all()
+  end
+
   def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
 
   def create_idea(user, topic, attrs) do
@@ -123,6 +133,16 @@ defmodule Collaboration.Contributions do
     |> Enum.map(fn i -> {i.id, i.remaining} end)
   end
 
+  def get_user_comments!(user_id) do
+    from(c in Comment,
+      select: c.id,
+      where: c.user_id == ^user_id,
+      order_by: c.inserted_at,
+      limit: 3
+    )
+    |> Repo.all()
+  end
+
   def load_comment(comment_id, user) do
     user_query = from u in User, select: u.name
     from(c in Comment, preload: [:likes, user: ^user_query])
@@ -130,9 +150,12 @@ defmodule Collaboration.Contributions do
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
+  def comment_changeset(params \\ %{}) do
+    Comment.changeset %Comment{}, params
+  end
+
   def create_comment(params) do
-    %Comment{}
-    |> Comment.changeset(params)
+    comment_changeset(params)
     |> Repo.insert()
   end
 
