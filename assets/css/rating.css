@@ -19,30 +19,10 @@
 
 .star-rating {
   float: left;
-  padding: 0 10px;
+  padding: 0 8px;
 }
 
-.star-rating:not(:checked) > input {
-  position:absolute;
-  top:-9999px;
+.star-rating button:not(:first-of-type):hover{
+  color: orange!important;
 }
 
-.star-rating:not(:checked) > label {
-  float:right;
-  color:#ccc;
-}
-
-.star-rating > input:checked ~ label {
-  color: blue;
-}
-.star-rating:not(:checked) > label:hover,
-.star-rating:not(:checked) > label:hover ~ label {
-  color: blue;
-}
-.star-rating > input:checked + label:hover,
-.star-rating > input:checked + label:hover ~ label,
-.star-rating > input:checked ~ label:hover,
-.star-rating > input:checked ~ label:hover ~ label,
-.star-rating > label:hover ~ input:checked ~ label {
-  color: blue;
-}

@@ -1,8 +1,8 @@
 defmodule CollaborationWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :collaboration
 
-  socket "/socket", CollaborationWeb.UserSocket,
-    websocket: true # or list of options
+  # socket "/socket", CollaborationWeb.UserSocket,
+  #   websocket: true # or list of options
     # longpoll: [check_origin: ...]
 
   # Serve at "/" the static files from "priv/static" directory.

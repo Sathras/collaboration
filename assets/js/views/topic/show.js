@@ -6,7 +6,7 @@ export default class View extends MainView {
   comment(id, cid, author, text, delay){
 
     var date = new Date()
-    date = new Date(date.getTime() + delay * 1000 - 1000 )
+    date = new Date(date.getTime() + delay * 1000 )
     date = date.toISOString()
     const comment = `<li id="comment${cid}" class="list-group-item pb-1 pt-2 comment" data-liked="false" data-likes="0" data-remaining="0">
     <p class="mb-0 text-justify">

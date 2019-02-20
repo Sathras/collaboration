@@ -2,13 +2,10 @@
   <div class="card-body">
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
       <div class="star-rating" style="display:none;">
-        <i class="fas fa-minus-circle text-danger"
-          drab-click="unrate(<%= @idea.id %>)"></i> |
-        <%= star 5, @idea %>
-        <%= star 4, @idea %>
-        <%= star 3, @idea %>
-        <%= star 2, @idea %>
-        <%= star 1, @idea %>
+        <%= unrate_btn @conn, @idea.id %> |
+        <%= for x <- 1..5 do %>
+          <%= star @conn, x, @idea %>
+        <% end %>
       </div>
       <div class="rating" title="Overall Rating" data-toggle="tooltip">
         <i class='fas fa-star'></i>
@@ -31,18 +28,13 @@
     <hr class="mt-1 mb-2">
     <small class="font-italic d-flex justify-content-between mb-2">
       <strong><%= @idea.author %></strong>
-      <%= if @idea.user_id == @user.id || @user.condition == 0 do %>
-        <div>
-          <i class="fas fa-pencil-alt" drab-click="edit(<%= @idea.id %>)"></i>
-        </div>
-      <% end %>
       <time datetime="<%= @idea.created %>"></time>
     </small>
     <p class="card-text text-justify"><%= @idea.text %></p>
   </div>
   <ul class="comments list-group list-group-flush">
     <%= for c <- @idea.comments do %>
-      <%= render CommentView, "comment.html", comment: c, user: @user %>
+      <%= render CommentView, "comment.html", conn: @conn, comment: c, user: @user %>
     <% end %>
   </ul>
   <div class="card-footer">

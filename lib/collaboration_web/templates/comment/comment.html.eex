@@ -12,29 +12,20 @@
   </p>
   <p class=' mb-1'>
     <small>
-      <%= if @comment.user_id !== @user.id do %>
+      <%= if @comment.likes > 0 || @comment.user_id !== @user.id do %>
         <i class="text-primary far fa-thumbs-up"></i>
       <% end %>
-      <%= if @user.condition == 0 do %>
-        <input
-          class="badge badge-pill badge-primary mr-1 d-inline border-0"
-          drab-change="update_fake_likes(<%= @comment.id %>)"
-          onfocus="$(this).select();"
-          style="width:36px;"
-          type="number"
-          value="<%= @comment.likes %>"
-        />
-      <% else %>
-        <span class="likes badge badge-pill badge-primary mr-1
-          <%= if @comment.likes === 0, do: "d-none" %>">
-          <%= @comment.likes %>
-        </span>
-      <% end %>
-      <%= if @comment.user_id !== @user.id do %>
-        <small class='text-primary' drab-click='like(<%= @comment.id %>)'>
-          <%= if @comment.liked, do: "Unlike", else: "Like" %>
-        </small>
-      <% end %>
+      <span class="likes badge badge-pill badge-primary mr-1
+        <%= if @comment.likes === 0, do: "d-none" %>">
+        <%= @comment.likes %>
+      </span>
+      <%=
+        if @comment.user_id !== @user.id do
+          if @comment.liked,
+            do: unlike_btn(@conn, @comment.id),
+            else: like_btn(@conn, @comment.id)
+        end
+      %>
       <time class="font-italic float-right" datetime="<%= @comment.created %>"></time>
     </small>
   </p>

@@ -82,18 +82,28 @@ defmodule CollaborationWeb.IdeaView do
     }
   end
 
-  def star(value, idea) do
-    input = content_tag :input, "",
-      id: "star#{value}",
-      type: "radio",
-      name: "rate",
-      checked: value == idea.my_rating,
-      value: value
+  def star(conn, value, idea) do
 
-    label = content_tag :label, content_tag(:i, "", class: "fas fa-star"),
-      data_rating: value,
-      drab_click: "rate(#{idea.id})"
+    label = content_tag :label,
+      content_tag(:i, "", class: "fas fa-star pointer")
 
-    [ input, label ]
+    color = if idea.my_rating && idea.my_rating >= value,
+      do: "text-primary",
+      else: "text-muted"
+
+    button label, to: Routes.idea_path(conn, :rate, idea.id, value),
+      method: "post",
+      class: "btn btn-link #{color} pointer p-0",
+      title: "rate #{value} stars",
+      data_toggle: "tooltip"
+  end
+
+  def unrate_btn(conn, idea_id) do
+    tag = content_tag :i, "", class: "fas fa-minus-circle pointer text-danger"
+    button tag, to: Routes.idea_path(conn, :unrate, idea_id),
+      method: "delete",
+      class: "btn btn-link pointer p-0",
+      title: "Remove Rating",
+      data_toggle: "tooltip"
   end
 end

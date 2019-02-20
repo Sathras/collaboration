@@ -5,6 +5,19 @@ defmodule CollaborationWeb.CommentView do
     if comment.remaining > 0, do: "comment d-none", else: "comment"
   end
 
+  def like_btn(conn, comment_id) do
+    button content_tag(:small, "Like"),
+      to: Routes.comment_path(conn, :like, comment_id),
+      method: "post", class: "btn btn-link pointer p-0"
+  end
+
+  def unlike_btn(conn, comment_id) do
+    button content_tag(:small, "Unlike"),
+      to: Routes.comment_path(conn, :unlike, comment_id),
+      method: "delete",
+      class: "btn btn-link pointer p-0"
+  end
+
   def render("comment.json", %{comment: c, user: u}) do
 
     created = if u.condition == 0 || c.user_id == u.id do

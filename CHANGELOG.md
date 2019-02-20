@@ -2,8 +2,10 @@
 
 ### 2.3.3
  * incorporated database changes from template
- * submitting feedback now via phoenix form instead of drab
+ * submitting feedback, rating/unrating, like/unlike now via phoenix form instead of drab
  * new mechanic so page will scroll to last position after submitting feedback
+ * no longer possible to edit ideas or update fake likes
+ * removed drab dependency
 
 ### 2.3.2
  * removed login via facebook or google placeholders

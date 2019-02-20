@@ -38,18 +38,6 @@ config :collaboration, CollaborationWeb.Endpoint,
   render_errors: [view: CollaborationWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Collaboration.PubSub, adapter: Phoenix.PubSub.PG2]
 
-# Configures Drab
-config :drab, CollaborationWeb.Endpoint,
-  otp_app: :collaboration
-
-# Configures default Drab file extension
-config :phoenix, :template_engines,
-  drab: Drab.Live.Engine
-
-# Configures Drab for webpack
-config :drab, CollaborationWeb.Endpoint,
-  js_socket_constructor: "window.__socket"
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

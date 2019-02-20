@@ -103,12 +103,6 @@ defmodule Collaboration.Contributions do
     |> Repo.insert()
   end
 
-  def update_idea(%Idea{} = idea, attrs) do
-    idea
-    |> Idea.changeset(attrs)
-    |> Repo.update()
-  end
-
   def rate_idea!(rating, idea_id, user_id) do
     case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
       nil -> %Rating{}

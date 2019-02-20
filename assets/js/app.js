@@ -11,11 +11,10 @@ import css from "../css/app.css"
 // Import dependencies
 
 require("expose-loader?$!jquery")
-import 'phoenix_html'
+import "phoenix_html"
 import Turbolinks from 'turbolinks'
 
 // Import local files
-import './socket'
 import { configTimeago } from './utils/functions'
 import loadView from './views/loader'
 
@@ -46,5 +45,3 @@ configTimeago();
 document.addEventListener('turbolinks:load', handleDOMContentLoaded)
 document.addEventListener('turbolinks:before-visit', handleDocumentUnload)
 Turbolinks.start()
-
-window.__socket = require("phoenix").Socket

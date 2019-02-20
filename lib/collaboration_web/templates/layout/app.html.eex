@@ -66,10 +66,5 @@
         <%= render @view_module, @view_template, assigns %>
       </main>
     </div>
-
-    <%= if Map.has_key?(@conn.assigns, :topic),
-      do: Drab.Client.run(@conn, user: current_user(@conn), topic_id: @topic.id),
-      else: Drab.Client.run(@conn, user: current_user(@conn))
-    %>
   </body>
 </html>
