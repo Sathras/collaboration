@@ -6,6 +6,9 @@ config :collaboration, CollaborationWeb.Endpoint,
   http: [port: 4001],
   server: false
 
+# decrease number of encryption rounds for testing
+config :pbkdf2_elixir, :rounds, 1
+
 # Print only warnings and errors during test
 config :logger, level: :warn
 

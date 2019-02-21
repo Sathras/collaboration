@@ -1,8 +1,8 @@
 <%= form_for @changeset, @action, fn f -> %>
 <%= if @changeset.action do %>
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <strong><%= raw gettext "Error" %></strong>
-    <%= gettext "Invalid Form Data. Please check the errors below:" %>
+    <strong>Error</strong>
+    Invalid Form Data. Please check the errors below:
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>

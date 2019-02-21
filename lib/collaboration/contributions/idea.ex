@@ -19,7 +19,7 @@ defmodule Collaboration.Contributions.Idea do
     has_many :ratings, Collaboration.Contributions.Rating,
       on_delete: :delete_all
     belongs_to :topic, Collaboration.Contributions.Topic
-    belongs_to :user, Collaboration.Coherence.User
+    belongs_to :user, Collaboration.Accounts.User
     timestamps()
   end
 

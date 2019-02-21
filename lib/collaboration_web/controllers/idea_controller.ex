@@ -1,5 +1,6 @@
 defmodule CollaborationWeb.IdeaController do
   use CollaborationWeb, :controller
+
   # alias CollaborationWeb.Endpoint
   # alias CollaborationWeb.CommentView
   # import Phoenix.View, only: [render_to_string: 3]

@@ -5,7 +5,7 @@ defmodule Collaboration.Contributions.Rating do
   schema "ratings" do
     field :rating, :integer
     belongs_to :idea, Collaboration.Contributions.Idea
-    belongs_to :user, Collaboration.Coherence.User
+    belongs_to :user, Collaboration.Accounts.User
   end
 
   @doc false

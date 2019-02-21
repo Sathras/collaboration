@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4
+ * removed coherence and scrivenier dependencies
+ * separated credentials from users
+ * experiment and peer users can no longer login
+
 ### 2.3.3
  * incorporated database changes from template
  * submitting feedback, rating/unrating, like/unlike now via phoenix form instead of drab

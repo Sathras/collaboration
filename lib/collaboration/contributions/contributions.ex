@@ -7,7 +7,7 @@ defmodule Collaboration.Contributions do
 
   alias Phoenix.View
   alias Collaboration.Repo
-  alias Collaboration.Coherence.User
+  alias Collaboration.Accounts.User
   alias Collaboration.Contributions.{ Topic, Idea, Comment, Rating }
   alias CollaborationWeb.{ IdeaView, CommentView }
 

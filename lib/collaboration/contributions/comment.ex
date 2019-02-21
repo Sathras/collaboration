@@ -2,6 +2,8 @@ defmodule Collaboration.Contributions.Comment do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Collaboration.Accounts.User
+
   schema "comments" do
     field :fake_likes, :integer, null: false, default: 0
     field :text, :string
@@ -13,10 +15,11 @@ defmodule Collaboration.Contributions.Comment do
     field :c6, :integer, default: 0
     field :c7, :integer, default: 0
     field :c8, :integer, default: 0
-    belongs_to :idea,       Collaboration.Contributions.Idea
-    belongs_to :user,       Collaboration.Coherence.User
-    many_to_many :likes,    Collaboration.Coherence.User, join_through: "likes",
-                            on_replace: :delete, on_delete: :delete_all
+
+    belongs_to :idea, Collaboration.Contributions.Idea
+    belongs_to :user, User
+    many_to_many :likes, User, join_through: "likes",
+      on_replace: :delete,  on_delete: :delete_all
     timestamps()
   end
 

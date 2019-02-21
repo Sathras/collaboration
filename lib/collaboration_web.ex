@@ -21,20 +21,10 @@ defmodule CollaborationWeb do
     quote do
       use Phoenix.Controller, namespace: CollaborationWeb
       import Plug.Conn
-      import Collaboration.Coherence.Schemas
-      import Collaboration.Contributions
-      import CollaborationWeb.Gettext
-      import Coherence, only: [current_user: 1]
+      import Collaboration.{ Accounts, Contributions }
+      import CollaborationWeb.ViewHelpers
 
       alias CollaborationWeb.Router.Helpers, as: Routes
-    end
-  end
-
-  def commander do
-    quote do
-      use Drab.Commander, modules: [Drab.Element, Drab.Live, Drab.Query]
-      import Collaboration.Contributions
-      import Phoenix.HTML, only: [safe_to_string: 1, raw: 1]
     end
   end
 
@@ -57,8 +47,6 @@ defmodule CollaborationWeb do
 
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
-      import CollaborationWeb.Gettext
-      import Coherence, only: [current_user: 1]
 
       alias CollaborationWeb.Router.Helpers, as: Routes
       alias CollaborationWeb.TopicView
@@ -72,6 +60,8 @@ defmodule CollaborationWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+      import CollaborationWeb.Auth,
+        only: [authenticate_user: 2, authenticate_admin: 2]
     end
   end
 

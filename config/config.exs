@@ -43,32 +43,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
-# %% Coherence Configuration %%   Don't remove this line
-config :coherence,
-  user_schema: Collaboration.Coherence.User,
-  repo: Collaboration.Repo,
-  module: Collaboration,
-  web_module: CollaborationWeb,
-  router: CollaborationWeb.Router,
-  messages_backend: CollaborationWeb.Coherence.Messages,
-  email_from_name: "fuchsberger.us",
-  email_from_email: "noreply@fuchsberger.us",
-  user_token: true,
-  opts: [
-    :rememberable,
-    :authenticatable,
-    :trackable
-  ]
-
-config :coherence, CollaborationWeb.Coherence.Mailer,
-  adapter: Swoosh.Adapters.Mailgun,
-  api_key: {:system, "APP_MAILGUN_APIKEY"},
-  domain: "fuchsberger.us"
-
-# %% End Coherence Configuration %%
-
 config :phoenix, :json_library, Jason
-config :phoenix, :template_engines, drab: Drab.Live.Engine
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -1,0 +1,47 @@
+<center>
+  <div class="card bg-light text-center" style="max-width: 320px;">
+    <div class="card-body">
+      <h3 class="card-title">Login</h3>
+      <%= form_for @conn, Routes.session_path(@conn, :create), [as: :session, novalidate: true ], fn f  -> %>
+        <div class="form-group">
+          <%= label f, "Email", class: "sr-only" %>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend" style="width: 40px;">
+              <div class="input-group-text">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <%= text_input f, :username,
+              class: "form-control",
+              required: true,
+              type: "text",
+              placeholder: "Username"
+            %>
+            <%= error_tag f, :username %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label f, "Password", class: "sr-only" %>
+          <div class="input-group">
+            <div class="input-group-prepend" style="width: 40px;">
+              <div class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </div>
+            </div>
+            <%= password_input f, :password,
+              class: "form-control",
+              required: true,
+              placeholder: "Password"
+            %>
+            <%= error_tag f, :password %>
+          </div>
+        </div>
+
+        <div class="form-group mb-1">
+          <%= submit "Sign In", class: "btn btn-primary" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</center>

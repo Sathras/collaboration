@@ -26,10 +26,8 @@
     <!-- End Google Analytics -->
 
     <script>
-      window.condition = <%= user_condition(@conn) %>;
+      window.condition = <%= condition(@conn) %>;
       window.time_passed = <%= time_passed(@conn) %>;
-      window.user = JSON.parse("<%= get_user(@conn) %>".replace(/(&quot\;)/g,"\""));
-      console.log(window.user)
     </script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
@@ -47,7 +45,7 @@
           </ul>
         <% end %>
 
-        <%= if @current_user do %>
+        <%= if current_user(@conn) do %>
           <form class="form-inline">
             <%= if admin?(@conn) do %>
               <%= logout_button(@conn) %>

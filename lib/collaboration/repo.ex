@@ -3,9 +3,6 @@ defmodule Collaboration.Repo do
     adapter: Ecto.Adapters.Postgres,
     otp_app: :collaboration
 
-  use Scrivener,
-    page_size: 1000
-
   @doc """
   Dynamically loads the repository url from the
   DATABASE_URL environment variable.

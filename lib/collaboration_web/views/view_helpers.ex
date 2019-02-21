@@ -4,17 +4,18 @@ defmodule CollaborationWeb.ViewHelpers do
   """
   use Phoenix.HTML
   import Phoenix.Controller, only: [current_path: 2]
-  import Coherence, only: [current_user: 1]
 
   @type conn :: Plug.Conn.t()
 
-  def authenticated?(conn), do: !!current_user(conn)
-  def condition(conn), do: current_user(conn) && current_user(conn).condition
-  def date(datetime), do: NaiveDateTime.to_iso8601(datetime) <> "Z"
+  def date(datetime), do: datetime && NaiveDateTime.to_iso8601(datetime) <> "Z"
   def icon(class), do: content_tag(:i, "", class: class)
-  def participant?(conn),
-    do: current_user(conn) && current_user(conn).condition > 0
-  def admin?(conn), do: current_user(conn) && current_user(conn).condition == 0
+
+  def current_user(conn), do: conn.assigns.current_user
+  def participant?(conn), do: condition(conn) > 0
+  def admin?(conn), do: condition(conn) == 0
+
+  # get details of current user (no check)
+  def condition(conn), do: current_user(conn) && current_user(conn).condition
   def user_id(conn), do: current_user(conn) && current_user(conn).id
 
   def nav_text(text, icon \\ false) do

@@ -37,7 +37,7 @@ export default class View extends MainView {
           }
         });
     }
-    window.user.comments.push(cid);
+    // window.user.comments.push(cid);
   }
 
   schedule_comment(idea_id, cid, author, text, delay){

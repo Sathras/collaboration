@@ -2,12 +2,7 @@ defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
   import Collaboration.Contributions
-
-  def user_condition(conn) do
-    if conn.assigns.current_user,
-      do: conn.assigns.current_user.condition,
-      else: false
-  end
+  alias CollaborationWeb.UserView
 
   @doc """
   Generates name for the JavaScript view we want to use
@@ -106,9 +101,9 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def time_passed(conn) do
-    if conn.assigns.current_user do
-      NaiveDateTime.diff NaiveDateTime.utc_now,
-        conn.assigns.current_user.inserted_at
+    user = current_user(conn)
+    if user do
+      NaiveDateTime.diff NaiveDateTime.utc_now, user.inserted_at
     else
       false
     end
@@ -182,6 +177,15 @@ defmodule CollaborationWeb.LayoutView do
       )
     else
       nil
+    end
+  end
+
+  def render_current_user(conn) do
+    if current_user(conn) do
+    Phoenix.View.render_one current_user(conn), UserView, "user.json"
+
+    else
+      Jason.encode!(nil)
     end
   end
 end

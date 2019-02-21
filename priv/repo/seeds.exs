@@ -4,26 +4,30 @@ defmodule Collaboration.Seeder do
   you can run this file via: $ mix run priv/repo/seeds.exs
   """
   import Ecto.Changeset, only: [put_assoc: 3]
+  import Collaboration.Accounts
+
   alias Collaboration.Repo
-  alias Collaboration.Coherence.User
   alias Collaboration.Contributions.{ Topic, Idea, Comment }
+
+  # set a default password for users with credentials
+  @password Application.fetch_env!(:collaboration, :password)
 
   def init do
 
-    # peer users will have the following email: <id>@peer
-    u1 = user "chemistrynerd1994", "1@peer"
-    u2 = user "islandthyme", "2@peer"
-    u3 = user "JF0909", "3@peer"
-    u4 = user "BetsyB", "4@peer"
-    u5 = user "Muma", "5@peer"
-    u6 = user "3-DMan", "6@peer"
-    u7 = user "Vans", "7@peer"
-    u8 = user "JustBrad", "8@peer"
-    u9 = user "i_v_a_n", "9@peer"
-    u10 = user "mattncheese", "10@peer"
+    # create some peer users first (have no login)
+    u1 = user "chemistrynerd1994"
+    u2 = user "islandthyme"
+    u3 = user "JF0909"
+    u4 = user "BetsyB"
+    u5 = user "Muma"
+    u6 = user "3-DMan"
+    u7 = user "Vans"
+    u8 = user "JustBrad"
+    u9 = user "i_v_a_n"
+    u10 = user "mattncheese"
 
-    # create an admin user
-    user "Admin", "admin@admin"
+    # create an admin user (able to login)
+    user "Admin", "admin"
 
     t1 = topic %{
       title: "How can USF improve its Parking and Transportation Services?",
@@ -256,8 +260,16 @@ defmodule Collaboration.Seeder do
     }, i1, u1
   end
 
-  defp user(name, email) do
-    User.changeset(%User{}, %{ name: name, email: email }) |> Repo.insert!()
+  # all users created here will be peer users / admins
+  defp user(name) do
+    register_user! %{ name: name }
+  end
+
+  defp user(name, username) do
+    register_user! %{
+      name: name,
+      credential: %{ username: username, password: @password }
+    }
   end
 
   defp topic(params) do
