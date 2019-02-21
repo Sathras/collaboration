@@ -4,6 +4,7 @@
  * removed coherence and scrivenier dependencies
  * separated credentials from users
  * experiment and peer users can no longer login
+ * passcode is now checked against a hash just like a real password
 
 ### 2.3.3
  * incorporated database changes from template

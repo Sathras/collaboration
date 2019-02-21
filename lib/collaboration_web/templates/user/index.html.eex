@@ -7,7 +7,7 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Email</th>
+      <th>Login</th>
       <th>Joined</th>
     </tr>
   </thead>
@@ -15,7 +15,7 @@
   <%= for u <- @users do %>
     <tr>
       <td><%= u.name %></td>
-      <td><%= u.email %></td>
+      <td>Fill with credential</td>
       <td><time datetime="<%= date(u.inserted_at) %>"></time></td>
     </tr>
   <% end %>

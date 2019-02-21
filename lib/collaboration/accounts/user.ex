@@ -7,7 +7,8 @@ defmodule Collaboration.Accounts.User do
   alias Collaboration.Contributions.{ Idea, Comment, Rating }
 
   # verify new experiment users via passcode
-  @passcode Application.fetch_env!(:collaboration, :passcode)
+  @passcode_hash Application.fetch_env!(:collaboration, :passcode)
+    |> Comeonin.Pbkdf2.hashpwsalt()
 
   schema "users" do
 
@@ -36,9 +37,7 @@ defmodule Collaboration.Accounts.User do
     user
     |> changeset(params)
     |> validate_required([:name, :passcode])
-    |> validate_change(:passcode, fn :passcode, passcode ->
-        if passcode != @passcode, do: [passcode: "Passcode was wrong"], else: []
-      end)
+    |> check_passcode(params)
     |> put_condition(params)
   end
 
@@ -48,6 +47,17 @@ defmodule Collaboration.Accounts.User do
     |> validate_required([:name])
     |> put_change(:condition, 0)
     |> put_credential(params)
+  end
+
+  defp check_passcode(user, params) do
+    cond do
+      Comeonin.Pbkdf2.checkpw(params["passcode"], @passcode_hash) ->
+        user
+
+      true ->
+        Comeonin.Pbkdf2.dummy_checkpw()
+        add_error(user, :passcode, "Passcode is invalid")
+    end
   end
 
   defp put_condition(user, params) do

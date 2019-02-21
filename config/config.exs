@@ -17,8 +17,8 @@ config :collaboration,
   ga_dev_code: "UA-119119225-1",  # Google Analytics Dev Code
   ga_prod_code: "UA-119138942-1", # Google Analytics Production Code
   minTime: 10 * 60,               # minimal experiment time [sec]
-  passcode: System.get_env("PASSCODE"), # passcode required for experiment
-  password: System.get_env("PASSWORD_DEFAULT"),  # experiment user password
+  passcode: System.get_env("PASSCODE"),           # passcode for experiment
+  password: System.get_env("PASSWORD_DEFAULT"),   # admin user password
   survey_codes: %{                # needed for survey upon finishing experiment
     1 => "condition 1 code",
     2 => "condition 2 code",
