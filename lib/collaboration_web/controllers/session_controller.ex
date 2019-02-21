@@ -8,9 +8,7 @@ defmodule CollaborationWeb.SessionController do
   def create(conn, %{"session" => %{"username" => username, "password" => pass}}) do
     case CollaborationWeb.Auth.login_by_username_and_pass(conn, username, pass) do
       {:ok, conn} ->
-        conn
-        |> put_flash(:info, "Welcome back!")
-        |> redirect(to: Routes.topic_path(conn, :show))
+        redirect conn, to: Routes.topic_path(conn, :show)
 
       {:error, _reason, conn} ->
         conn
