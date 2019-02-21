@@ -91,6 +91,11 @@ export default class View extends MainView {
       this.rate(idea_id, rating)
   }
 
+  checkReload() {
+    // reloads page every 30 seconds unless currently focusing on an input
+    if(!this.writeFocus) location.reload(true);
+  }
+
   mount() {
     super.mount();
 

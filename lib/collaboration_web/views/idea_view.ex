@@ -54,11 +54,11 @@ defmodule CollaborationWeb.IdeaView do
   def render("idea.json", %{idea: i, user: u}) do
 
     condition = String.to_atom "c#{u.condition}"
-    created = if u.condition == 0 || i.user_id == u.id,
+    inserted_at = if u.condition == 0 || i.user_id == u.id,
       do: i.inserted_at,
       else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition))
 
-    remaining = NaiveDateTime.diff created, NaiveDateTime.utc_now()
+    remaining = NaiveDateTime.diff inserted_at, NaiveDateTime.utc_now()
 
     my_rating = if u, do: Enum.find(i.ratings, & &1.user_id === u.id), else: nil
     my_rating = if my_rating, do: Map.get(my_rating, :rating), else: nil
@@ -72,7 +72,7 @@ defmodule CollaborationWeb.IdeaView do
       id: i.id,
       author: i.user,
       comments: comments,
-      created: date(created),
+      inserted_at: date(inserted_at),
       my_rating: my_rating,
       rating: rating,
       raters: raters,

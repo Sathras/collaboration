@@ -28,7 +28,7 @@
     <hr class="mt-1 mb-2">
     <small class="font-italic d-flex justify-content-between mb-2">
       <strong><%= @idea.author %></strong>
-      <time datetime="<%= @idea.created %>"></time>
+      <time datetime="<%= @idea.inserted_at %>"></time>
     </small>
     <p class="card-text text-justify"><%= @idea.text %></p>
   </div>

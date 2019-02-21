@@ -15,7 +15,7 @@ defmodule Collaboration.Accounts.User do
     field :name, :string
     field :condition, :integer, default: 0
     timestamps()
-    field :completed_at, :naive_datetime_usec
+    field :completed_at, :naive_datetime
     field :passcode, :string, virtual: true
 
     has_one :credential, Credential
@@ -83,49 +83,4 @@ defmodule Collaboration.Accounts.User do
       user
     end
   end
-
-  # def changeset(model, params \\ %{})
-
-  # # create admin / peer user (via seed file)
-  # def changeset(model, %{ :name => _, :email => _ } = params ) do
-  #   model
-  #   |> cast(params, [:name, :email] ++ coherence_fields())
-  #   |> validate_required([:name, :email])
-  #   |> validate_format(:email, ~r/@/)
-  #   |> put_change(:password, @password)
-  #   |> put_change(:password_confirmation, @password)
-  #   |> unique_constraint(:email)
-  #   |> validate_coherence(params)
-  # end
-
-  # def changeset(model, params) do
-  #   model
-  #   |> cast(params, [:name, :email] ++ coherence_fields())
-  #   |> validate_required([:name, :email])
-  #   |> validate_format(:email, ~r/@/)
-  #   |> unique_constraint(:email)
-  #   |> validate_coherence(params)
-  # end
-
-  # # create user for experiment ( via default registration )
-  # def changeset(model, params, :experiment) do
-  #   model
-  #   |> cast(params, [:name, :passcode] ++ coherence_fields())
-  #   |> validate_required([:name, :passcode])
-  #   |> validate_length(:name, min: 3, max: 30)
-  #   |> put_change(:passcode, String.downcase(Map.get(params, "passcode", "")))
-  #   |> validate_inclusion(:passcode, [ @passcode ])
-  #   |> put_change(:email, random_string(10) <>"@participant")
-  #   |> put_change(:password, @password)
-  #   |> put_change(:password_confirmation, @password)
-  #   |> put_condition(params)
-  #   |> validate_coherence(params)
-  # end
-
-
-
-
-  # defp random_string(length) do
-  #   :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
-  # end
 end

@@ -5,6 +5,9 @@
  * separated credentials from users
  * experiment and peer users can no longer login
  * passcode is now checked against a hash just like a real password
+ * when user exits the experiment compeleted will now be saved as a timestamp rather than a boolean (so we see how long they stayed in the sim)
+ * more intelligent query to load pregenerated ideas / comments
+
 
 ### 2.3.3
  * incorporated database changes from template

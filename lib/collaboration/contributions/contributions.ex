@@ -65,13 +65,14 @@ defmodule Collaboration.Contributions do
   end
 
   # gets list of ideas to a specific topic
+  # load penerated ideas for conditon and own ones
   def load_ideas(topic_id, user) do
     idea_query(user)
     |> where(topic_id: ^topic_id)
     |> get_where(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
-    |> Enum.sort_by(fn(i) -> i.created end, &>=/2)
+    |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
   end
 
   # get idea with all details
@@ -79,6 +80,21 @@ defmodule Collaboration.Contributions do
     idea_query(user)
     |> Repo.get(idea_id)
     |> View.render_one(IdeaView, "idea.json", user: user)
+  end
+
+  defp get_where(changeset, user) do
+    # compute time that has passed since user started experiment [sec]
+    time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
+
+    if user.condition > 0 do
+      # normal users: show ideas for condition that should be posted by now
+      condition = String.to_atom "c#{user.condition}"
+      where changeset, [i],
+        (field(i, ^condition) != 0 and field(i, ^condition) < ^time ) or i.user_id == ^user.id
+    else
+      # admins: show all peer ideas (and their own ones)
+      where changeset, [i], i.user_id <= 11 or i.user_id == ^user.id
+    end
   end
 
   def get_idea!(id), do: Repo.get!(Idea, id)
@@ -174,16 +190,5 @@ defmodule Collaboration.Contributions do
     |> change()
     |> put_assoc(:likes, List.delete(comment.likes, user))
     |> Repo.update()
-  end
-
-  # if admin or peer user, show all ideas from admins or peer users or current
-  # if experiment user, show all ideas for current condition and user ideas
-  defp get_where(changeset, user) do
-    if user.condition > 0 do
-      condition = String.to_atom "c#{user.condition}"
-      where changeset, [i], field(i, ^condition) != 0 or i.user_id == ^user.id
-    else
-      where changeset, [i], i.user_id <= 11 or i.user_id == ^user.id
-    end
   end
 end
