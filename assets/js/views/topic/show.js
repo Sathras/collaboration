@@ -1,6 +1,8 @@
 import $ from 'jquery'
 import MainView from '../main'
 
+import socket from '../../utils/socket'
+
 export default class View extends MainView {
 
   comment(id, cid, author, text, delay){
@@ -96,8 +98,23 @@ export default class View extends MainView {
     if(!this.writeFocus) location.reload(true);
   }
 
+  joinChannel(){
+    socket.connect()
+    const channel = socket.channel("topic")
+
+    channel.on("test", (res) => {
+      console.log(res)
+    })
+
+    channel.join()
+    this.channel = channel
+  }
+
   mount() {
     super.mount();
+
+    // connect socket and join topic_channel
+    this.joinChannel()
 
     // enables to submit feedback with Enter, but not shift enter (new line)
     $(".idea textarea").keypress(function (e) {
