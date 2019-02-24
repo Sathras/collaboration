@@ -1,9 +1,8 @@
 <li
   id="comment<%= @comment.id %>"
-  class="list-group-item pb-1 pt-2 <%= comment_class @comment %>"
+  class="list-group-item pb-1 pt-2 comment"
   data-liked="<%= @comment.liked %>"
   data-likes="<%= @comment.likes %>"
-  data-remaining="<%= @comment.remaining %>"
 >
   <p class="mb-0 text-justify">
     <small>
@@ -19,14 +18,10 @@
         <%= if @comment.likes === 0, do: "d-none" %>">
         <%= @comment.likes %>
       </span>
-      <%=
-        if @comment.user_id !== @user.id do
-          if @comment.liked,
-            do: unlike_btn(@conn, @comment.id),
-            else: like_btn(@conn, @comment.id)
-        end
-      %>
-      <time class="font-italic float-right" datetime="<%= @comment.created %>"></time>
+
+      <%= if @comment.user_id != @user.id do like_button(@comment) end %>
+
+      <time class="font-italic float-right" datetime="<%= @comment.inserted_at %>"></time>
     </small>
   </p>
 </li>

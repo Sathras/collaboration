@@ -7,8 +7,8 @@ defmodule CollaborationWeb.IdeaController do
 
   def create(conn, %{"idea" => params}) do
     topic = get_published_topic!()
-    # user = get_user!(conn.assigns.current_user.id)
     user = current_user(conn)
+
     case create_idea(user, topic, params) do
       {:ok, _idea} ->
         # create automated feedback (if not admin or in condition 1 and 2
@@ -55,14 +55,12 @@ defmodule CollaborationWeb.IdeaController do
         |> redirect(to: Routes.topic_path(conn, :show))
 
       {:error, changeset} ->
-        ideas = load_ideas(topic.id, user)
         conn
         |> put_view(CollaborationWeb.TopicView)
         |> render(:show,
             idea_changeset: changeset,
             comment_changeset: comment_changeset(),
-            ideas: ideas,
-            user_ideas: user_ideas(ideas, user.id),
+            ideas: load_past_ideas(topic.id, user),
             topic: topic)
     end
   end

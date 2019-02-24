@@ -7,6 +7,8 @@
  * passcode is now checked against a hash just like a real password
  * when user exits the experiment compeleted will now be saved as a timestamp rather than a boolean (so we see how long they stayed in the sim)
  * more intelligent query to load pregenerated ideas / comments
+ * liking / unliking now done via channel
+ * delayed post scheduling now done on server and communicated via channel
 
 
 ### 2.3.3

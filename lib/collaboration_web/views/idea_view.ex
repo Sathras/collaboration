@@ -1,9 +1,6 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
-  alias Phoenix.View
-  alias CollaborationWeb.CommentView
-
   def base_rating(rating, raters) do
     cond do
       raters === 0 ->  "base0"
@@ -66,7 +63,7 @@ defmodule CollaborationWeb.IdeaView do
 
     comments = i.comments
     |> View.render_many(CommentView, "comment.json", user: u)
-    |> Enum.sort_by(fn(c) -> c.created end)
+    |> Enum.sort_by(fn(c) -> c.inserted_at end)
 
     %{
       id: i.id,
@@ -82,7 +79,7 @@ defmodule CollaborationWeb.IdeaView do
     }
   end
 
-  def star(conn, value, idea) do
+  def star(value, idea) do
 
     label = content_tag :label,
       content_tag(:i, "", class: "fas fa-star pointer")
@@ -91,16 +88,16 @@ defmodule CollaborationWeb.IdeaView do
       do: "text-primary",
       else: "text-muted"
 
-    button label, to: Routes.idea_path(conn, :rate, idea.id, value),
+    button label, to: Routes.idea_path(Endpoint, :rate, idea.id, value),
       method: "post",
       class: "btn btn-link #{color} pointer p-0",
       title: "rate #{value} stars",
       data_toggle: "tooltip"
   end
 
-  def unrate_btn(conn, idea_id) do
+  def unrate_btn(idea_id) do
     tag = content_tag :i, "", class: "fas fa-minus-circle pointer text-danger"
-    button tag, to: Routes.idea_path(conn, :unrate, idea_id),
+    button tag, to: Routes.idea_path(Endpoint, :unrate, idea_id),
       method: "delete",
       class: "btn btn-link pointer p-0",
       title: "Remove Rating",

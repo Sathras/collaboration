@@ -56,10 +56,9 @@ defmodule CollaborationWeb do
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
 
+      alias Phoenix.View
       alias CollaborationWeb.Router.Helpers, as: Routes
-      alias CollaborationWeb.TopicView
-      alias CollaborationWeb.IdeaView
-      alias CollaborationWeb.CommentView
+      alias CollaborationWeb.{ CommentView, IdeaView, TopicView, Endpoint }
     end
   end
 

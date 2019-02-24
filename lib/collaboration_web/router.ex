@@ -28,9 +28,6 @@ defmodule CollaborationWeb.Router do
     resources "/comments",  CommentController, only: [:create]
     post "/rate/:idea_id/:rating", IdeaController, :rate
     delete "/rate/:idea_id", IdeaController, :unrate
-    post "/like/:comment_id", CommentController, :like
-    delete "/like/:comment_id", CommentController, :unlike
-
     delete "/logout", SessionController, :delete
 
     post "/", IdeaController, :create

@@ -102,12 +102,29 @@ export default class View extends MainView {
     socket.connect()
     const channel = socket.channel("topic")
 
-    channel.on("test", (res) => {
-      console.log(res)
+    // Listen for server events
+
+    channel.on("post_idea", ({ idea }) => {
+      $(`#ideas`).append(idea).find(`time`).timeago()
+    })
+
+    channel.on("post_comment", ({ idea_id, comment }) => {
+      $(`#idea${idea_id} .comments`).append(comment)
+    })
+
+    // enable like and unlike
+    $('#ideas').on('click', 'a.like', (e) => {
+      e.preventDefault()
+      channel.push('like', {
+        comment_id: $(e.target).data('comment-id'),
+        like: $(e.target).text() != "Unlike"
+      }).receive("ok", () => {
+        if($(e.target).text() == "Unlike") $(e.target).text("Like")
+        else $(e.target).text("Unlike")
+      })
     })
 
     channel.join()
-    this.channel = channel
   }
 
   mount() {
@@ -158,42 +175,42 @@ export default class View extends MainView {
     })
 
     // enable delayed likes
-    switch(window.condition){
-      case 5:
-      case 7:
-        this.schedule_like(12, 530)
-        this.schedule_like(13, 180)
-        this.schedule_like(18, 90)
-        this.schedule_rating(6, 4.4, 75)
-        this.schedule_rating(7, 4.7, 360)
-        break
-      case 6:
-      case 8:
-        this.schedule_like(1, 530)
-        this.schedule_like(2, 180)
-        this.schedule_like(6, 90)
-        this.schedule_rating(1, 4.4, 75)
-        this.schedule_rating(2, 4.7, 360)
-    }
+    // switch(window.condition){
+    //   case 5:
+    //   case 7:
+    //     this.schedule_like(12, 530)
+    //     this.schedule_like(13, 180)
+    //     this.schedule_like(18, 90)
+    //     this.schedule_rating(6, 4.4, 75)
+    //     this.schedule_rating(7, 4.7, 360)
+    //     break
+    //   case 6:
+    //   case 8:
+    //     this.schedule_like(1, 530)
+    //     this.schedule_like(2, 180)
+    //     this.schedule_like(6, 90)
+    //     this.schedule_rating(1, 4.4, 75)
+    //     this.schedule_rating(2, 4.7, 360)
+    // }
 
     // answer with a new comment to the first two user_ideas
-    if([3,4,7,8].indexOf(window.condition) >= 0 && window.respond_to.length>0){
+    // if([3,4,7,8].indexOf(window.condition) >= 0 && window.respond_to.length>0){
 
-      const r1 = window.respond_to[0]
-      const r2 = window.respond_to[1] || null
+    //   const r1 = window.respond_to[0]
+    //   const r2 = window.respond_to[1] || null
 
-      switch(window.condition){
-        case 3:
-          this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
-        case 4:
-          this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
-        case 7:
-          this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
-        case 8:
-          this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
-          // if(r2) this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
-      }
-    }
+    //   switch(window.condition){
+    //     case 3:
+    //       this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
+    //     case 4:
+    //       this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
+    //     case 7:
+    //       this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
+    //     case 8:
+    //       this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
+    //       // if(r2) this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
+    //   }
+    // }
   }
 
   unmount() {

@@ -2,9 +2,9 @@
   <div class="card-body">
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
       <div class="star-rating" style="display:none;">
-        <%= unrate_btn @conn, @idea.id %> |
+        <%= unrate_btn @idea.id %> |
         <%= for x <- 1..5 do %>
-          <%= star @conn, x, @idea %>
+          <%= star x, @idea %>
         <% end %>
       </div>
       <div class="rating" title="Overall Rating" data-toggle="tooltip">
@@ -34,11 +34,11 @@
   </div>
   <ul class="comments list-group list-group-flush">
     <%= for c <- @idea.comments do %>
-      <%= render CommentView, "comment.html", conn: @conn, comment: c, user: @user %>
+      <%= render CommentView, "comment.html", comment: c, user: @user %>
     <% end %>
   </ul>
   <div class="card-footer">
-    <%= form_for @comment_changeset, Routes.comment_path(@conn, :create), fn f -> %>
+    <%= form_for @comment_changeset, Routes.comment_path(Endpoint, :create), fn f -> %>
       <%= hidden_input f, :idea_id, id: nil, value: @idea.id %>
       <%= textarea f, :text,
         id: nil,

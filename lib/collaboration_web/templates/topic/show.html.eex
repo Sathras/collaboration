@@ -9,7 +9,6 @@
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
     <%= render IdeaView, "idea.html",
-      conn: @conn,
       user: @current_user,
       idea: i,
       comment_changeset: @comment_changeset

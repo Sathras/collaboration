@@ -14,14 +14,4 @@ defmodule CollaborationWeb.CommentController do
         |> redirect(to: Routes.topic_path(conn, :show))
     end
   end
-
-  def like(conn, %{"comment_id" => comment_id }) do
-    like_comment conn.assigns.current_user, comment_id
-    redirect conn, to: Routes.topic_path(conn, :show)
-  end
-
-  def unlike(conn, %{"comment_id" => comment_id }) do
-    unlike_comment conn.assigns.current_user, comment_id
-    redirect conn, to: Routes.topic_path(conn, :show)
-  end
 end
