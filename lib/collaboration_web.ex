@@ -20,6 +20,8 @@ defmodule CollaborationWeb do
   def channel do
     quote do
       use Phoenix.Channel
+
+      import Collaboration.Contributions
     end
   end
 

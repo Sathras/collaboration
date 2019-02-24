@@ -3,7 +3,7 @@ defmodule CollaborationWeb.TopicChannel do
 
   def join("topic", _params, socket) do
 
-    # schedule spawning of new posts
+    # schedule spawning of pregenerated, delayed ideas and comments
     send(self, :after_join)
 
     {:ok, socket}
@@ -11,16 +11,22 @@ defmodule CollaborationWeb.TopicChannel do
 
   def handle_info(:after_join, socket) do
 
-    schedule_idea(socket, "test", 5)
-    schedule_idea(socket, "test", 6)
-    schedule_idea(socket, "test", 7)
+    # get ideas that should be posted in the future (experiment users only)
+    if socket.assigns.user.condition > 0 do
+      ideas = load_future_ideas(socket.assigns.topic_id, socket.assigns.user)
+      for idea <- ideas do
+        schedule_idea socket, idea
+      end
+
+      # comments = load_future_comments(socket.assigns.topic_id, socket.assigns.user)
+    end
 
     {:noreply, socket}
   end
 
-  defp schedule_idea(socket, _idea, time) do
-    spawn(fn -> :timer.sleep(time * 1000);
-      push(socket, "test", %{time: time})
+  defp schedule_idea(socket, idea) do
+    spawn(fn -> :timer.sleep(idea.remaining * 1000);
+      push socket, "post_idea", idea
     end)
   end
 end

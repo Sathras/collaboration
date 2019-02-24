@@ -26,6 +26,10 @@ defmodule Collaboration.Contributions do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
+  def get_featured_topic_id!() do
+    Repo.one from(t in Topic, select: t.id, where: t.featured)
+  end
+
   def get_published_topic!, do: Repo.one from(t in Topic, where: t.featured)
 
   def create_topic(attrs \\ %{}) do
@@ -75,6 +79,15 @@ defmodule Collaboration.Contributions do
     |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
   end
 
+  def load_future_ideas(topic_id, user) do
+    idea_query(user)
+    |> where(topic_id: ^topic_id)
+    |> get_future(user)
+    |> Repo.all()
+    |> View.render_many(IdeaView, "idea.json", user: user)
+    |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
+  end
+
   # get idea with all details
   def load_idea(idea_id, user) do
     idea_query(user)
@@ -95,6 +108,17 @@ defmodule Collaboration.Contributions do
       # admins: show all peer ideas (and their own ones)
       where changeset, [i], i.user_id <= 11 or i.user_id == ^user.id
     end
+  end
+
+  defp get_future(changeset, user) do
+    # compute time that has passed since user started experiment [sec]
+    time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
+
+    # normal users: show ideas for condition that should be posted by now
+    condition = String.to_atom "c#{user.condition}"
+
+    where changeset, [i],
+      (field(i, ^condition) != 0 and field(i, ^condition) > ^time )
   end
 
   def get_idea!(id), do: Repo.get!(Idea, id)
