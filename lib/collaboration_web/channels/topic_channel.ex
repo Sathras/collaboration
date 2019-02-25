@@ -45,7 +45,7 @@ defmodule CollaborationWeb.TopicChannel do
   end
 
   def handle_in("create_comment", params, socket) do
-
+    IO.inspect params
     params = Map.put params, "user_id", socket.assigns.user.id
     case create_comment(params) do
       {:ok, comment} ->

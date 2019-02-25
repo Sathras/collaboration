@@ -128,7 +128,7 @@ export default class View extends MainView {
         }
 
         channel.push('create_comment', {
-          idea_id: elm.data('idea-id'),
+          idea_id: elm.data('idea_id'),
           text: elm.val()
         }).receive("ok", ({ comment }) => {
           elm.parent().siblings('ul.comments')
