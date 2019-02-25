@@ -109,18 +109,59 @@ export default class View extends MainView {
     })
 
     channel.on("post_comment", ({ idea_id, comment }) => {
-      $(`#idea${idea_id} .comments`).append(comment)
+      $(`#idea${idea_id} .comments`).append(comment).find('time').timeago()
+    })
+
+    // enable posting of comments
+    $('#ideas').on('keypress', '.idea textarea', (e) => {
+
+      // enables to submit feedback with Enter, but not shift enter (new line)
+      if(e.which == 13 && !e.shiftKey) {
+
+        const elm = $(e.target)
+
+        if(elm.val().length < 10 || elm.val().length > 200){
+          elm.addClass('is-invalid')
+          elm.siblings('.invalid-feedback')
+            .text('Comment need to have between 10 and 200 characters.')
+          return false;
+        }
+
+        channel.push('create_comment', {
+          idea_id: elm.data('idea-id'),
+          text: elm.val()
+        }).receive("ok", ({ comment }) => {
+          elm.parent().siblings('ul.comments')
+            .append(comment).find('time').timeago()
+        })
+      }
     })
 
     // enable like and unlike
     $('#ideas').on('click', 'a.like', (e) => {
       e.preventDefault()
+      const elm = $(e.target)
       channel.push('like', {
-        comment_id: $(e.target).data('comment-id'),
-        like: $(e.target).text() != "Unlike"
+        comment_id: elm.data('comment-id'),
+        like: elm.text() != "Unlike"
       }).receive("ok", () => {
-        if($(e.target).text() == "Unlike") $(e.target).text("Like")
-        else $(e.target).text("Unlike")
+
+        const elmLikes = elm.siblings('span')
+        let likes = parseInt(elmLikes.text())
+
+        // was unliked
+        if(elm.text() == "Unlike"){
+          likes--;
+          elmLikes.text(likes)
+          elm.text("Like")
+          if(likes == 0) elmLikes.addClass('d-none')
+        }
+        // was liked
+        else {
+          likes++;
+          elmLikes.text(likes).removeClass('d-none')
+          elm.text("Unlike")
+        }
       })
     })
 
@@ -132,26 +173,6 @@ export default class View extends MainView {
 
     // connect socket and join topic_channel
     this.joinChannel()
-
-    // enables to submit feedback with Enter, but not shift enter (new line)
-    $(".idea textarea").keypress(function (e) {
-      if(e.which == 13 && !e.shiftKey) {
-        // validate form
-        const txt = $(e.target).val()
-        if(txt.length < 10 || txt.length > 200){
-          $(e.target).addClass('is-invalid')
-          $(e.target).siblings('.invalid-feedback').text('Comment need to have between 10 and 200 characters.')
-          return false;
-        }
-
-        // create event handlers for saving scroll position
-        localStorage.setItem('scroll-pos', $(window).scrollTop());
-
-        $(this).closest("form").submit();
-        e.preventDefault();
-        return false;
-      }
-    });
 
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {

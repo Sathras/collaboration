@@ -44,6 +44,22 @@ defmodule CollaborationWeb.TopicChannel do
     {:noreply, socket}
   end
 
+  def handle_in("create_comment", params, socket) do
+
+    params = Map.put params, "user_id", socket.assigns.user.id
+    case create_comment(params) do
+      {:ok, comment} ->
+        comment = render_to_string(CommentView, "comment.html",
+          comment: load_comment(comment, socket.assigns.user),
+          user: socket.assigns.user
+        )
+        {:reply, {:ok, %{ comment: comment }}, socket}
+
+      {:error, _changeset} ->
+        {:reply, :error, socket}
+    end
+  end
+
   def handle_in("like", %{"comment_id" => id, "like" => like }, socket) do
     case like_comment socket.assigns.user, id, like do
       {:ok, _comment} ->

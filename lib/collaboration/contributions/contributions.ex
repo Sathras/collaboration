@@ -181,9 +181,15 @@ defmodule Collaboration.Contributions do
     |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
   end
 
-  def load_comment(comment_id, user) do
+  def load_comment(comment, user) when is_number(comment) do
     from(c in Comment, preload: [:likes, user: ^user_query()])
-    |> Repo.get(comment_id)
+    |> Repo.get(comment)
+    |> View.render_one(CommentView, "comment.json", user: user)
+  end
+
+  def load_comment(comment, user) when is_map(comment) do
+    comment
+    |> Repo.preload([:likes, user: user_query()])
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 

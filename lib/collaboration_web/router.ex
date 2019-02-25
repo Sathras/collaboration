@@ -25,7 +25,6 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through [ :browser, :authenticate_user ]
 
-    resources "/comments",  CommentController, only: [:create]
     post "/rate/:idea_id/:rating", IdeaController, :rate
     delete "/rate/:idea_id", IdeaController, :unrate
     delete "/logout", SessionController, :delete
