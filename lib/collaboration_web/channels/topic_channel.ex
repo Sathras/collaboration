@@ -74,6 +74,24 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
+  def handle_in("rate_idea", %{"id" => id, "rating" => rating }, socket) do
+    case rate_idea rating, id, socket.assigns.user.id do
+      {:ok, _rating} ->
+        {:reply, :ok, socket}
+      {:error, _} ->
+        {:reply, :error, socket}
+    end
+  end
+
+  def handle_in("unrate_idea", %{"id" => id }, socket) do
+    case unrate_idea id, socket.assigns.user.id do
+      {:ok, _rating} ->
+        {:reply, :ok, socket}
+      {:error, _} ->
+        {:reply, :error, socket}
+    end
+  end
+
   def handle_in("like", %{"comment_id" => id, "like" => like }, socket) do
     case like_comment socket.assigns.user, id, like do
       {:ok, _comment} ->
@@ -88,8 +106,7 @@ defmodule CollaborationWeb.TopicChannel do
       push socket, "post_idea", %{
         idea: render_to_string(IdeaView, "idea.html",
           idea: idea,
-          user: socket.assigns.user,
-          comment_changeset: comment_changeset()
+          user: socket.assigns.user
         )
       }
     end)
@@ -107,7 +124,6 @@ defmodule CollaborationWeb.TopicChannel do
     end)
   end
 end
-
 # create automated feedback (if not admin or in condition 1 and 2
 # if !user.admin && user.condition in [3,4] do
 #   Task.Supervisor.async_nolink(Collaboration.TaskSupervisor, fn ->

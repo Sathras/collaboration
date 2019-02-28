@@ -5,7 +5,7 @@ defmodule CollaborationWeb.TopicController do
     render conn, "index.html", topics: list_topics()
   end
 
-  def show(conn, params) do
+  def show(conn, _) do
     if current_user(conn) do
       case get_published_topic!() do
         nil ->
@@ -15,8 +15,6 @@ defmodule CollaborationWeb.TopicController do
 
         topic ->
           render conn, "show.html",
-            idea_changeset: Map.get(params, :idea_changeset, change_idea()),
-            comment_changeset: comment_changeset(),
             ideas: load_past_ideas(topic.id, current_user(conn)),
             topic: topic
       end

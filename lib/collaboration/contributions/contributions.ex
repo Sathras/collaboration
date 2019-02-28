@@ -130,22 +130,19 @@ defmodule Collaboration.Contributions do
     |> View.render_one(IdeaView, "idea.json", user: user)
   end
 
-  def rate_idea!(rating, idea_id, user_id) do
+  def rate_idea(rating, idea_id, user_id) do
     case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
       nil -> %Rating{}
       rating -> rating
     end
     |> Rating.changeset(%{ rating: rating, idea_id: idea_id, user_id: user_id })
-    |> Repo.insert_or_update!()
+    |> Repo.insert_or_update()
   end
 
-  def unrate_idea!(idea_id, user_id) do
-    case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
-      nil -> :error
-      rating ->
-        Repo.delete!(rating)
-        :ok
-    end
+  def unrate_idea(idea_id, user_id) do
+    Rating
+    |> Repo.get_by!(idea_id: idea_id, user_id: user_id)
+    |> Repo.delete()
   end
 
   def user_ideas(ideas, user_id) do
@@ -189,12 +186,9 @@ defmodule Collaboration.Contributions do
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
-  def comment_changeset(params \\ %{}) do
-    Comment.changeset %Comment{}, params
-  end
-
   def create_comment(params) do
-    comment_changeset(params)
+    %Comment{}
+    |> Comment.changeset(params)
     |> Repo.insert()
   end
 

@@ -25,10 +25,7 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through [ :browser, :authenticate_user ]
 
-    post "/rate/:idea_id/:rating", IdeaController, :rate
-    delete "/rate/:idea_id", IdeaController, :unrate
     delete "/logout", SessionController, :delete
-
     post "/complete", UserController, :finish
   end
 

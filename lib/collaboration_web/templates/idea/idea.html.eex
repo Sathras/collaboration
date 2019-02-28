@@ -2,9 +2,19 @@
   <div class="card-body">
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
       <div class="star-rating" style="display:none;">
-        <%= unrate_btn @idea.id %> |
+        <button
+          class='unrate btn btn-link pointer p-0'
+          data-idea='<%= @idea.id %>'>
+          <i class='fas fa-minus-circle pointer text-danger'></i>
+        </button> |
         <%= for x <- 1..5 do %>
-          <%= star x, @idea %>
+          <button
+            class="rate btn btn-link <%= color(@idea, x) %> pointer p-0"
+            data-idea='<%= @idea.id %>'
+            data-rating='<%= x %>'
+          >
+            <i class='fas fa-star pointer'></i>
+          </button>
         <% end %>
       </div>
       <div class="rating" title="Overall Rating" data-toggle="tooltip">

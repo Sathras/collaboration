@@ -154,6 +154,44 @@ export default class View extends MainView {
       }
     })
 
+    // enable rating of ideas
+    // TODO: improve by styling via css instead of javascript
+    // TODO: update correct rating
+
+    $('#ideas').on('click', '.rate', (e) => {
+
+      const idea_id = $(e.currentTarget).data('idea')
+      const rating = $(e.currentTarget).data('rating')
+
+      channel.push('rate_idea', { id: idea_id, rating })
+      .receive("ok", () => {
+        $(`#idea${idea_id}`).find('.star-rating button')
+          .removeClass('text-primary').addClass('text-muted')
+        for(let i = 1; i <= rating; i++){
+          $(`#idea${idea_id} [data-rating="${i}"]`).addClass('text-primary').removeClass('text-muted')
+        }
+        $(`#idea${idea_id}`).find('.user-rating strong').text(rating).show()
+        $(`#idea${idea_id}`).find('.user-rating small').hide()
+        $(`#idea${idea_id} .user-rating i`).addClass('text-primary')
+        $(`#idea${idea_id} .user-rating`).siblings().toggle()
+      })
+    })
+
+    $('#ideas').on('click', '.unrate', (e) => {
+
+      const idea_id = $(e.currentTarget).data('idea')
+
+      channel.push('unrate_idea', { id: idea_id })
+      .receive("ok", () => {
+        $(`#idea${idea_id}`).find('.star-rating button')
+          .removeClass('text-primary').addClass('text-muted')
+        $(`#idea${idea_id}`).find('.user-rating strong').text('').hide()
+        $(`#idea${idea_id}`).find('.user-rating small').show()
+        $(`#idea${idea_id} .user-rating i`).removeClass('text-primary')
+        $(`#idea${idea_id} .user-rating`).siblings().toggle()
+      })
+    })
+
     // enable like and unlike
     $('#ideas').on('click', 'a.like', (e) => {
       e.preventDefault()

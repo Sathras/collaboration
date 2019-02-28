@@ -28,10 +28,6 @@
 </div>
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
-    <%= render IdeaView, "idea.html",
-      user: @current_user,
-      idea: i,
-      comment_changeset: @comment_changeset
-    %>
+    <%= render IdeaView, "idea.html", user: @current_user, idea: i %>
   <% end %>
 </div>

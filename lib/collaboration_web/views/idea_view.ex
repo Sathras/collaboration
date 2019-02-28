@@ -1,6 +1,12 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
+  def color(idea, value) do
+    if idea.my_rating && idea.my_rating >= value,
+      do: "text-primary",
+      else: "text-muted"
+  end
+
   def base_rating(rating, raters) do
     cond do
       raters === 0 ->  "base0"
@@ -77,30 +83,5 @@ defmodule CollaborationWeb.IdeaView do
       text: i.text,
       user_id: i.user_id
     }
-  end
-
-  def star(value, idea) do
-
-    label = content_tag :label,
-      content_tag(:i, "", class: "fas fa-star pointer")
-
-    color = if idea.my_rating && idea.my_rating >= value,
-      do: "text-primary",
-      else: "text-muted"
-
-    button label, to: Routes.idea_path(Endpoint, :rate, idea.id, value),
-      method: "post",
-      class: "btn btn-link #{color} pointer p-0",
-      title: "rate #{value} stars",
-      data_toggle: "tooltip"
-  end
-
-  def unrate_btn(idea_id) do
-    tag = content_tag :i, "", class: "fas fa-minus-circle pointer text-danger"
-    button tag, to: Routes.idea_path(Endpoint, :unrate, idea_id),
-      method: "delete",
-      class: "btn btn-link pointer p-0",
-      title: "Remove Rating",
-      data_toggle: "tooltip"
   end
 end
