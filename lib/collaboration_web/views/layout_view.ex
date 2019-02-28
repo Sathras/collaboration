@@ -126,17 +126,11 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def home_button(conn) do
-    text = raw("<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus")
+    text = raw "<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus"
 
-    if current_user(conn) do
-      link text,
-        to: Routes.topic_path(conn, :show),
-        class: "navbar-brand d-none d-md-block"
-    else
-      link text,
-        to: Routes.user_path(conn, :new),
-        class: "navbar-brand"
-    end
+    if current_user(conn),
+      do: content_tag :span, text, class: "navbar-brand d-none d-md-block",
+      else: link text, to: Routes.user_path(conn, :new), class: "navbar-brand"
   end
 
   def timer_button(conn) do

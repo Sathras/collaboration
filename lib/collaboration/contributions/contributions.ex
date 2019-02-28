@@ -58,9 +58,7 @@ defmodule Collaboration.Contributions do
   # IDEAS
 
   def idea_query(user) do
-    comments_query = from(c in Comment)
-    |> get_past(user)
-    |> preload([:likes, user: ^user_query()])
+    comments_query = comment_query() |> get_past(user)
 
     from i in Idea,
       preload: [ :ratings, comments: ^comments_query, user: ^user_query() ]
@@ -84,12 +82,6 @@ defmodule Collaboration.Contributions do
     |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
   end
 
-  # get idea with all details
-  def load_idea(idea_id, user) do
-    idea_query(user)
-    |> Repo.get(idea_id)
-    |> View.render_one(IdeaView, "idea.json", user: user)
-  end
 
   # select only ideas/comments that have already been published
   defp get_past(changeset, user) do
@@ -126,12 +118,16 @@ defmodule Collaboration.Contributions do
 
   def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
 
-  def create_idea(user, topic, attrs) do
+  def create_idea(params, topic_id, user ) do
     %Idea{}
-    |> Idea.changeset(attrs)
-    |> put_assoc(:user, user)
-    |> put_assoc(:topic, topic)
-    |> Repo.insert()
+    |> Idea.changeset(params)
+    |> put_change(:topic_id, topic_id)
+    |> put_change(:user_id, user.id)
+    |> Repo.insert!()
+    |> Repo.preload([user: user_query()])
+    |> Map.put(:ratings, [])
+    |> Map.put(:comments, [])
+    |> View.render_one(IdeaView, "idea.json", user: user)
   end
 
   def rate_idea!(rating, idea_id, user_id) do
@@ -159,7 +155,7 @@ defmodule Collaboration.Contributions do
   end
 
   def comment_query() do
-    from(c in Comment, preload: [:likes, user: ^user_query()])
+    from c in Comment, preload: [:likes, user: ^user_query()]
   end
 
   def get_user_comments!(user_id) do

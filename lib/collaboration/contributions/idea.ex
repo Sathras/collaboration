@@ -28,7 +28,7 @@ defmodule Collaboration.Contributions.Idea do
     idea
     |> cast(attrs, ~w(text fake_rating fake_raters c1 c2 c3 c4 c5 c6 c7 c8)a)
     |> validate_required([:text])
-    |> validate_length(:text, max: 1200, min: 40)
+    |> validate_length(:text, max: 999, min: 40)
     |> validate_number(:c1, [])
     |> validate_number(:c2, [])
     |> validate_number(:c3, [])

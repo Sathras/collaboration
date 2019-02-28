@@ -112,6 +112,23 @@ export default class View extends MainView {
       $(`#idea${idea_id} .comments`).append(comment).find('time').timeago()
     })
 
+    // enable posting of ideas
+    $('#idea-form').on('submit', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if ($('#idea-form')[0].checkValidity() === false)
+        $('#idea-form').addClass('was-validated')
+      else {
+        channel.push('create_idea', {
+          text: $(e.target).find('textarea').val()
+        }).receive("ok", ({ idea }) => {
+          $(e.target).find('textarea').val('')
+          $(e.target).removeClass('was-validated')
+          $('#ideas').prepend(idea)
+        })
+      }
+    });
+
     // enable posting of comments
     $('#ideas').on('keypress', '.idea textarea', (e) => {
 

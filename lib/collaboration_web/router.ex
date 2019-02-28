@@ -29,7 +29,6 @@ defmodule CollaborationWeb.Router do
     delete "/rate/:idea_id", IdeaController, :unrate
     delete "/logout", SessionController, :delete
 
-    post "/", IdeaController, :create
     post "/complete", UserController, :finish
   end
 

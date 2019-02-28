@@ -10,6 +10,7 @@
  * liking, unlikeing and posting comments now done via channel and socket
  * delayed post scheduling now done on server and communicated via channel
  * fixed a bug that caused the deletion of other users's likes on liking a comment
+ * submitting new ideas via channel / socket instead of form now
 
 
 ### 2.3.3
