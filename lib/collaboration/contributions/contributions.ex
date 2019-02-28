@@ -130,19 +130,35 @@ defmodule Collaboration.Contributions do
     |> View.render_one(IdeaView, "idea.json", user: user)
   end
 
-  def rate_idea(rating, idea_id, user_id) do
-    case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
+  def rate_idea!(rating, idea_id, user_id) do
+    rating = case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
       nil -> %Rating{}
       rating -> rating
     end
     |> Rating.changeset(%{ rating: rating, idea_id: idea_id, user_id: user_id })
-    |> Repo.insert_or_update()
+    |> Repo.insert_or_update!()
+    |> Repo.preload([:idea])
+
+    my_rating = rating.rating
+    { rating, raters } =
+      IdeaView.calc_rating(rating.idea.fake_rating, rating.idea.fake_raters, my_rating)
+
+    %{
+      rating: rating,
+      raters: raters,
+      my_rating: my_rating
+    }
   end
 
-  def unrate_idea(idea_id, user_id) do
-    Rating
-    |> Repo.get_by!(idea_id: idea_id, user_id: user_id)
-    |> Repo.delete()
+  def unrate_idea!(idea_id, user_id) do
+    rating = Repo.get_by!(Rating, idea_id: idea_id, user_id: user_id)
+    |> Repo.delete!()
+    |> Repo.preload([:idea])
+
+    %{
+      rating: rating.idea.fake_rating,
+      raters: rating.idea.fake_raters,
+    }
   end
 
   def user_ideas(ideas, user_id) do

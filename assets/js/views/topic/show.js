@@ -155,40 +155,55 @@ export default class View extends MainView {
     })
 
     // enable rating of ideas
-    // TODO: improve by styling via css instead of javascript
-    // TODO: update correct rating
-
     $('#ideas').on('click', '.rate', (e) => {
 
       const idea_id = $(e.currentTarget).data('idea')
       const rating = $(e.currentTarget).data('rating')
 
       channel.push('rate_idea', { id: idea_id, rating })
-      .receive("ok", () => {
-        $(`#idea${idea_id}`).find('.star-rating button')
-          .removeClass('text-primary').addClass('text-muted')
-        for(let i = 1; i <= rating; i++){
-          $(`#idea${idea_id} [data-rating="${i}"]`).addClass('text-primary').removeClass('text-muted')
-        }
-        $(`#idea${idea_id}`).find('.user-rating strong').text(rating).show()
-        $(`#idea${idea_id}`).find('.user-rating small').hide()
+      .receive("ok", ({ my_rating, raters, rating }) => {
+        const idea = $(`#idea${idea_id}`)
+
+        // update and show overall rating and raters
+        idea.find('.rating').show().children('strong').text(rating)
+        idea.find('.raters').show().children('strong').text(raters)
+
+        // update and show user rating
+        idea.find('.user-rating strong').text(my_rating).show()
+        idea.find('.user-rating small').hide()
         $(`#idea${idea_id} .user-rating i`).addClass('text-primary')
-        $(`#idea${idea_id} .user-rating`).siblings().toggle()
+
+        // update and hide stars
+        idea.find('.star-rating').hide()
+          .find('button').removeClass('text-primary').addClass('text-muted')
+        for(let i = 1; i <= rating; i++){
+          idea.find(`[data-rating="${i}"]`)
+            .addClass('text-primary').removeClass('text-muted')
+        }
       })
     })
 
+    // enable unrating of ideas
     $('#ideas').on('click', '.unrate', (e) => {
 
       const idea_id = $(e.currentTarget).data('idea')
 
       channel.push('unrate_idea', { id: idea_id })
-      .receive("ok", () => {
-        $(`#idea${idea_id}`).find('.star-rating button')
-          .removeClass('text-primary').addClass('text-muted')
-        $(`#idea${idea_id}`).find('.user-rating strong').text('').hide()
-        $(`#idea${idea_id}`).find('.user-rating small').show()
+      .receive("ok", ({ raters, rating }) => {
+        const idea = $(`#idea${idea_id}`)
+
+        // update and show overall rating and raters
+        idea.find('.rating').show().children('strong').text(rating)
+        idea.find('.raters').show().children('strong').text(raters)
+
+        // update and hide user rating
+        idea.find('.user-rating strong').text('').hide()
+        idea.find('.user-rating small').show()
         $(`#idea${idea_id} .user-rating i`).removeClass('text-primary')
-        $(`#idea${idea_id} .user-rating`).siblings().toggle()
+
+        // update and hide stars
+        idea.find('.star-rating').hide()
+          .find('button').removeClass('text-primary').addClass('text-muted')
       })
     })
 
