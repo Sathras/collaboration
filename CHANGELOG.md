@@ -11,7 +11,7 @@
  * delayed post scheduling now done on server and communicated via channel
  * fixed a bug that caused the deletion of other users's likes on liking a comment
  * submitting new ideas via channel / socket instead of form now
-
+ * removed rating header for user ideas as they cannot be rated anyways
 
 ### 2.3.3
  * incorporated database changes from template

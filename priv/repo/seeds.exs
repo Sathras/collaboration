@@ -249,15 +249,21 @@ defmodule Collaboration.Seeder do
       c5: 540, c7: 540
     }, i8, u6
 
-    # c 23 (bot-to-user comment 1 like)
-    comment %{
-      text: "Fake comment 1. This should never appear but is needed for bot-to-user likes"
-    }, i1, u1
-
-    # c 24 (bot-to-user comment 2 like)
-    comment %{
-      text: "Fake comment 2. This should never appear but is needed for bot-to-user likes"
-    }, i1, u1
+    # bot-to-user comments
+    comment %{ text: "that’s crazy!", c3: 40 }, u1 # 24
+    comment %{ text: "What did I just read?", c3: 120 }, u3 # 25
+    comment %{ text: "Bingo!", c3: 40 }, u6 # 26
+    comment %{ text: "100% agree", c3: 120 }, u6 # 27
+    comment %{ text: "you just won the worst idea award!", c7: 40 }, u7 # 28
+    comment %{ text: "NOPE NOPE NOPE", c7: 400 }, u3 # 29
+    comment %{ text: "This is just dumb", c7: 120 }, u2 # 30
+    comment %{ text: "Feels bad man", c7: 200 }, u4 # 31
+    comment %{ text: "Doesn’t make sense!", c7: 220 }, u5 # 32
+    comment %{ text: "Added points for that idea!", c8: 40 }, u8 # 33
+    comment %{ text: "hire this dude!", c8: 400 }, u10 # 34
+    comment %{ text: "Sounds interesting!", c8: 120 }, u9 # 35
+    comment %{ text: "well said", c8: 200 }, u6 # 36
+    comment %{ text: "I like this!", c8: 220 }, u7 # 37
   end
 
   # all users created here will be peer users / admins
@@ -286,6 +292,13 @@ defmodule Collaboration.Seeder do
   defp comment(params, idea, user) do
     Comment.changeset(%Comment{}, params)
     |> put_assoc(:idea, idea)
+    |> put_assoc(:user, user)
+    |> Repo.insert!()
+  end
+
+  # used for bot-to-user comments (do not belong to a specific idea)
+  defp comment(params, user) do
+    Comment.changeset(%Comment{}, params)
     |> put_assoc(:user, user)
     |> Repo.insert!()
   end

@@ -43,7 +43,8 @@
                 aria_describedby: "passcode-help",
                 autocomplete: "off",
                 class: "form-control #{error_class(f, :passcode)}",
-                placeholder: "Passcode"
+                placeholder: "Passcode",
+                value: "orange" # TODO: DELETE!
               %>
               <%= error_tag f.source, :passcode %>
             </div>
@@ -62,7 +63,8 @@
                 aria_describedby: "name-help",
                 autocomplete: "off",
                 class: "form-control #{error_class(f, :name)}",
-                placeholder: "Name"
+                placeholder: "Name",
+                value: "*test_8*" # TODO: DELETE!
               %>
               <%= error_tag f.source, :name %>
             </div>

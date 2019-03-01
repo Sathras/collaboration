@@ -63,13 +63,19 @@ defmodule CollaborationWeb.IdeaView do
 
     remaining = NaiveDateTime.diff inserted_at, NaiveDateTime.utc_now()
 
-    my_rating = if u, do: Enum.find(i.ratings, & &1.user_id === u.id), else: nil
-    my_rating = if my_rating, do: Map.get(my_rating, :rating), else: nil
+    my_rating = if Ecto.assoc_loaded?(i.ratings),
+      do: List.first(i.ratings),
+      else: nil
+
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    comments = i.comments
-    |> View.render_many(CommentView, "comment.json", user: u)
-    |> Enum.sort_by(fn(c) -> c.inserted_at end)
+    comments = if Ecto.assoc_loaded?(i.ratings) do
+      comments = i.comments
+      |> View.render_many(CommentView, "comment.json", user: u)
+      |> Enum.sort_by(fn(c) -> c.inserted_at end)
+    else
+      []
+    end
 
     %{
       id: i.id,
@@ -84,4 +90,5 @@ defmodule CollaborationWeb.IdeaView do
       user_id: i.user_id
     }
   end
+
 end

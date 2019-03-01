@@ -129,7 +129,7 @@ defmodule CollaborationWeb.LayoutView do
     text = raw "<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus"
 
     if current_user(conn),
-      do: content_tag :span, text, class: "navbar-brand d-none d-md-block",
+      do: content_tag(:span, text, class: "navbar-brand d-none d-md-block"),
       else: link text, to: Routes.user_path(conn, :new), class: "navbar-brand"
   end
 

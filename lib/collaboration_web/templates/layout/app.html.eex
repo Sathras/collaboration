@@ -26,7 +26,6 @@
     <!-- End Google Analytics -->
 
     <script>
-      window.condition = <%= condition(@conn) %>;
       window.time_passed = <%= time_passed(@conn) %>;
       window.userToken = "<%= assigns[:user_token] %>";
     </script>

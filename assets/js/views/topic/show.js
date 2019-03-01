@@ -124,7 +124,7 @@ export default class View extends MainView {
         }).receive("ok", ({ idea }) => {
           $(e.target).find('textarea').val('')
           $(e.target).removeClass('was-validated')
-          $('#ideas').prepend(idea)
+          $('#ideas').prepend(idea).find('time').timeago()
         })
       }
     });
@@ -235,7 +235,18 @@ export default class View extends MainView {
       })
     })
 
-    channel.join()
+    channel.join().receive('ok', ({ ideas }) => {
+      console.log(ideas)
+      // schedule loading of future ideas
+      $.each(ideas, function( idea_id, remaining ) {
+        setTimeout(() => {
+          channel.push('load_idea', { id: idea_id })
+          .receive("ok", ({ idea }) => {
+            $('#ideas').prepend(idea).find('time').timeago()
+          })
+        }, remaining * 1000)
+      });
+    })
   }
 
   mount() {
