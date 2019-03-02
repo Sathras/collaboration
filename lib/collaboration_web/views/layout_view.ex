@@ -1,8 +1,6 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
-  alias CollaborationWeb.UserView
-
   @doc """
   Generates name for the JavaScript view we want to use
   in this combination of view/template.

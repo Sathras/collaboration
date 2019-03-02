@@ -4,7 +4,6 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset
   import Ecto.Query, warn: false
-  import Collaboration.Accounts, only: [user_query: 0]
 
   alias Phoenix.View
   alias Collaboration.Repo
@@ -55,45 +54,42 @@ defmodule Collaboration.Contributions do
 
   def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
 
+  # IDEAS
+
   def count_ideas(user_id) do
     from(i in Idea, where: i.user_id == ^user_id)
     |> Repo.aggregate(:count, :id)
   end
 
-  # IDEAS
-
-  def idea_query(user) do
-    comments_query = comment_query() |> get_past(user)
-    condition = String.to_atom "c#{user.condition}"
-
-    from i in Idea,
-      preload: [ :ratings, comments: ^comments_query, user: ^user_query() ],
-      order_by: field(i, ^condition)
-  end
-
+  @doc """
+  Loads all pre- and user-generated ideas with comments
+  and those that are bot-generated and already published
+  """
   def load_past_ideas(topic_id, user) do
-    idea_query(user)
-    |> where(topic_id: ^topic_id)
+    comments_query = comment_query() |> get_past(user)
+
+    from(i in Idea,
+      preload: [ :ratings, :user, comments: ^comments_query ],
+      where: [topic_id: ^topic_id]
+    )
     |> get_past(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
+    |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
   end
 
+  @doc """
+  Loads bot-generated ideas that have not yet been published
+  """
   def load_future_ideas(topic_id, user) do
-    condition = String.to_atom "c#{user.condition}"
-    from(i in Idea,
-      preload: [ user: ^user_query() ],
-      order_by: field(i, ^String.to_atom("c#{user.condition}"))
-    )
-    |> where(topic_id: ^topic_id)
+    from(i in Idea, preload: [:user], where: [topic_id: ^topic_id] )
     |> get_future(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
   end
 
   def load_idea(idea_id, user) do
-    from(i in Idea, preload: [ user: ^user_query() ])
-    |> get_past(user)
+    from(i in Idea, preload: [ :user ])
     |> Repo.get(idea_id)
     |> View.render_many(IdeaView, "idea.json", user: user)
   end
@@ -104,9 +100,8 @@ defmodule Collaboration.Contributions do
 
     if user.condition > 0 do
       # normal users: show ideas for condition that should be posted by now
-      condition = String.to_atom "c#{user.condition}"
       where changeset, [i],
-        (field(i, ^condition) < ^time and field(i, ^condition) != 0) or i.user_id == ^user.id
+        (field(i, ^condition(user)) < ^time and field(i, ^condition(user)) != 0) or i.user_id == ^user.id
     else
       # admins: show all peer ideas
       where changeset, [i], i.user_id <= 11
@@ -116,21 +111,33 @@ defmodule Collaboration.Contributions do
   # select only ideas that have not been posted yet
   defp get_future(changeset, user) do
     time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
-    condition = String.to_atom "c#{user.condition}"
-    where changeset, [i], field(i, ^condition) > ^time
+    where changeset, [i], field(i, ^condition(user)) > ^time
   end
 
   # returns a map of future idea ids that have yet to be posted
   # in the form %{ idea_id => remaining_time }
-  def get_idea_ids!(topic_id, user) do
-    condition = String.to_atom "c#{user.condition}"
+  def get_future_idea_ids!(topic_id, user) do
     time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
     from(i in Idea,
-      select: { i.id, field(i, ^condition) },
-      where: i.topic_id == ^topic_id and (i.user_id == ^user.id or field(i, ^condition) > ^time)
+      select: { i.id, field(i, ^condition(user)) },
+      where: i.topic_id == ^topic_id and field(i, ^condition(user)) > ^time
     )
     |> Repo.all()
-    |> Map.new(fn {id, offset} -> {id, offset - time} end )
+    |> Map.new(fn { id, remaining } -> { id, remaining - time } end)
+  end
+
+  # gets the two oldest user_ids
+  def get_user_idea_ids(topic_id, user_id) do
+    from(i in Idea,
+      select: {i.id, i.inserted_at},
+      where: i.topic_id == ^topic_id and i.user_id == ^user_id,
+      order_by: i.inserted_at,
+      limit: 2
+    )
+    |> Repo.all()
+    |> Enum.map(fn {id, inserted_at} ->
+        { id, NaiveDateTime.diff(inserted_at, NaiveDateTime.utc_now())}
+      end)
   end
 
   def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
@@ -140,11 +147,7 @@ defmodule Collaboration.Contributions do
     |> Idea.changeset(params)
     |> put_change(:topic_id, topic_id)
     |> put_change(:user_id, user.id)
-    |> Repo.insert!()
-    |> Repo.preload([user: user_query()])
-    |> Map.put(:ratings, [])
-    |> Map.put(:comments, [])
-    |> View.render_one(IdeaView, "idea.json", user: user)
+    |> Repo.insert()
   end
 
   def rate_idea!(rating, idea_id, user_id) do
@@ -185,15 +188,23 @@ defmodule Collaboration.Contributions do
   end
 
   def comment_query() do
-    from c in Comment, preload: [:likes, user: ^user_query()]
+    from c in Comment, preload: [ :likes, :user ]
   end
 
-  def get_user_comments!(user_id) do
+  def get_user_comment_ids(user_id) do
     from(c in Comment,
       select: c.id,
       where: c.user_id == ^user_id,
       order_by: c.inserted_at,
       limit: 3
+    )
+    |> Repo.all()
+  end
+
+  def get_future_bot_comment_ids(user) do
+    from(c in Comment,
+      select: {c.id, field(c, ^condition(user))},
+      where: is_nil(c.idea_id) and field(c, ^condition(user)) > 0
     )
     |> Repo.all()
   end
@@ -208,21 +219,14 @@ defmodule Collaboration.Contributions do
   end
 
   def load_comment(comment, user) when is_number(comment) do
-    from(c in Comment, preload: [:likes, user: ^user_query()])
+    from(c in Comment, preload: [:likes, :user])
     |> Repo.get(comment)
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
   def load_comment(comment, user) when is_map(comment) do
     comment
-    |> Repo.preload([:likes, user: user_query()])
-    |> View.render_one(CommentView, "comment.json", user: user)
-  end
-
-  def load_comment(comment, user, delay) do
-    comment = from(c in Comment, preload: [:likes, user: ^user_query()])
-    |> Repo.get(comment)
-    |> Map.put(:inserted_at, NaiveDateTime.utc_now())
+    |> Repo.preload([:likes, :user ])
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
@@ -255,4 +259,7 @@ defmodule Collaboration.Contributions do
         |> Repo.update()
     end
   end
+
+  # returns the condition of a user as an atom
+  defp condition(user), do: String.to_atom("c#{user.condition}")
 end

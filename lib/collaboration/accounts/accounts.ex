@@ -5,10 +5,6 @@ defmodule Collaboration.Accounts do
   alias Collaboration.Accounts.User
   alias Collaboration.Repo
 
-  def user_query() do
-    from u in User, select: u.name
-  end
-
   def get_user(id) do
     Repo.get(User, id)
   end

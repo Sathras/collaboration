@@ -1,93 +1,59 @@
 defmodule CollaborationWeb.TopicChannel do
   use CollaborationWeb, :channel
 
-  import Phoenix.View, only: [render_to_string: 3]
+  alias Phoenix.View
   alias CollaborationWeb.{ IdeaView, CommentView }
 
   def join("topic", _params, socket) do
 
-    # preload future ideas and comments and store in socket
-    ideas = get_idea_ids!(socket.assigns.topic_id, socket.assigns.user)
-    IO.inspect Enum.filter(ideas, fn {k, v} -> v > 0 end)
-    # comments = get_future_comment_ids!(socket.assigns.topic_id, socket.assigns.user)
-    # scheduled_ideas = Map.new(ideas, fn i -> { i.id, i.remaining } end)
-    # IO.inspect comments
-
-
-    # # TODO: load and post future bot-to-user comments
-    # { first, rest } = List.pop_at user_ids, 0
-
-    # if not is_nil(first) and Enum.member?([3,4,7,8], user.condition) do
-
-    #   schedule_first_response_comment(socket, first)
-
-    #   second = List.first(rest)
-    #   IO.inspect second
-    #   if not is_nil(second) and Enum.member?([3,4,7,8], user.condition) do
-    #     schedule_second_response_comment(socket, second)
-    #   end
-    # end
-
-    # schedule spawning of pregenerated, delayed ideas and comments
-    send self(), :after_join
+    # load bot-to-user comments and user_ideas (id and inserted_at)
+    socket = socket
+    |> assign(:bot_comment_ids, get_future_bot_comment_ids(socket.assigns.user))
+    |> assign(:user_idea_ids, get_user_idea_ids(socket.assigns.topic_id, socket.assigns.user.id))
 
     {:ok, %{
-      ideas: Enum.filter(ideas, fn {k, v} -> v > 0 end) # only future ideas
+      ideas: get_idea_schedule(socket),       # get ideas to be published
+      comments: get_comment_schedule(socket)  # get comments to be published
     }, socket}
-  end
-
-  def handle_info(:after_join, socket) do
-    user = socket.assigns.user
-
-    # get ideas that should be posted in the future (experiment users only)
-    if user.condition > 0 do
-
-      # # load and post future ideas
-      # ideas = load_future_ideas(socket.assigns.topic_id, user)
-      # for idea <- ideas do
-      #   schedule_idea socket, idea
-      # end
-
-      # # load and post future comments
-      # idea_ids = Enum.map(idea_ids, fn { id, _ } -> id end)
-      # comments = load_future_comments(idea_ids, user)
-      # for comment <- comments do
-      #   schedule_comment socket, comment
-      # end
-    end
-
-    {:noreply, socket}
   end
 
   def handle_in("create_idea", params, socket) do
     params = Map.put params, "user_id", socket.assigns.user.id
     case create_idea(params, socket.assigns.topic_id, socket.assigns.user) do
-      idea ->
+      {:ok, idea } ->
 
         # check how many ideas the user has
-        idea_count = count_ideas socket.assigns.user.id
-        case idea_count do
-          1 -> schedule_first_response_comment(socket, idea.id)
-          2 -> schedule_second_response_comment(socket, idea.id)
-        end
+        # idea_count = count_ideas socket.assigns.user.id
+        # case idea_count do
+        #   1 -> schedule_first_response_comment(socket, idea.id)
+        #   2 -> schedule_second_response_comment(socket, idea.id)
+        # end
 
-        idea = render_to_string IdeaView, "idea.html",
-          idea: idea,
+        idea = View.render_to_string IdeaView, "idea.html",
+          idea: View.render_one(idea, IdeaView, "idea.json", user: socket.assigns.user),
           user: socket.assigns.user
 
         {:reply, {:ok, %{ idea: idea }}, socket}
 
-      _error ->
+      { :error, _changeset } ->
         {:reply, :error, socket}
     end
   end
 
   def handle_in("load_idea", %{"id" => idea_id }, socket) do
-    idea = render_to_string IdeaView, "idea.html",
+    idea = View.render_to_string IdeaView, "idea.html",
       idea: load_idea(idea_id, socket.assigns.user),
       user: socket.assigns.user
 
     {:reply, {:ok, %{ idea: idea }}, socket}
+  end
+
+  def handle_in("load_comment", %{"id" => comment_id }, socket) do
+    comment = View.render_to_string CommentView, "comment.html",
+      comment: load_comment(comment_id, socket.assigns.user),
+      user: socket.assigns.user
+
+    {:reply, {:ok, %{ comment: comment }}, socket}
   end
 
   def handle_in("create_comment", params, socket) do
@@ -98,7 +64,7 @@ defmodule CollaborationWeb.TopicChannel do
         # TODO: check how many comments the user has
 
 
-        comment = render_to_string(CommentView, "comment.html",
+        comment = View.render_to_string(CommentView, "comment.html",
           comment: load_comment(comment, socket.assigns.user),
           user: socket.assigns.user
         )
@@ -131,55 +97,128 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
-  defp schedule_comment(socket, comment) do
-    if comment.remaining > 0 do
-      spawn(fn -> :timer.sleep(comment.remaining * 1000);
-        push socket, "post_comment", %{
-          idea_id: comment.idea_id,
-          comment: render_to_string(CommentView, "comment.html",
-            comment: comment,
-            user: socket.assigns.user
-          )
-        }
+  @doc """
+    returns a list of ids for automated ideas that have yet to be published
+
+    @param socket
+    @return
+      list [[ idea_id, remaining ], ...]
+      idea_id     = id of idea where to attach it to,
+      remaining   = when to attach it to [sec]
+  """
+  defp get_idea_schedule(socket) do
+    get_future_idea_ids!(socket.assigns.topic_id, socket.assigns.user)
+  end
+
+  @doc """
+    returns a list of ids for automated comments that have yet to be published,
+    both bot-to-bot and bot-to-user responses
+
+    @param socket
+    @return
+      list [[ comment_id, idea_id, remaining ], ...]
+      comment_id  = id of comment that needs to be published
+      idea_id     = id of idea where to attach it to,
+      remaining   = when to attach it to [sec]
+  """
+  defp get_comment_schedule(socket) do
+    time = NaiveDateTime.diff NaiveDateTime.utc_now(), socket.assigns.user.inserted_at
+
+    r_ids = idea_response_ids(socket)
+
+    bot_to_user_comments = Enum.map(r_ids, fn response_id ->
+
+        # find the time after which a bot comment should be posted
+        {_, remaining } = Enum.find(socket.assigns.bot_comment_ids,
+          fn {id, remaining} -> id == response_id end)
+
+        # find the index of the user_idea
+        i = Enum.find_index(r_ids, fn x -> x == response_id end)
+
+        # find the idea_id and time since user idea has been posted
+        case Enum.at(socket.assigns.user_idea_ids, i) do
+          {idea_id, passed } ->
+            { response_id, idea_id, passed + remaining }
+          nil -> { response_id, nil, nil}
+        end
       end)
-    else
-      push socket, "post_comment", %{
-        idea_id: comment.idea_id,
-        comment: render_to_string(CommentView, "comment.html",
-          comment: comment,
-          user: socket.assigns.user
-        )
-      }
+    |> Enum.filter(fn {_, idea_id, remaining} -> not is_nil(idea_id) and remaining > 0 end)
+
+    bot_to_user_comments ++ []
+    |> Enum.map(fn {c, i, r } -> [c, i, r] end)
+  end
+
+  # bot-to-user comment_ids on ideas
+  defp idea_response_ids(socket) do
+    case socket.assigns.user.condition do
+      3 -> [24]
+      4 -> [26]
+      7 -> [28, 29]
+      8 -> [33, 34]
+      _ -> []
     end
   end
 
-  defp schedule_first_response_comment(socket, idea_id) do
-    delay = NaiveDateTime.diff NaiveDateTime.utc_now(),
-      socket.assigns.user.inserted_at
-
-    comment = case socket.assigns.user.condition do
-      3 -> load_comment(24, socket.assigns.user, delay)
-      4 -> load_comment(26, socket.assigns.user, delay)
-      7 -> load_comment(28, socket.assigns.user, delay)
-      8 -> load_comment(33, socket.assigns.user, delay)
+  # bot-to-user comment_ids on comments
+  defp comment_response_ids(socket) do
+    case socket.assigns.user.condition do
+      3 -> [25]
+      4 -> [27]
+      7 -> [30, 31, 32]
+      8 -> [35, 36, 37]
+      _ -> []
     end
-    IO.inspect comment
-    schedule_comment socket, Map.put(comment, :idea_id, idea_id)
   end
 
-  defp schedule_second_response_comment(socket, idea_id) do
-    delay = NaiveDateTime.diff NaiveDateTime.utc_now(),
-      socket.assigns.user.inserted_at
+  # defp schedule_comment(socket, comment) do
+  #   if comment.remaining > 0 do
+  #     spawn(fn -> :timer.sleep(comment.remaining * 1000);
+  #       push socket, "post_comment", %{
+  #         idea_id: comment.idea_id,
+  #         comment: render_to_string(CommentView, "comment.html",
+  #           comment: comment,
+  #           user: socket.assigns.user
+  #         )
+  #       }
+  #     end)
+  #   else
+  #     push socket, "post_comment", %{
+  #       idea_id: comment.idea_id,
+  #       comment: render_to_string(CommentView, "comment.html",
+  #         comment: comment,
+  #         user: socket.assigns.user
+  #       )
+  #     }
+  #   end
+  # end
 
-    comment = case socket.assigns.user.condition do
-      7 -> load_comment(29, socket.assigns.user, delay)
-      8 -> load_comment(34, socket.assigns.user, delay)
-    end
+#   defp schedule_first_response_comment(socket, idea_id) do
+#     delay = NaiveDateTime.diff NaiveDateTime.utc_now(),
+#       socket.assigns.user.inserted_at
 
-    IO.inspect comment
+#     comment = case socket.assigns.user.condition do
+#       3 -> load_comment(24, socket.assigns.user, delay)
+#       4 -> load_comment(26, socket.assigns.user, delay)
+#       7 -> load_comment(28, socket.assigns.user, delay)
+#       8 -> load_comment(33, socket.assigns.user, delay)
+#     end
+#     IO.inspect comment
+#     schedule_comment socket, Map.put(comment, :idea_id, idea_id)
+#   end
 
-    schedule_comment socket, Map.put(comment, :idea_id, idea_id)
-  end
+#   defp schedule_second_response_comment(socket, idea_id) do
+#     delay = NaiveDateTime.diff NaiveDateTime.utc_now(),
+#       socket.assigns.user.inserted_at
+
+#     comment = case socket.assigns.user.condition do
+#       7 -> load_comment(29, socket.assigns.user, delay)
+#       8 -> load_comment(34, socket.assigns.user, delay)
+#     end
+
+#     IO.inspect comment
+
+#     schedule_comment socket, Map.put(comment, :idea_id, idea_id)
+#   end
 
 end
 # create automated feedback (if not admin or in condition 1 and 2

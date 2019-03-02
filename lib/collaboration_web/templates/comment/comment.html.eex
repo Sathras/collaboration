@@ -6,7 +6,7 @@
 >
   <p class="mb-0 text-justify">
     <small>
-      <strong class="mr-1"><%= @comment.author %></strong><%= @comment.text %>
+      <strong class="mr-1"><%= @comment.user %></strong><%= @comment.text %>
     </small>
   </p>
   <p class=' mb-1'>

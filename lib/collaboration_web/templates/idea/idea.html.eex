@@ -39,7 +39,7 @@
     <% end %>
 
     <small class="font-italic d-flex justify-content-between mb-2">
-      <strong><%= @idea.author %></strong>
+      <strong><%= @idea.user %></strong>
       <time datetime="<%= @idea.inserted_at %>"></time>
     </small>
     <p class="card-text text-justify"><%= @idea.text %></p>

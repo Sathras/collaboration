@@ -69,17 +69,23 @@ defmodule CollaborationWeb.IdeaView do
 
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    comments = if Ecto.assoc_loaded?(i.ratings) do
-      comments = i.comments
+    comments = if Ecto.assoc_loaded?(i.comments) do
+      i.comments
       |> View.render_many(CommentView, "comment.json", user: u)
       |> Enum.sort_by(fn(c) -> c.inserted_at end)
     else
       []
     end
 
+    # if user was not preloaded check if id matches current user
+    user = cond do
+      Ecto.assoc_loaded?(i.user) -> i.user.name
+      i.user_id == u.id -> u.name
+      true -> "Unknown"
+    end
+
     %{
       id: i.id,
-      author: i.user,
       comments: comments,
       inserted_at: date(inserted_at),
       my_rating: my_rating,
@@ -87,7 +93,8 @@ defmodule CollaborationWeb.IdeaView do
       raters: raters,
       remaining: remaining,
       text: i.text,
-      user_id: i.user_id
+      user_id: i.user_id,
+      user: user
     }
   end
 
