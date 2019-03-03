@@ -236,7 +236,7 @@ export default class View extends MainView {
     })
 
     channel.join().receive('ok', ({ ideas, comments }) => {
-
+      console.log(comments)
       // schedule loading of future ideas
       $.each(ideas, function( idea_id, remaining ) {
         setTimeout(() => {
@@ -249,12 +249,18 @@ export default class View extends MainView {
 
       // schedule loading of future comments
       for(let i = 0; i < comments.length; i++){
-        setTimeout(() => {
+        if(comments[i][2] > 0)
+          setTimeout(() => {
+            channel.push('load_comment', { id: comments[i][0] })
+            .receive("ok", ({ comment }) => {
+              $(`#idea${comments[i][1]} .comments`).append(comment).find('time').timeago()
+            })}, comments[i][2] * 1000)
+        else {
           channel.push('load_comment', { id: comments[i][0] })
           .receive("ok", ({ comment }) => {
             $(`#idea${comments[i][1]} .comments`).append(comment).find('time').timeago()
           })
-        }, comments[i][2] * 1000)
+        }
       }
     })
   }

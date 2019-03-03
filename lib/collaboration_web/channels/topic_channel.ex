@@ -142,32 +142,10 @@ defmodule CollaborationWeb.TopicChannel do
           nil -> { response_id, nil, nil}
         end
       end)
-    |> Enum.filter(fn {_, idea_id, remaining} -> not is_nil(idea_id) and remaining > 0 end)
+    |> Enum.filter(fn {_, idea_id, remaining} -> not is_nil(idea_id) end)
 
     bot_to_user_comments ++ []
     |> Enum.map(fn {c, i, r } -> [c, i, r] end)
-  end
-
-  # bot-to-user comment_ids on ideas
-  defp idea_response_ids(socket) do
-    case socket.assigns.user.condition do
-      3 -> [24]
-      4 -> [26]
-      7 -> [28, 29]
-      8 -> [33, 34]
-      _ -> []
-    end
-  end
-
-  # bot-to-user comment_ids on comments
-  defp comment_response_ids(socket) do
-    case socket.assigns.user.condition do
-      3 -> [25]
-      4 -> [27]
-      7 -> [30, 31, 32]
-      8 -> [35, 36, 37]
-      _ -> []
-    end
   end
 
   # defp schedule_comment(socket, comment) do

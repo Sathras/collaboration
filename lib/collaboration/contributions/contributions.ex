@@ -68,7 +68,7 @@ defmodule Collaboration.Contributions do
   def load_past_ideas(topic_id, user) do
     comments_query = comment_query() |> get_past(user)
 
-    from(i in Idea,
+    ideas = from(i in Idea,
       preload: [ :ratings, :user, comments: ^comments_query ],
       where: [topic_id: ^topic_id]
     )
@@ -76,6 +76,64 @@ defmodule Collaboration.Contributions do
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
     |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
+    |> add_past_bot_to_user_comments(user)
+  end
+
+  defp add_past_bot_to_user_comments(ideas, user) do
+
+    # get bot-to-user response ids and comments
+    i_rids = idea_response_ids(user.condition)
+    c_rids = comment_response_ids(user.condition)
+    comments = get_bot_to_user_comments(user)
+
+    # get the id's of the first two user_ideas
+    i_uids = ideas
+      |> Enum.filter(fn i -> i.user_id == user.id end)
+      |> Enum.map(fn i -> i.id end)
+      |> Enum.sort()
+      |> Enum.slice(0, Enum.count(i_rids))
+
+    # get the id's of the first three user_comments
+    c_uids = ideas
+      |> Enum.map(fn i ->
+          Enum.filter(i.comments, fn c -> c.user_id == user.id end)
+          |> Enum.map(fn c -> c.id end)
+        end)
+      |> Enum.flat_map(fn c -> c end)
+      |> Enum.sort()
+      |> Enum.slice(0, Enum.count(c_rids))
+
+    Enum.map ideas, fn i ->
+      # potentially add bot-to-user comment on posting idea
+      i = case Enum.find_index(i_uids, fn x -> x == i.id end) do
+        nil -> i
+        index ->
+          cid = Enum.at(i_rids, index)
+          case Enum.find(comments, fn c -> c.id == cid and c.remaining <= 0 end) do
+            nil -> i
+            comment ->
+              comments = i.comments ++ [comment]
+              Map.put(i, :comments, comments)
+          end
+      end
+
+      # potentially add bot-to-user comment on posting comment
+      comments = Enum.map(c_uids, fn id ->
+        index = Enum.find_index(c_uids, fn x -> x == id end)
+        cid = Enum.at(c_rids, index)
+
+        if Enum.find(i.comments, fn c -> c.id == id end) do
+          Enum.find(comments, fn c -> c.id == cid and c.remaining <= 0 end)
+        else
+          nil
+        end
+      end)
+      |> Enum.reject(fn x -> x == nil end)
+      |> Enum.concat(i.comments)
+      |> Enum.sort_by(&(&1.inserted_at), &>/2)
+
+      Map.put(i, :comments, comments)
+    end
   end
 
   @doc """
@@ -201,6 +259,15 @@ defmodule Collaboration.Contributions do
     |> Repo.all()
   end
 
+  def get_bot_to_user_comments(user) do
+    from(c in Comment,
+      preload: [ :likes, :user ],
+      where: is_nil(c.idea_id) and field(c, ^condition(user)) > 0
+    )
+    |> Repo.all()
+    |> View.render_many(CommentView, "comment.json", user: user)
+  end
+
   def get_future_bot_comment_ids(user) do
     from(c in Comment,
       select: {c.id, field(c, ^condition(user))},
@@ -257,6 +324,28 @@ defmodule Collaboration.Contributions do
         comment
         |> put_assoc(:likes, List.delete(comment.data.likes, user))
         |> Repo.update()
+    end
+  end
+
+  # bot-to-user comment_ids on ideas
+  def idea_response_ids(condition) do
+    case condition do
+      3 -> [24]
+      4 -> [26]
+      7 -> [28, 29]
+      8 -> [33, 34]
+      _ -> []
+    end
+  end
+
+  # bot-to-user comment_ids on comments
+  def comment_response_ids(condition) do
+    case condition do
+      3 -> [25]
+      4 -> [27]
+      7 -> [30, 31, 32]
+      8 -> [35, 36, 37]
+      _ -> []
     end
   end
 
