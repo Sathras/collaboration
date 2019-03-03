@@ -102,16 +102,6 @@ export default class View extends MainView {
     socket.connect()
     const channel = socket.channel("topic")
 
-    // Listen for server events
-
-    channel.on("post_idea", ({ idea }) => {
-      $(`#ideas`).append(idea).find(`time`).timeago()
-    })
-
-    channel.on("post_comment", ({ idea_id, comment }) => {
-      $(`#idea${idea_id} .comments`).append(comment).find('time').timeago()
-    })
-
     // enable posting of ideas
     $('#idea-form').on('submit', (e) => {
       e.preventDefault()
@@ -121,7 +111,15 @@ export default class View extends MainView {
       else {
         channel.push('create_idea', {
           text: $(e.target).find('textarea').val()
-        }).receive("ok", ({ idea }) => {
+        }).receive("ok", ({ idea, feedback }) => {
+          console.log(feedback)
+          if(feedback){
+            setTimeout(() => {
+              $(`#idea${feedback[0]} .comments`).append(feedback[2])
+                .find('time').timeago()
+            }, feedback[1] * 1000)
+          }
+
           $(e.target).find('textarea').val('')
           $(e.target).removeClass('was-validated')
           $('#ideas').prepend(idea).find('time').timeago()
@@ -147,8 +145,14 @@ export default class View extends MainView {
         channel.push('create_comment', {
           idea_id: elm.data('idea_id'),
           text: elm.val()
-        }).receive("ok", ({ comment }) => {
-          elm.parent().siblings('ul.comments')
+        }).receive("ok", ({ comment, feedback }) => {
+          if(feedback){
+            setTimeout(() => {
+              $(`#idea${idea_id} .comments`).append(feedback[1])
+                .find('time').timeago()
+            }, feedback[0] * 1000)
+          }
+          elm.val('').parent().siblings('ul.comments')
             .append(comment).find('time').timeago()
         })
       }
@@ -236,31 +240,18 @@ export default class View extends MainView {
     })
 
     channel.join().receive('ok', ({ ideas, comments }) => {
-      console.log(comments)
       // schedule loading of future ideas
-      $.each(ideas, function( idea_id, remaining ) {
+      for(let i = 0; i < ideas.length; i++){
         setTimeout(() => {
-          channel.push('load_idea', { id: idea_id })
-          .receive("ok", ({ idea }) => {
-            $('#ideas').prepend(idea).find('time').timeago()
-          })
-        }, remaining * 1000)
-      });
-
+          $('#ideas').prepend(ideas[i][1]).find('time').timeago()
+        }, ideas[i][0] * 1000)
+      }
       // schedule loading of future comments
       for(let i = 0; i < comments.length; i++){
-        if(comments[i][2] > 0)
-          setTimeout(() => {
-            channel.push('load_comment', { id: comments[i][0] })
-            .receive("ok", ({ comment }) => {
-              $(`#idea${comments[i][1]} .comments`).append(comment).find('time').timeago()
-            })}, comments[i][2] * 1000)
-        else {
-          channel.push('load_comment', { id: comments[i][0] })
-          .receive("ok", ({ comment }) => {
-            $(`#idea${comments[i][1]} .comments`).append(comment).find('time').timeago()
-          })
-        }
+        setTimeout(() => {
+          $(`#idea${comments[i][0]} .comments`).append(comments[i][2])
+            .find('time').timeago()
+        }, comments[i][1] * 1000)
       }
     })
   }

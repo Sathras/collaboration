@@ -66,7 +66,8 @@ defmodule Collaboration.Contributions do
   and those that are bot-generated and already published
   """
   def load_past_ideas(topic_id, user) do
-    comments_query = comment_query() |> get_past(user)
+    comments_query = from(c in Comment, preload: [ :likes, :user ])
+    |> get_past(user)
 
     ideas = from(i in Idea,
       preload: [ :ratings, :user, comments: ^comments_query ],
@@ -130,7 +131,7 @@ defmodule Collaboration.Contributions do
       end)
       |> Enum.reject(fn x -> x == nil end)
       |> Enum.concat(i.comments)
-      |> Enum.sort_by(&(&1.inserted_at), &>/2)
+      |> Enum.sort_by(&(&1.inserted_at))
 
       Map.put(i, :comments, comments)
     end
@@ -154,12 +155,10 @@ defmodule Collaboration.Contributions do
 
   # select only ideas/comments that have already been published
   defp get_past(changeset, user) do
-    time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
-
     if user.condition > 0 do
       # normal users: show ideas for condition that should be posted by now
       where changeset, [i],
-        (field(i, ^condition(user)) < ^time and field(i, ^condition(user)) != 0) or i.user_id == ^user.id
+        (field(i, ^condition(user)) < ^time_passed(user) and field(i, ^condition(user)) != 0) or i.user_id == ^user.id
     else
       # admins: show all peer ideas
       where changeset, [i], i.user_id <= 11
@@ -168,27 +167,14 @@ defmodule Collaboration.Contributions do
 
   # select only ideas that have not been posted yet
   defp get_future(changeset, user) do
-    time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
-    where changeset, [i], field(i, ^condition(user)) > ^time
-  end
-
-  # returns a map of future idea ids that have yet to be posted
-  # in the form %{ idea_id => remaining_time }
-  def get_future_idea_ids!(topic_id, user) do
-    time = NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
-    from(i in Idea,
-      select: { i.id, field(i, ^condition(user)) },
-      where: i.topic_id == ^topic_id and field(i, ^condition(user)) > ^time
-    )
-    |> Repo.all()
-    |> Map.new(fn { id, remaining } -> { id, remaining - time } end)
+    where changeset, [i], field(i, ^condition(user)) > ^time_passed(user)
   end
 
   # gets the two oldest user_ids
-  def get_user_idea_ids(topic_id, user_id) do
+  def get_user_idea_ids(topic_id, user) do
     from(i in Idea,
       select: {i.id, i.inserted_at},
-      where: i.topic_id == ^topic_id and i.user_id == ^user_id,
+      where: i.topic_id == ^topic_id and i.user_id == ^user.id,
       order_by: i.inserted_at,
       limit: 2
     )
@@ -245,18 +231,18 @@ defmodule Collaboration.Contributions do
     |> Enum.map(fn i -> {i.id, i.remaining} end)
   end
 
-  def comment_query() do
-    from c in Comment, preload: [ :likes, :user ]
-  end
-
-  def get_user_comment_ids(user_id) do
+  # gets the two oldest user_ids
+  def get_user_comment_ids(user) do
     from(c in Comment,
-      select: c.id,
-      where: c.user_id == ^user_id,
+      select: { c.idea_id, c.inserted_at },
+      where: c.user_id == ^user.id,
       order_by: c.inserted_at,
       limit: 3
     )
     |> Repo.all()
+    |> Enum.map(fn {id, inserted_at} ->
+        { id, NaiveDateTime.diff(inserted_at, NaiveDateTime.utc_now())}
+      end)
   end
 
   def get_bot_to_user_comments(user) do
@@ -268,21 +254,11 @@ defmodule Collaboration.Contributions do
     |> View.render_many(CommentView, "comment.json", user: user)
   end
 
-  def get_future_bot_comment_ids(user) do
-    from(c in Comment,
-      select: {c.id, field(c, ^condition(user))},
-      where: is_nil(c.idea_id) and field(c, ^condition(user)) > 0
-    )
-    |> Repo.all()
-  end
-
-  def load_future_comments(idea_ids, user) do
-    comment_query()
-    |> where([c], c.idea_id in ^idea_ids)
+  def get_bot_to_bot_comments(user) do
+    from( c in Comment, preload: [:likes, :user], where: not is_nil(c.idea_id))
     |> get_future(user)
     |> Repo.all()
     |> View.render_many(CommentView, "comment.json", user: user)
-    |> Enum.sort_by(fn(i) -> i.inserted_at end, &>=/2)
   end
 
   def load_comment(comment, user) when is_number(comment) do
@@ -351,4 +327,8 @@ defmodule Collaboration.Contributions do
 
   # returns the condition of a user as an atom
   defp condition(user), do: String.to_atom("c#{user.condition}")
+
+  defp time_passed(user) do
+    NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
+  end
 end

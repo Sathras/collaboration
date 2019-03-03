@@ -12,6 +12,7 @@
  * fixed a bug that caused the deletion of other users's likes on liking a comment
  * submitting new ideas via channel / socket instead of form now
  * removed rating header for user ideas as they cannot be rated anyways
+ * optimized column mansion layout
 
 ### 2.3.3
  * incorporated database changes from template
