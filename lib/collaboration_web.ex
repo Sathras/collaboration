@@ -48,6 +48,8 @@ defmodule CollaborationWeb do
         get_flash: 2,
         view_module: 1
       ]
+      import Collaboration.Accounts, only: [condition: 1]
+      import Collaboration.Contributions, only: [future: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML

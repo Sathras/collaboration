@@ -5,16 +5,18 @@ defmodule CollaborationWeb.TopicChannel do
   alias CollaborationWeb.{ IdeaView, CommentView }
 
   def join("topic", _params, socket) do
+    t = topic_id(socket)
+    u = user(socket)
 
     # load bot-to-user comments and user_ideas (id and inserted_at)
     socket = socket
-    |> assign(:bot_to_user_comments, get_bot_to_user_comments(user(socket)))
-    |> assign(:user_idea_ids, get_user_idea_ids(topic_id(socket), user(socket)))
-    |> assign(:user_comment_ids, get_user_comment_ids(user(socket)))
+    |> assign(:bot_to_user_comments, get_bot_to_user_comments(u))
+    |> assign(:user_idea_ids, get_user_idea_ids(t, u))
+    |> assign(:user_comment_ids, get_user_comment_ids(u))
 
     {:ok, %{
-      ideas: get_idea_schedule(socket),       # get ideas to be published
-      comments: get_comment_schedule(socket)  # get comments to be published
+      ideas: load_future_ideas(t, u),
+      comments: get_comment_schedule(socket)
     }, socket}
   end
 
@@ -24,27 +26,27 @@ defmodule CollaborationWeb.TopicChannel do
       {:ok, idea } ->
 
         idea_ids = socket.assigns.user_idea_ids ++ [idea.id]
-        socket = assign(socket, :user_comment_ids, idea_ids)
+        socket = assign(socket, :user_idea_ids, idea_ids)
+
+        idea = render_idea(
+          View.render_one(idea, IdeaView, "idea.json", user: user(socket)),
+          user(socket)
+        )
 
         feedback = case Enum.at(idea_response_ids(condition(socket)), Enum.count(idea_ids)) do
           nil -> nil
           rid ->
             c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == rid end)
-            IO.inspect c
             if not is_nil(c) do
               [
                 idea.id,
-                time_passed(socket) + c.remaining,
-                View.render_to_string(CommentView, "comment.html", comment: c, user: user(socket))
+                NaiveDateTime.diff(c.inserted_at - time_passed(socket)),
+                render_comment(c, user(socket))
               ]
             else
               nil
             end
         end
-
-        idea = View.render_to_string IdeaView, "idea.html",
-          idea: View.render_one(idea, IdeaView, "idea.json", user: socket.assigns.user),
-          user: socket.assigns.user
 
         {:reply, {:ok, %{ idea: idea, feedback: feedback }}, socket}
 
@@ -66,8 +68,8 @@ defmodule CollaborationWeb.TopicChannel do
             c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == rid end)
             if not is_nil(c) do
               [
-                time_passed(socket) + c.remaining,
-                View.render_to_string(CommentView, "comment.html", comment: c, user: user(socket))
+                NaiveDateTime.diff(c.inserted_at, user(socket).inserted_at),
+                render_comment(c, user(socket))
               ]
             else
               nil
@@ -107,37 +109,10 @@ defmodule CollaborationWeb.TopicChannel do
     end
   end
 
-  @doc """
-    returns a list of ids for automated ideas that have yet to be published
-
-    @param socket
-    @return
-      list [[ idea_id, remaining ], ...]
-      idea_id     = id of idea where to attach it to,
-      remaining   = when to attach it to [sec]
-  """
-  defp get_idea_schedule(socket) do
-    load_future_ideas(topic_id(socket), user(socket))
-    |> Enum.map(fn i -> [
-      i.remaining,
-      View.render_to_string(IdeaView, "idea.html", idea: i, user: user(socket))
-    ] end)
-  end
-
-  @doc """
-    returns a list of ids for automated comments that have yet to be published,
-    both bot-to-bot and bot-to-user responses
-
-    @param socket
-    @return
-      list [[ idea_id, remaining, comment ], ...]
-      idea_id     = id of idea where to attach it to,
-      remaining   = when to attach it to [sec]
-      comment     = html of comment
-  """
+  # returns a list of ids for automated comments that have yet to be published,
+  # includes both bot-to-bot and bot-to-user responses
   defp get_comment_schedule(socket) do
     u = user(socket)
-    time = time_passed socket
 
     # get future bot-to-user comment responses to ideas
     r_ids = idea_response_ids condition(socket)
@@ -148,10 +123,10 @@ defmodule CollaborationWeb.TopicChannel do
           c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == Enum.at(r_ids, index) end)
           case Enum.at(socket.assigns.user_idea_ids, index) do
             nil -> nil
-            { idea_id, passed } ->
-              if not is_nil(c) and c.remaining + passed > 0 do
-                [ idea_id, c.remaining + passed, View.render_to_string(
-                  CommentView, "comment.html", comment: c, user: u )]
+            idea_id ->
+              if not is_nil(c) and future(c.inserted_at) do
+                remaining = NaiveDateTime.diff(c.inserted_at, u.inserted_at)
+                [ idea_id, remaining, render_comment(c, u)]
               else
                 nil
               end
@@ -168,10 +143,10 @@ defmodule CollaborationWeb.TopicChannel do
           c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == Enum.at(c_ids, index) end)
           case Enum.at(socket.assigns.user_comment_ids, index) do
             nil -> nil
-            { idea_id, passed } ->
-              if not is_nil(c) and c.remaining + passed > 0 do
-                [ idea_id, c.remaining + passed, View.render_to_string(
-                  CommentView, "comment.html", comment: c, user: u )]
+            idea_id ->
+              if not is_nil(c) and future(c.inserted_at) do
+                remaining = NaiveDateTime.diff(c.inserted_at, u.inserted_at)
+                [ idea_id, remaining, render_comment(c, u) ]
               else
                 nil
               end
@@ -179,12 +154,9 @@ defmodule CollaborationWeb.TopicChannel do
       end
     end) |> Enum.reject(&(is_nil(&1)))
 
-    # get future bot-to-bot comments
-    bot_to_bot_comments = get_bot_to_bot_comments(u)
-    |> Enum.map(fn c -> [ c.idea_id, c.remaining, View.render_to_string(
-      CommentView, "comment.html", comment: c, user: u )] end)
-
-    bot_to_idea_responses ++ bot_to_comment_responses ++ bot_to_bot_comments
+    bot_to_idea_responses
+    ++ bot_to_comment_responses
+    ++ get_bot_to_bot_comments(u)
   end
 
   defp time_passed(socket) do
@@ -195,4 +167,3 @@ defmodule CollaborationWeb.TopicChannel do
   defp topic_id(socket), do: socket.assigns.topic_id
   defp user(socket), do: socket.assigns.user
 end
-

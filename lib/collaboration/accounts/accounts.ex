@@ -5,6 +5,9 @@ defmodule Collaboration.Accounts do
   alias Collaboration.Accounts.User
   alias Collaboration.Repo
 
+  # returns the condition of a user as an atom
+  def condition(user), do: String.to_atom("c#{user.condition}")
+
   def get_user(id) do
     Repo.get(User, id)
   end
@@ -87,5 +90,9 @@ defmodule Collaboration.Accounts do
 
   def update_user(user, params) do
     Repo.update(change_user(user, params))
+  end
+
+  def time_passed(u) do
+    NaiveDateTime.diff NaiveDateTime.utc_now(), u.inserted_at
   end
 end

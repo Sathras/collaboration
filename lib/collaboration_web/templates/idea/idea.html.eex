@@ -1,4 +1,4 @@
-<div id="idea<%= @idea.id %>" class="card <%= idea_class @idea %>" data-remaining="<%= @idea.remaining %>">
+<div id="idea<%= @idea.id %>" class="card <%= idea_class @idea %>">
   <div class="card-body">
     <%= if @user.id != @idea.user_id do %>
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
@@ -40,7 +40,7 @@
 
     <small class="font-italic d-flex justify-content-between mb-2">
       <strong><%= @idea.user %></strong>
-      <time datetime="<%= @idea.inserted_at %>"></time>
+      <time datetime="<%= date(@idea.inserted_at) %>"></time>
     </small>
     <p class="card-text text-justify"><%= @idea.text %></p>
   </div>

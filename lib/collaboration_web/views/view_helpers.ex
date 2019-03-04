@@ -11,11 +11,11 @@ defmodule CollaborationWeb.ViewHelpers do
   def icon(class), do: content_tag(:i, "", class: class)
 
   def current_user(conn), do: conn.assigns.current_user
-  def participant?(conn), do: condition(conn) > 0
-  def admin?(conn), do: condition(conn) == 0
+  def participant?(conn), do: user_cond(conn) > 0
+  def admin?(conn), do: user_cond(conn) == 0
 
   # get details of current user (no check)
-  def condition(conn), do: current_user(conn) && current_user(conn).condition
+  def user_cond(conn), do: current_user(conn) && current_user(conn).condition
   def user_id(conn), do: current_user(conn) && current_user(conn).id
 
   def nav_text(text, icon \\ false) do

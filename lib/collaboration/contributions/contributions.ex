@@ -4,6 +4,7 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset
   import Ecto.Query, warn: false
+  import Collaboration.Accounts, only: [condition: 1, time_passed: 1]
 
   alias Phoenix.View
   alias Collaboration.Repo
@@ -69,7 +70,7 @@ defmodule Collaboration.Contributions do
     comments_query = from(c in Comment, preload: [ :likes, :user ])
     |> get_past(user)
 
-    ideas = from(i in Idea,
+    from(i in Idea,
       preload: [ :ratings, :user, comments: ^comments_query ],
       where: [topic_id: ^topic_id]
     )
@@ -110,7 +111,8 @@ defmodule Collaboration.Contributions do
         nil -> i
         index ->
           cid = Enum.at(i_rids, index)
-          case Enum.find(comments, fn c -> c.id == cid and c.remaining <= 0 end) do
+          case Enum.find(comments, fn c -> c.id == cid and
+            not future(i.inserted_at) end) do
             nil -> i
             comment ->
               comments = i.comments ++ [comment]
@@ -124,7 +126,8 @@ defmodule Collaboration.Contributions do
         cid = Enum.at(c_rids, index)
 
         if Enum.find(i.comments, fn c -> c.id == id end) do
-          Enum.find(comments, fn c -> c.id == cid and c.remaining <= 0 end)
+          Enum.find(comments, fn c -> c.id == cid and
+          not future(i.inserted_at) end)
         else
           nil
         end
@@ -141,14 +144,18 @@ defmodule Collaboration.Contributions do
   Loads bot-generated ideas that have not yet been published
   """
   def load_future_ideas(topic_id, user) do
-    from(i in Idea, preload: [:user], where: [topic_id: ^topic_id] )
+    from(i in Idea, preload: [:ratings, :user], where: [topic_id: ^topic_id] )
     |> get_future(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
+    |> Enum.map(fn i -> [
+        NaiveDateTime.diff(i.inserted_at, user.inserted_at),
+        render_idea(i, user)
+      ] end)
   end
 
   def load_idea(idea_id, user) do
-    from(i in Idea, preload: [ :user ])
+    from(i in Idea, preload: [:ratings, :user ])
     |> Repo.get(idea_id)
     |> View.render_many(IdeaView, "idea.json", user: user)
   end
@@ -225,40 +232,32 @@ defmodule Collaboration.Contributions do
     }
   end
 
-  def user_ideas(ideas, user_id) do
-    ideas
-    |> Enum.filter(fn i -> i.user_id == user_id end)
-    |> Enum.map(fn i -> {i.id, i.remaining} end)
-  end
-
   # gets the two oldest user_ids
   def get_user_comment_ids(user) do
     from(c in Comment,
-      select: { c.idea_id, c.inserted_at },
+      select: c.idea_id,
       where: c.user_id == ^user.id,
       order_by: c.inserted_at,
       limit: 3
-    )
-    |> Repo.all()
-    |> Enum.map(fn {id, inserted_at} ->
-        { id, NaiveDateTime.diff(inserted_at, NaiveDateTime.utc_now())}
-      end)
+    ) |> Repo.all()
   end
 
   def get_bot_to_user_comments(user) do
-    from(c in Comment,
-      preload: [ :likes, :user ],
-      where: is_nil(c.idea_id) and field(c, ^condition(user)) > 0
-    )
+    from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id))
     |> Repo.all()
     |> View.render_many(CommentView, "comment.json", user: user)
   end
 
   def get_bot_to_bot_comments(user) do
-    from( c in Comment, preload: [:likes, :user], where: not is_nil(c.idea_id))
+    from(c in Comment, preload: [:likes, :user], where: not is_nil(c.idea_id))
     |> get_future(user)
     |> Repo.all()
     |> View.render_many(CommentView, "comment.json", user: user)
+    |> Enum.map(fn c -> [
+        c.idea_id,
+        NaiveDateTime.diff(c.inserted_at, user.inserted_at),
+        render_comment(c, user)
+      ] end)
   end
 
   def load_comment(comment, user) when is_number(comment) do
@@ -325,10 +324,15 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  # returns the condition of a user as an atom
-  defp condition(user), do: String.to_atom("c#{user.condition}")
+  def render_idea(i, user) do
+    View.render_to_string( IdeaView, "idea.html", idea: i, user: user )
+  end
 
-  defp time_passed(user) do
-    NaiveDateTime.diff NaiveDateTime.utc_now(), user.inserted_at
+  def render_comment(c, user) do
+    View.render_to_string( CommentView, "comment.html", comment: c, user: user )
+  end
+
+  def future(date1, date2 \\ NaiveDateTime.utc_now()) do
+    NaiveDateTime.compare(date1, date2) == :gt
   end
 end

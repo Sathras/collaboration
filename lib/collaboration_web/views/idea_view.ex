@@ -27,7 +27,7 @@ defmodule CollaborationWeb.IdeaView do
   end
 
   def idea_class(idea) do
-    if idea.remaining > 0, do: "idea d-none", else: "idea"
+    if future(idea.inserted_at), do: "idea d-none", else: "idea"
   end
 
   def topic_id(conn), do: Map.get(conn.params, "topic_id", conn.params["id"])
@@ -56,15 +56,11 @@ defmodule CollaborationWeb.IdeaView do
 
   def render("idea.json", %{idea: i, user: u}) do
 
-    condition = String.to_atom "c#{u.condition}"
-    inserted_at = if u.condition == 0 || i.user_id == u.id,
-      do: i.inserted_at,
-      else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition))
+    inserted_at = if condition(u) == 0 || i.user_id == u.id, do: i.inserted_at,
+      else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition(u)))
 
-    remaining = NaiveDateTime.diff inserted_at, NaiveDateTime.utc_now()
-
-    my_rating = if Ecto.assoc_loaded?(i.ratings),
-      do: List.first(i.ratings),
+    my_rating = if Ecto.assoc_loaded?(i.ratings) && i.ratings != [],
+      do: List.first(i.ratings).rating,
       else: nil
 
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
@@ -87,11 +83,10 @@ defmodule CollaborationWeb.IdeaView do
     %{
       id: i.id,
       comments: comments,
-      inserted_at: date(inserted_at),
+      inserted_at: inserted_at,
       my_rating: my_rating,
       rating: rating,
       raters: raters,
-      remaining: remaining,
       text: i.text,
       user_id: i.user_id,
       user: user

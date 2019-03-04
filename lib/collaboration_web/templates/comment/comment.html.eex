@@ -21,7 +21,8 @@
 
       <%= if @comment.user_id != @user.id do like_button(@comment) end %>
 
-      <time class="font-italic float-right" datetime="<%= @comment.inserted_at %>"></time>
+      <time class="font-italic float-right"
+        datetime="<%= date(@comment.inserted_at) %>"></time>
     </small>
   </p>
 </li>

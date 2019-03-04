@@ -58,7 +58,7 @@ defmodule CollaborationWeb.Auth do
   end
 
   def authenticate_admin(conn, _opts) do
-    if condition(conn) == 0 do
+    if user_cond(conn) == 0 do
       conn
     else
       conn

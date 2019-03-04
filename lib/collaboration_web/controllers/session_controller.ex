@@ -18,7 +18,7 @@ defmodule CollaborationWeb.SessionController do
   end
 
   def delete(conn, _) do
-    if condition(conn) == 0 do
+    if user_cond(conn) == 0 do
       conn
       |> CollaborationWeb.Auth.logout()
       |> redirect(to: Routes.session_path(conn, :new))
