@@ -329,7 +329,7 @@ defmodule Collaboration.Contributions do
   end
 
   def remaining(date1, date2 \\ NaiveDateTime.utc_now()) do
-    NaiveDateTime.diff(time, NaiveDateTime.utc_now())
+    NaiveDateTime.diff(date1, date2)
   end
 
   def render_idea(i, user) do

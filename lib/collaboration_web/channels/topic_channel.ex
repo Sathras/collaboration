@@ -40,7 +40,7 @@ defmodule CollaborationWeb.TopicChannel do
             if not is_nil(c) do
               [
                 idea.id,
-                NaiveDateTime.diff(c.inserted_at - time_passed(socket)),
+                NaiveDateTime.diff(c.inserted_at, time_passed(socket)),
                 render_comment(c, user(socket))
               ]
             else
