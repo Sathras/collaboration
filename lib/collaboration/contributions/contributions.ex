@@ -324,7 +324,13 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  def remaining(time), do: NaiveDateTime.diff(time, NaiveDateTime.utc_now())
+  def future(date1, date2 \\ NaiveDateTime.utc_now()) do
+    remaining(date1, date2) > 0
+  end
+
+  def remaining(date1, date2 \\ NaiveDateTime.utc_now()) do
+    NaiveDateTime.diff(time, NaiveDateTime.utc_now())
+  end
 
   def render_idea(i, user) do
     View.render_to_string( IdeaView, "idea.html", idea: i, user: user )
@@ -332,9 +338,5 @@ defmodule Collaboration.Contributions do
 
   def render_comment(c, user) do
     View.render_to_string( CommentView, "comment.html", comment: c, user: user )
-  end
-
-  def future(date1, date2 \\ NaiveDateTime.utc_now()) do
-    NaiveDateTime.compare(date1, date2) == :gt
   end
 end
