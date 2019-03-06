@@ -324,6 +324,8 @@ defmodule Collaboration.Contributions do
     end
   end
 
+  def remaining(time), do: NaiveDateTime.diff(time, NaiveDateTime.utc_now())
+
   def render_idea(i, user) do
     View.render_to_string( IdeaView, "idea.html", idea: i, user: user )
   end
