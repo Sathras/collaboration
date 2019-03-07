@@ -112,7 +112,8 @@ export default class View extends MainView {
         channel.push('create_idea', {
           text: $(e.target).find('textarea').val()
         }).receive("ok", ({ idea, feedback }) => {
-          console.log(feedback)
+
+          // schedule feedback if required
           if(feedback){
             setTimeout(() => {
               $(`#idea${feedback[0]} .comments`).append(feedback[2])

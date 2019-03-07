@@ -47,6 +47,7 @@
  * fully finished delayed automated idea / comment / like / rating posting for specific conditions
  * bot-to-user comments now do not persist in the database but can now be liked
  * fixed: bot-to-user comments are now inserted at the correct place
+ * fixed: bot-to-idea comments are now scheduled with the correct value
 
 
 ### 2.3.1

@@ -114,8 +114,10 @@ defmodule Collaboration.Contributions do
           case Enum.find(comments, fn c -> c.id == cid and
             not future(i.inserted_at) end) do
             nil -> i
-            comment ->
-              comments = i.comments ++ [comment]
+            c ->
+              c = Map.put(c, :inserted_at,
+                NaiveDateTime.add(i.inserted_at, c.delay))
+              comments = i.comments ++ [c]
               Map.put(i, :comments, comments)
           end
       end
@@ -193,9 +195,9 @@ defmodule Collaboration.Contributions do
 
   def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
 
-  def create_idea(params, topic_id, user ) do
+  def create_idea(text, topic_id, user ) do
     %Idea{}
-    |> Idea.changeset(params)
+    |> Idea.changeset(%{ text: text })
     |> put_change(:topic_id, topic_id)
     |> put_change(:user_id, user.id)
     |> Repo.insert()

@@ -17,6 +17,7 @@ defmodule CollaborationWeb.CommentView do
 
     inserted_at = if u.condition == 0 || c.user_id == u.id, do: c.inserted_at,
     else: NaiveDateTime.add(u.inserted_at, Map.get(c, condition(u)))
+    # TODO: fix so it is i.inserted_at, Map.get,.... for bot-to-user comments
 
     liked = !!Enum.find(c.likes, & &1.id === u.id)
     likes = if liked, do: c.fake_likes + 1, else: c.fake_likes
@@ -31,6 +32,7 @@ defmodule CollaborationWeb.CommentView do
     %{
       id: c.id,
       inserted_at: inserted_at,
+      delay: Map.get(c, condition(u)),
       text: c.text,
       liked: liked,
       likes: likes,

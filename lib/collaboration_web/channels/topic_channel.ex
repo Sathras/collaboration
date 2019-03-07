@@ -20,37 +20,33 @@ defmodule CollaborationWeb.TopicChannel do
     }, socket}
   end
 
-  def handle_in("create_idea", params, socket) do
-    params = Map.put params, "user_id", socket.assigns.user.id
-    case create_idea(params, socket.assigns.topic_id, socket.assigns.user) do
-      {:ok, idea } ->
+  def handle_in("create_idea", %{ "text" => text }, socket) do
+    u = user(socket)
+    case create_idea(text, topic_id(socket), u) do
+      { :ok, idea } ->
 
-        idea_ids = socket.assigns.user_idea_ids ++ [idea.id]
-        socket = assign(socket, :user_idea_ids, idea_ids)
+        # add idea_id to idea_ids in socket
+        ids = user_idea_ids(socket)
+        socket = assign socket, :user_idea_ids, ids ++ [idea.id]
 
-        idea = render_idea(
-          View.render_one(idea, IdeaView, "idea.json", user: user(socket)),
-          user(socket)
-        )
-
-        feedback = case Enum.at(idea_response_ids(condition(socket)), Enum.count(idea_ids)) do
+        # determine if a response comment should be prepared
+        f = case Enum.at(idea_response_ids(u.condition), Enum.count(ids)) do
           nil -> nil
           rid ->
-            c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == rid end)
-            if not is_nil(c) do
-              [
-                idea.id,
-                NaiveDateTime.diff(c.inserted_at, time_passed(socket)),
-                render_comment(c, user(socket))
-              ]
-            else
-              nil
+            case get_bot_comment(socket, rid, idea.inserted_at) do
+              nil -> nil
+              c -> [ idea.id, c.delay, render_comment(c, u) ]
             end
         end
 
-        {:reply, {:ok, %{ idea: idea, feedback: feedback }}, socket}
+        # prepare idea for socket
+        idea = idea
+        |> View.render_one(IdeaView, "idea.json", user: u )
+        |> render_idea(u)
 
-      { :error, _changeset } ->
+        {:reply, {:ok, %{ idea: idea, feedback: f }}, socket}
+
+      {:error, _changeset } ->
         {:reply, :error, socket}
     end
   end
@@ -159,11 +155,18 @@ defmodule CollaborationWeb.TopicChannel do
     ++ get_bot_to_bot_comments(u)
   end
 
-  defp time_passed(socket) do
-    NaiveDateTime.diff NaiveDateTime.utc_now(), socket.assigns.user.inserted_at
+  # gets the correct comment and sets posting date as a delay to idea date
+  defp get_bot_comment(socket, rid, inserted_at) do
+    comments = socket.assigns.bot_to_user_comments
+    case Enum.find(comments, fn c -> c.id == rid end) do
+      nil -> nil
+      c -> Map.put(c, :inserted_at, NaiveDateTime.add(inserted_at, c.delay))
+    end
   end
 
+  # helper functions
   defp condition(socket), do: socket.assigns.user.condition
   defp topic_id(socket), do: socket.assigns.topic_id
   defp user(socket), do: socket.assigns.user
+  defp user_idea_ids(socket), do: Map.get(socket.assigns, :user_idea_ids)
 end
