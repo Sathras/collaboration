@@ -79,6 +79,13 @@ export default class View extends MainView {
     ratersElm.text(raters +1)
   }
 
+  schedule_idea(i){
+    console.log(i)
+    if(i[1]) setTimeout(() =>
+      { $(`#ideas`).append(i[0]).find('time').first().timeago() }, 1000 * i[1])
+    else $(`#ideas`).append(i[0]).find('time').first().timeago()
+  }
+
   schedule_comment(c){
     console.log(c)
     if(c[2]) setTimeout(() => {
@@ -120,7 +127,8 @@ export default class View extends MainView {
         channel.push('create_idea', { text: $(e.target).find('textarea').val()})
         .receive("ok", ({ idea, feedback }) => {
 
-          // schedule feedback if required
+          // schedule idea and feedback if required
+          this.schedule_idea([idea])
           if(feedback) this.schedule_comment(feedback)
 
           // append idea
@@ -141,7 +149,7 @@ export default class View extends MainView {
 
         const elm = $(e.target)
 
-        if(elm.val().length < 10 || elm.val().length > 200){
+        if(elm.val().length < 10 || elm.val().length > 500){
           elm.addClass('is-invalid')
           elm.siblings('.invalid-feedback')
             .text('Comment need to have between 10 and 200 characters.')
@@ -242,15 +250,9 @@ export default class View extends MainView {
     })
 
     channel.join().receive('ok', ({ ideas, comments }) => {
-      // schedule loading of future ideas
-      for(let i = 0; i < ideas.length; i++){
-        setTimeout(() => {
-          $('#ideas').prepend(ideas[i][1]).find('time').timeago()
-        }, ideas[i][0] * 1000)
-      }
-      // schedule loading of future comments
-      for(let i = 0; i < comments.length; i++)
-        this.schedule_comment(comments[i]);
+      // schedule loading of future ideas and comments
+      for(let i = 0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
+      for(let i = 0; i<comments.length; i++) this.schedule_comment(comments[i]);
     })
   }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.4.1
+ * fixed: refreshing browser does not mess up bot-to-user comments anymore
+ * fixed: bot-to-user comments are now inserted at the correct place with the correct time
+ * fixed: bot-to-idea comments are now scheduled with the correct value
+ * increased possible text length of a comment from 200 to 500 characterrs
+
 ## 2.4
  * removed coherence and scrivenier dependencies
  * separated credentials from users
@@ -13,6 +19,7 @@
  * submitting new ideas via channel / socket instead of form now
  * removed rating header for user ideas as they cannot be rated anyways
  * optimized column mansion layout
+
 
 ### 2.3.3
  * incorporated database changes from template
@@ -46,9 +53,6 @@
  * improved rating mechanism: shows now own rating in separated space (blue star). If not rated yet, it shows a Rate tag for more intuitive handling. Users can now also remove their rating from an idea.
  * fully finished delayed automated idea / comment / like / rating posting for specific conditions
  * bot-to-user comments now do not persist in the database but can now be liked
- * fixed: bot-to-user comments are now inserted at the correct place
- * fixed: bot-to-idea comments are now scheduled with the correct value
-
 
 ### 2.3.1
  * fixed port number in email links

@@ -28,6 +28,7 @@ defmodule Collaboration.Contributions.Comment do
     comment
     |> cast(attrs, ~w(text fake_likes c1 c2 c3 c4 c5 c6 c7 c8 idea_id)a)
     |> validate_required([:text])
+    |> validate_length(:text, min: 10, max: 500)
     |> validate_number(:fake_likes, greater_than_or_equal_to: 0)
   end
 end
