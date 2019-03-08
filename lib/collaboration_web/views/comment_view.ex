@@ -17,9 +17,10 @@ defmodule CollaborationWeb.CommentView do
 
     inserted_at = if u.condition == 0 || c.user_id == u.id, do: c.inserted_at,
     else: NaiveDateTime.add(u.inserted_at, Map.get(c, condition(u)))
-    # TODO: fix so it is i.inserted_at, Map.get,.... for bot-to-user comments
 
-    liked = !!Enum.find(c.likes, & &1.id === u.id)
+    liked = if Ecto.assoc_loaded?(c.likes),
+      do: !!Enum.find(c.likes, & &1.id === u.id),
+      else: false
     likes = if liked, do: c.fake_likes + 1, else: c.fake_likes
 
     # if user was not preloaded check if id matches current user

@@ -115,10 +115,13 @@ defmodule Collaboration.Contributions do
             not future(i.inserted_at) end) do
             nil -> i
             c ->
-              c = Map.put(c, :inserted_at,
-                NaiveDateTime.add(i.inserted_at, c.delay))
-              comments = i.comments ++ [c]
-              Map.put(i, :comments, comments)
+              inserted_at = NaiveDateTime.add(i.inserted_at, c.delay)
+              if remaining(inserted_at) <= 0 do
+                c = Map.put(c, :inserted_at, inserted_at)
+                Map.put(i, :comments, i.comments ++ [c])
+              else
+                i
+              end
           end
       end
 
@@ -172,6 +175,11 @@ defmodule Collaboration.Contributions do
       # admins: show all peer ideas
       where changeset, [i], i.user_id <= 11
     end
+  end
+
+  def get_inserted_at(idea_id) do
+    from(i in Idea, select: i.inserted_at)
+    |> Repo.get(idea_id)
   end
 
   # select only ideas that have not been posted yet
@@ -257,8 +265,8 @@ defmodule Collaboration.Contributions do
     |> View.render_many(CommentView, "comment.json", user: user)
     |> Enum.map(fn c -> [
         c.idea_id,
-        NaiveDateTime.diff(c.inserted_at, user.inserted_at),
-        render_comment(c, user)
+        render_comment(c, user),
+        remaining(c.inserted_at)
       ] end)
   end
 
@@ -274,9 +282,10 @@ defmodule Collaboration.Contributions do
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
-  def create_comment(params) do
+  def create_comment(params, user) do
     %Comment{}
     |> Comment.changeset(params)
+    |> put_change(:user_id, user.id)
     |> Repo.insert()
   end
 

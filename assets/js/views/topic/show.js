@@ -79,6 +79,14 @@ export default class View extends MainView {
     ratersElm.text(raters +1)
   }
 
+  schedule_comment(c){
+    console.log(c)
+    if(c[2]) setTimeout(() => {
+      $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
+    }, 1000 * c[2])
+    else $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
+  }
+
   schedule_like(comment_id, delay){
     if(window.time_passed < delay)
       setTimeout(this.like(comment_id), 1000 * (delay - window.time_passed))
@@ -109,21 +117,18 @@ export default class View extends MainView {
       if ($('#idea-form')[0].checkValidity() === false)
         $('#idea-form').addClass('was-validated')
       else {
-        channel.push('create_idea', {
-          text: $(e.target).find('textarea').val()
-        }).receive("ok", ({ idea, feedback }) => {
+        channel.push('create_idea', { text: $(e.target).find('textarea').val()})
+        .receive("ok", ({ idea, feedback }) => {
 
           // schedule feedback if required
-          if(feedback){
-            setTimeout(() => {
-              $(`#idea${feedback[0]} .comments`).append(feedback[2])
-                .find('time').timeago()
-            }, feedback[1] * 1000)
-          }
+          if(feedback) this.schedule_comment(feedback)
 
+          // append idea
+          $('#ideas').prepend(idea).find('time').first().timeago()
+
+          // reset submit idea form
           $(e.target).find('textarea').val('')
           $(e.target).removeClass('was-validated')
-          $('#ideas').prepend(idea).find('time').timeago()
         })
       }
     });
@@ -146,15 +151,11 @@ export default class View extends MainView {
         channel.push('create_comment', {
           idea_id: elm.data('idea_id'),
           text: elm.val()
-        }).receive("ok", ({ comment, feedback }) => {
-          if(feedback){
-            setTimeout(() => {
-              $(`#idea${idea_id} .comments`).append(feedback[1])
-                .find('time').timeago()
-            }, feedback[0] * 1000)
-          }
-          elm.val('').parent().siblings('ul.comments')
-            .append(comment).find('time').timeago()
+        })
+        .receive("ok", ({ comment, feedback }) => {
+          // schedule comment and feedback if required
+          this.schedule_comment(comment)
+          if(feedback) this.schedule_comment(feedback)
         })
       }
     })
@@ -248,12 +249,8 @@ export default class View extends MainView {
         }, ideas[i][0] * 1000)
       }
       // schedule loading of future comments
-      for(let i = 0; i < comments.length; i++){
-        setTimeout(() => {
-          $(`#idea${comments[i][0]} .comments`).append(comments[i][2])
-            .find('time').timeago()
-        }, comments[i][1] * 1000)
-      }
+      for(let i = 0; i < comments.length; i++)
+        this.schedule_comment(comments[i]);
     })
   }
 

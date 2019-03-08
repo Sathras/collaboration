@@ -32,11 +32,10 @@ defmodule CollaborationWeb.TopicChannel do
         # determine if a response comment should be prepared
         f = case Enum.at(idea_response_ids(u.condition), Enum.count(ids)) do
           nil -> nil
-          rid ->
-            case get_bot_comment(socket, rid, idea.inserted_at) do
-              nil -> nil
-              c -> [ idea.id, c.delay, render_comment(c, u) ]
-            end
+          rid -> case get_bot_comment(socket, rid, idea.inserted_at) do
+            nil -> nil
+            c -> [ idea.id, render_comment(c, u), c.delay ]
+          end
         end
 
         # prepare idea for socket
@@ -52,31 +51,29 @@ defmodule CollaborationWeb.TopicChannel do
   end
 
   def handle_in("create_comment", params, socket) do
-    params = Map.put params, "user_id", socket.assigns.user.id
-    case create_comment(params) do
+    u = user(socket)
+    case create_comment(params, u) do
       {:ok, comment} ->
-        cids = socket.assigns.user_comment_ids ++ [comment.id]
-        socket = assign(socket, :user_comment_ids, cids)
 
-        feedback = case Enum.at(comment_response_ids(condition(socket)), Enum.count(cids)) do
+        # add comment_id to comment_ids in socket
+        ids = user_comment_ids(socket)
+        socket = assign socket, :user_comment_ids, ids ++ [comment.id]
+
+        # determine if a response comment should be prepared
+        f = case Enum.at(comment_response_ids(u.condition), Enum.count(ids)) do
           nil -> nil
-          rid ->
-            c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == rid end)
-            if not is_nil(c) do
-              [
-                NaiveDateTime.diff(c.inserted_at, user(socket).inserted_at),
-                render_comment(c, user(socket))
-              ]
-            else
-              nil
-            end
+          rid -> case get_bot_comment(socket, rid, comment.inserted_at) do
+            nil -> nil
+            c -> [ comment.idea_id, render_comment(c, u), c.delay ]
+          end
         end
 
-        comment = View.render_to_string(CommentView, "comment.html",
-          comment: load_comment(comment, socket.assigns.user),
-          user: socket.assigns.user
-        )
-        {:reply, {:ok, %{ comment: comment, feedback: feedback }}, socket}
+        # prepare comment for socket
+        c = comment
+        |> View.render_one(CommentView, "comment.json", user: u )
+        |> render_comment(u)
+
+        { :reply, {:ok, %{ comment: [ comment.idea_id, c ], feedback: f }}, socket}
 
       {:error, _changeset} ->
         {:reply, :error, socket}
@@ -119,10 +116,9 @@ defmodule CollaborationWeb.TopicChannel do
           c = Enum.find(socket.assigns.bot_to_user_comments, fn c -> c.id == Enum.at(r_ids, index) end)
           case Enum.at(socket.assigns.user_idea_ids, index) do
             nil -> nil
-            idea_id ->
-              if not is_nil(c) and future(c.inserted_at) do
-                remaining = NaiveDateTime.diff(c.inserted_at, u.inserted_at)
-                [ idea_id, remaining, render_comment(c, u)]
+            { idea_id, inserted } ->
+              if not is_nil(c) and inserted + c.delay > 0 do
+                [ idea_id, render_comment(c, u), inserted + c.delay ]
               else
                 nil
               end
@@ -140,9 +136,8 @@ defmodule CollaborationWeb.TopicChannel do
           case Enum.at(socket.assigns.user_comment_ids, index) do
             nil -> nil
             idea_id ->
-              if not is_nil(c) and future(c.inserted_at) do
-                remaining = NaiveDateTime.diff(c.inserted_at, u.inserted_at)
-                [ idea_id, remaining, render_comment(c, u) ]
+              if not is_nil(c) and remaining(c.inserted_at) > 0 do
+                [ idea_id, render_comment(c, u), remaining(c.inserted_at) ]
               else
                 nil
               end
@@ -169,4 +164,5 @@ defmodule CollaborationWeb.TopicChannel do
   defp topic_id(socket), do: socket.assigns.topic_id
   defp user(socket), do: socket.assigns.user
   defp user_idea_ids(socket), do: Map.get(socket.assigns, :user_idea_ids)
+  defp user_comment_ids(socket), do: Map.get(socket.assigns, :user_comment_ids)
 end
