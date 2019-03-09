@@ -73,39 +73,31 @@ export default class View extends MainView {
     let finalRating = uRating
       ? (newRating + uRating + rating * raters) / (raters + 1)
       : (newRating + rating * raters) / (raters + 1)
-    finalRating = Math.round(finalRating * 100) / 100
+    finalRating = Math.round(finalRating * 10) / 10
 
     ratingElm.text(finalRating)
     ratersElm.text(raters +1)
   }
 
   schedule_idea(i){
-    console.log(i)
     if(i[1]) setTimeout(() =>
       { $(`#ideas`).append(i[0]).find('time').first().timeago() }, 1000 * i[1])
     else $(`#ideas`).append(i[0]).find('time').first().timeago()
   }
 
   schedule_comment(c){
-    console.log(c)
     if(c[2]) setTimeout(() => {
       $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
     }, 1000 * c[2])
     else $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
   }
 
-  schedule_like(comment_id, delay){
-    if(window.time_passed < delay)
-      setTimeout(this.like(comment_id), 1000 * (delay - window.time_passed))
-    else
-      this.like(comment_id)
+  schedule_like(like){
+    setTimeout(this.like(like[0]), 1000 * like[1])
   }
 
-  schedule_rating(idea_id, rating, delay){
-    if(window.time_passed < delay)
-      setTimeout(this.rate(idea_id, rating), 1000*(delay - window.time_passed))
-    else
-      this.rate(idea_id, rating)
+  schedule_rating(rating){
+    setTimeout(this.rate(rating[0], rating[2]), 1000 * rating[1])
   }
 
   checkReload() {
@@ -249,10 +241,12 @@ export default class View extends MainView {
       })
     })
 
-    channel.join().receive('ok', ({ ideas, comments }) => {
-      // schedule loading of future ideas and comments
-      for(let i = 0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
-      for(let i = 0; i<comments.length; i++) this.schedule_comment(comments[i]);
+    // join and schedule loading of future ideas, comments, likes, and ratings
+    channel.join().receive('ok', ({ ideas, comments, likes, ratings }) => {
+      for(let i=0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
+      for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
+      for(let i=0; i < likes.length; i++) this.schedule_like(likes[i]);
+      for(let i=0; i < ratings.length; i++) this.schedule_rating(ratings[i]);
     })
   }
 
@@ -282,44 +276,6 @@ export default class View extends MainView {
         $(elm).removeClass('d-none').addClass('new').parent().append(elm)
       }, $(elm).data('remaining') * 1000)
     })
-
-    // enable delayed likes
-    // switch(window.condition){
-    //   case 5:
-    //   case 7:
-    //     this.schedule_like(12, 530)
-    //     this.schedule_like(13, 180)
-    //     this.schedule_like(18, 90)
-    //     this.schedule_rating(6, 4.4, 75)
-    //     this.schedule_rating(7, 4.7, 360)
-    //     break
-    //   case 6:
-    //   case 8:
-    //     this.schedule_like(1, 530)
-    //     this.schedule_like(2, 180)
-    //     this.schedule_like(6, 90)
-    //     this.schedule_rating(1, 4.4, 75)
-    //     this.schedule_rating(2, 4.7, 360)
-    // }
-
-    // answer with a new comment to the first two user_ideas
-    // if([3,4,7,8].indexOf(window.condition) >= 0 && window.respond_to.length>0){
-
-    //   const r1 = window.respond_to[0]
-    //   const r2 = window.respond_to[1] || null
-
-    //   switch(window.condition){
-    //     case 3:
-    //       this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
-    //     case 4:
-    //       this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
-    //     case 7:
-    //       this.schedule_comment(r1[0], 25, "chemistrynerd1994", "that’s crazy!", r1[1] + 40)
-    //     case 8:
-    //       this.schedule_comment(r1[0], 25, "3-DMan", "Bingo!", r1[1] + 40)
-    //       // if(r2) this.schedule_comment(r1[0], 24, "3-DMan", "Bingo!", r1[1] + 40)
-    //   }
-    // }
   }
 
   unmount() {
