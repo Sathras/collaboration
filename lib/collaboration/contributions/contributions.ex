@@ -86,7 +86,7 @@ defmodule Collaboration.Contributions do
     # get bot-to-user response ids and comments
     i_rids = idea_response_ids(user.condition)
     c_rids = comment_response_ids(user.condition)
-    comments = get_bot_to_user_comments(user)
+    bot_comments = get_bot_to_user_comments(user)
 
     # get the id's of the first two user_ideas
     i_uids = ideas
@@ -95,23 +95,13 @@ defmodule Collaboration.Contributions do
       |> Enum.sort()
       |> Enum.slice(0, Enum.count(i_rids))
 
-    # get the id's of the first three user_comments
-    c_uids = ideas
-      |> Enum.map(fn i ->
-          Enum.filter(i.comments, fn c -> c.user_id == user.id end)
-          |> Enum.map(fn c -> c.id end)
-        end)
-      |> Enum.flat_map(fn c -> c end)
-      |> Enum.sort()
-      |> Enum.slice(0, Enum.count(c_rids))
-
     Enum.map ideas, fn i ->
       # potentially add bot-to-user comment on posting idea
       i = case Enum.find_index(i_uids, fn x -> x == i.id end) do
         nil -> i
         index ->
           cid = Enum.at(i_rids, index)
-          case Enum.find(comments, fn c -> c.id == cid and
+          case Enum.find(bot_comments, fn c -> c.id == cid and
             not future(i.inserted_at) end) do
             nil -> i
             c ->
@@ -125,16 +115,31 @@ defmodule Collaboration.Contributions do
           end
       end
 
+      # get the id's of the first three user_comments
+      c_uids = ideas
+      |> Enum.map(fn i ->
+          Enum.filter(i.comments, fn c -> c.user_id == user.id end)
+          |> Enum.map(fn c -> c.id end)
+        end)
+      |> Enum.flat_map(fn c -> c end)
+      |> Enum.sort()
+      |> Enum.slice(0, Enum.count(c_rids))
+
       # potentially add bot-to-user comment on posting comment
       comments = Enum.map(c_uids, fn id ->
         index = Enum.find_index(c_uids, fn x -> x == id end)
         cid = Enum.at(c_rids, index)
 
-        if Enum.find(i.comments, fn c -> c.id == id end) do
-          Enum.find(comments, fn c -> c.id == cid and
-          not future(i.inserted_at) end)
-        else
-          nil
+        case { Enum.find(i.comments, fn c -> c.id == id end), Enum.find(bot_comments, fn c -> c.id == cid end)} do
+          { nil, _ } -> nil
+          { _, nil } -> nil
+          { c, feedback } ->
+            inserted_at = NaiveDateTime.add(c.inserted_at, feedback.delay)
+            if remaining(inserted_at) <= 0 do
+              Map.put(feedback, :inserted_at, inserted_at)
+            else
+              nil
+            end
         end
       end)
       |> Enum.reject(fn x -> x == nil end)
@@ -225,7 +230,7 @@ defmodule Collaboration.Contributions do
       IdeaView.calc_rating(rating.idea.fake_rating, rating.idea.fake_raters, my_rating)
 
     %{
-      rating: rating,
+      rating: Float.round(rating, 1),
       raters: raters,
       my_rating: my_rating
     }
@@ -237,7 +242,7 @@ defmodule Collaboration.Contributions do
     |> Repo.preload([:idea])
 
     %{
-      rating: rating.idea.fake_rating,
+      rating: if is_nil(rating.idea.fake_rating) do nil else Float.round(rating.idea.fake_rating, 1) end,
       raters: rating.idea.fake_raters,
     }
   end
@@ -333,6 +338,32 @@ defmodule Collaboration.Contributions do
       8 -> [35, 36, 37]
       _ -> []
     end
+  end
+
+  def get_future_likes(user) do
+    case user.condition do
+      6 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
+      8 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
+      5 -> [{ 12, 530 }, { 13, 180 }, { 18, 90 }]
+      7 -> [{ 12, 530 }, { 13, 180 }, { 18, 90 }]
+      _ -> []
+    end
+    |> Enum.map(fn { cid, delay } ->
+      [ cid, max(0, remaining(user.inserted_at) + delay) ]
+    end)
+  end
+
+  def get_future_ratings(user) do
+    case user.condition do
+      6 -> [{ 1, 75, 4 }, { 2, 360, 5 }]
+      8 -> [{ 1, 75, 4 }, { 2, 360, 5 }]
+      5 -> [{ 6, 75, 4 }, { 7, 360, 5 }]
+      7 -> [{ 6, 75, 4 }, { 7, 360, 5 }]
+      _ -> []
+    end
+    |> Enum.map(fn { id, delay, rating } ->
+      [ id, max(0, remaining(user.inserted_at) + delay), rating ]
+    end)
   end
 
   def future(date1, date2 \\ NaiveDateTime.utc_now()) do

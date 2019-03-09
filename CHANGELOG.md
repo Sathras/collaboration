@@ -4,7 +4,10 @@
  * fixed: refreshing browser does not mess up bot-to-user comments anymore
  * fixed: bot-to-user comments are now inserted at the correct place with the correct time
  * fixed: bot-to-idea comments are now scheduled with the correct value
+ * fixed: refreshing while bot-to-user comment was still in the future caused the same feedback to appear twice
  * increased possible text length of a comment from 200 to 500 characterrs
+ * ratings will now be displayed rounded to only one (instead of 2) digits behind decimal
+ * restored: delayed automated likes and ratings from bot
 
 ## 2.4
  * removed coherence and scrivenier dependencies

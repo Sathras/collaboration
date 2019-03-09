@@ -16,7 +16,9 @@ defmodule CollaborationWeb.TopicChannel do
 
     {:ok, %{
       ideas: load_future_ideas(t, u),
-      comments: get_comment_schedule(socket)
+      comments: get_comment_schedule(socket),
+      likes: get_future_likes(u),
+      ratings: get_future_ratings(u)
     }, socket}
   end
 
@@ -81,12 +83,7 @@ defmodule CollaborationWeb.TopicChannel do
   end
 
   def handle_in("rate_idea", %{"id" => id, "rating" => rating }, socket) do
-    case rate_idea! rating, id, socket.assigns.user.id do
-      %{ "raters" => _, "rating" => _, "my_rating" => _ } = rating ->
-        {:reply, {:ok, rating }, socket}
-      _->
-        {:reply, :error, socket}
-    end
+    {:reply, {:ok, rate_idea!(rating, id, socket.assigns.user.id) }, socket }
   end
 
   def handle_in("unrate_idea", %{"id" => id }, socket) do

@@ -85,7 +85,7 @@ defmodule CollaborationWeb.IdeaView do
       comments: comments,
       inserted_at: inserted_at,
       my_rating: my_rating,
-      rating: rating,
+      rating: if is_nil(rating) do nil else Float.round(rating, 1) end,
       raters: raters,
       text: i.text,
       user_id: i.user_id,
