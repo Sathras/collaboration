@@ -12,6 +12,10 @@ assets/npm-debug.log
 assets/package-lock.json
 mix.lock
 
+# editor & operating system
+.DS_store
+.elixir_ls/
+
 # fix to allow phx.digest to work properly
 /priv/static/**/*
 !/priv/static/.keep

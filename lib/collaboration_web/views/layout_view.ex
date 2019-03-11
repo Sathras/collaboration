@@ -39,12 +39,12 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def render_flash(conn) do
-    Enum.map(get_flash(conn), fn {k, v} ->
-      { color, icon } = case k do
+    Enum.map(get_flash(conn), fn { type, msg } ->
+      { color, icon } = case type do
         "info" -> { "info", "fa-info-circle" }
         _ -> { "danger", "fa-exclamation-circle" }
       end
-      render LayoutView, "flash.html", color: color, icon: icon, message: v
+      render LayoutView, "flash.html", color: color, icon: icon, message: msg
     end)
   end
 
@@ -52,12 +52,6 @@ defmodule CollaborationWeb.LayoutView do
     if Application.get_env(:collaboration, :env) == :dev,
       do: Application.fetch_env!(:collaboration, :ga_dev_code),
       else: Application.fetch_env!(:collaboration, :ga_prod_code)
-  end
-
-  def remaining_seconds(user) do
-    started = user.confirmed_at
-    now = NaiveDateTime.utc_now()
-    NaiveDateTime.diff(started, now) + 60 * 10
   end
 
   def time_passed(conn) do
