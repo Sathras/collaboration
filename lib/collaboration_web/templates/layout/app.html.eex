@@ -57,8 +57,7 @@
       </div>
     </nav>
     <div class="container">
-      <%= render "flash.html", type: :info, msg: get_flash(@conn, :info) %>
-      <%= render "flash.html", type: :error, msg: get_flash(@conn, :error) %>
+      <%= render_flash @conn %>
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>

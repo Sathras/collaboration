@@ -45,6 +45,7 @@ defmodule CollaborationWeb do
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [
         action_name: 1,
+        get_flash: 1,
         get_flash: 2,
         view_module: 1
       ]

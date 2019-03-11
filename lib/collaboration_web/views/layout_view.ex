@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
+  alias CollaborationWeb.LayoutView
+
   @doc """
   Generates name for the JavaScript view we want to use
   in this combination of view/template.
@@ -36,53 +38,14 @@ defmodule CollaborationWeb.LayoutView do
     |> Enum.at(0)
   end
 
-  # FLASH MESSAGES
-  def flash_color(type) do
-    case type do
-      :info -> "info"
-      _ -> "danger"
-    end
-  end
-
-  def flash_icon(type) do
-    case type do
-      :info -> "fa-info-circle"
-      _ -> "fa-exclamation-circle"
-    end
-  end
-
-  def flash_messages(conn) do
-    [
-      flash_alert(get_flash(conn, :info), "info", "fas fa-info-circle"),
-      flash_alert(
-        get_flash(conn, :error),
-        "danger",
-        "fas fa-exclamation-circle"
-      )
-    ]
-    |> Enum.filter(& &1)
-  end
-
-  defp flash_alert(message, class, icon) do
-    icon = content_tag(:i, "", class: icon <> " mr-2")
-
-    button =
-      content_tag(
-        :button,
-        content_tag(:span, raw("&times;"), area_hidden: "true"),
-        class: "close",
-        type: "button",
-        data_dismiss: "alert",
-        aria_label: "Close"
-      )
-
-    if message do
-      content_tag(
-        :div,
-        [icon, message, button],
-        class: "alert alert-#{class} alert-dismissible fade show"
-      )
-    end
+  def render_flash(conn) do
+    Enum.map(get_flash(conn), fn {k, v} ->
+      { color, icon } = case k do
+        "info" -> { "info", "fa-info-circle" }
+        _ -> { "danger", "fa-exclamation-circle" }
+      end
+      render LayoutView, "flash.html", color: color, icon: icon, message: v
+    end)
   end
 
   def ga_code() do
