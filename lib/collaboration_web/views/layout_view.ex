@@ -19,7 +19,7 @@ defmodule CollaborationWeb.LayoutView do
   def button_complete(conn) do
     button "Complete Experiment",
       id: "btn-complete",
-      class: "btn btn-success dd-none",
+      class: "btn btn-success d-none",
       data_confirm: "Are you sure? This will move you to the survey!",
       to: Routes.session_path(conn, :delete, completed: "✓"),
       method: "delete"
