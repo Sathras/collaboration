@@ -1,14 +1,81 @@
 defmodule CollaborationWeb.LayoutView do
   use CollaborationWeb, :view
 
+  import Phoenix.Controller,
+    only: [ current_path: 2, get_flash: 1, view_template: 1, view_module: 1 ]
+
   alias CollaborationWeb.LayoutView
+
+  @minTime Application.fetch_env!(:collaboration, :minTime)
+
+  def button_abort(conn) do
+    link raw("<i class=\"fas fa-power-off\"></i> Abort"),
+      class: "btn btn-outline-danger ml-2",
+      to: Routes.session_path(conn, :delete, aborted: "✓"),
+      data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
+      method: "delete"
+  end
+
+  def button_complete(conn) do
+    button "Complete Experiment",
+      id: "btn-complete",
+      class: "btn btn-success dd-none",
+      data_confirm: "Are you sure? This will move you to the survey!",
+      to: Routes.session_path(conn, :delete, completed: "✓"),
+      method: "delete"
+  end
+
+  def button_logout(conn) do
+    link content_tag(:i, "", class: "fas fa-power-off"),
+      to: Routes.session_path(conn, :delete),
+      class: "nav-link text-light",
+      data_toggle: "tooltip",
+      method: "delete",
+      title: "Sign Out"
+  end
+
+  def button_home(conn) do
+    text = raw "<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus"
+
+    if current_user(conn),
+      do: content_tag(:span, text, class: "navbar-brand d-none d-md-block"),
+      else: link text, to: Routes.user_path(conn, :new), class: "navbar-brand"
+  end
+
+  def button_timer(conn) do
+    finish_time = NaiveDateTime.add(current_user(conn).inserted_at, @minTime)
+
+    if remaining(finish_time) > 0 do
+      content_tag :div, content_tag(:time, "", datetime: date(finish_time)),
+        id: "timer",
+        class: "btn btn-light disabled ml-2",
+        data_remaining: remaining(finish_time)
+    end
+  end
+
+  def ga_code() do
+    if Application.get_env(:collaboration, :env) == :dev,
+      do: Application.fetch_env!(:collaboration, :ga_dev_code),
+      else: Application.fetch_env!(:collaboration, :ga_prod_code)
+  end
 
   @doc """
   Generates name for the JavaScript view we want to use
   in this combination of view/template.
   """
-  def js_view_name(conn, view_template) do
-    [view_name(conn), template_name(view_template)]
+  def js_view_name(conn) do
+
+    # Removes the extention from the template and returns just the name.
+    template_name = view_template(conn)
+    |> String.split(".")
+    |> Enum.at(0)
+
+    # Takes the resource name of view module and removes the ending: *_view*.
+    view_name = view_module(conn)
+    |> Phoenix.Naming.resource_name()
+    |> String.replace("_view", "")
+
+    [view_name, template_name]
     |> Enum.reverse()
     |> List.insert_at(0, "view")
     |> Enum.map(&String.capitalize/1)
@@ -16,26 +83,10 @@ defmodule CollaborationWeb.LayoutView do
     |> Enum.join("")
   end
 
-  def path_params_to_data_attributes(conn),
-    do:
-      Enum.map(conn.path_params, fn {p, v} -> " data-#{p}=#{v}" end)
-      |> Enum.join()
-
-  # Takes the resource name of the view module and removes the
-  # the ending *_view* string.
-  defp view_name(conn) do
-    conn
-    |> view_module
-    |> Phoenix.Naming.resource_name()
-    |> String.replace("_view", "")
-  end
-
-  # Removes the extion from the template and reutrns
-  # just the name.
-  defp template_name(template) when is_binary(template) do
-    template
-    |> String.split(".")
-    |> Enum.at(0)
+  def nav_item(conn, text, to) do
+    active = if current_path(conn, %{}) === to, do: " active", else: ""
+    content_tag(:li, link(text, to: to, class: "nav-link"),
+      class: "nav-item #{active}")
   end
 
   def render_flash(conn) do
@@ -46,70 +97,5 @@ defmodule CollaborationWeb.LayoutView do
       end
       render LayoutView, "flash.html", color: color, icon: icon, message: msg
     end)
-  end
-
-  def ga_code() do
-    if Application.get_env(:collaboration, :env) == :dev,
-      do: Application.fetch_env!(:collaboration, :ga_dev_code),
-      else: Application.fetch_env!(:collaboration, :ga_prod_code)
-  end
-
-  def time_passed(conn) do
-    user = current_user(conn)
-    if user do
-      NaiveDateTime.diff NaiveDateTime.utc_now, user.inserted_at
-    else
-      false
-    end
-  end
-
-  def abort_button(conn) do
-    link raw("<i class=\"fas fa-power-off\"></i> Abort"),
-      class: "btn btn-outline-danger ml-2",
-      to: Routes.session_path(conn, :delete),
-      data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
-      method: "delete"
-  end
-
-  def logout_button(conn) do
-    link content_tag(:i, "", class: "fas fa-power-off"),
-      to: Routes.session_path(conn, :delete),
-      class: "nav-link text-light",
-      data_toggle: "tooltip",
-      method: "delete",
-      title: "Sign Out"
-  end
-
-  def home_button(conn) do
-    text = raw "<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus"
-
-    if current_user(conn),
-      do: content_tag(:span, text, class: "navbar-brand d-none d-md-block"),
-      else: link text, to: Routes.user_path(conn, :new), class: "navbar-brand"
-  end
-
-  def timer_button(conn) do
-    started = current_user(conn).inserted_at
-    minTime = Application.fetch_env!(:collaboration, :minTime)
-    countdown = NaiveDateTime.diff(started, NaiveDateTime.utc_now()) + minTime
-
-    if countdown <= 0 do
-      button "Complete Experiment",
-        id: "timer",
-        class: "btn btn-success",
-        data_confirm: "Are you sure? This will move you to the survey!",
-        to: Routes.user_path(conn, :finish)
-    else
-      timeElement = content_tag :time, "",
-        datetime: date(NaiveDateTime.add(started, minTime ))
-
-      button timeElement,
-        id: "timer",
-        class: "btn btn-light",
-        data_confirm: "Are you sure? This will move you to the survey!",
-        data_remaining: countdown,
-        disabled: true,
-        to: Routes.user_path(conn, :finish)
-    end
   end
 end

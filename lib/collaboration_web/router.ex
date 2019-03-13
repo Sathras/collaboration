@@ -34,7 +34,8 @@ defmodule CollaborationWeb.Router do
     pipe_through :browser
 
     get "/", TopicController, :show
-    get "/complete", UserController, :complete
+    get "/aborted", SessionController, :aborted
+    get "/complete", SessionController, :complete
 
     get "/login", SessionController, :new
     post "/login", SessionController, :create

@@ -1,9 +1,10 @@
 defmodule CollaborationWeb.SessionController do
   use CollaborationWeb, :controller
 
-  def new(conn, _) do
-    render conn, "new.html"
-  end
+  @survey_codes Application.fetch_env!(:collaboration, :survey_codes)
+
+  def aborted(conn, _), do: render conn, "aborted.html"
+  def complete(conn, _), do: render conn, "complete.html"
 
   def create(conn, %{"session" => %{"username" => username, "password" => pass}}) do
     case CollaborationWeb.Auth.login_by_username_and_pass(conn, username, pass) do
@@ -17,19 +18,29 @@ defmodule CollaborationWeb.SessionController do
     end
   end
 
-  def delete(conn, _) do
-    if user_cond(conn) == 0 do
-      conn
-      |> CollaborationWeb.Auth.logout()
-      |> redirect(to: Routes.session_path(conn, :new))
-    else
-      user = current_user(conn)
-      update_user! user, %{completed_at: NaiveDateTime.utc_now()}
+  def delete(conn, %{ "completed" => _ }) do
+    user = current_user(conn)
+    update_user! user, %{ completed_at: NaiveDateTime.utc_now() }
+    code = @survey_codes[user.condition]
 
-      conn
-      |> CollaborationWeb.Auth.logout()
-      |> redirect(to: Routes.user_path(conn, :complete, surveycode:
-        Application.fetch_env!(:collaboration, :survey_codes)[user.condition]))
-    end
+    conn
+    |> CollaborationWeb.Auth.logout()
+    |> redirect(to: Routes.session_path(conn, :complete, surveycode: code))
+  end
+
+  def delete(conn, %{ "aborted" => _ }) do
+    conn
+    |> CollaborationWeb.Auth.logout()
+    |> redirect(to: Routes.session_path(conn, :aborted))
+  end
+
+  def delete(conn, _) do
+    conn
+    |> CollaborationWeb.Auth.logout()
+    |> redirect(to: Routes.session_path(conn, :new))
+  end
+
+  def new(conn, _) do
+    render conn, "new.html"
   end
 end

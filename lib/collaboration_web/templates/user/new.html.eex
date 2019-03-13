@@ -1,7 +1,9 @@
 <h2>Idea Nexus</h2>
 <div class="row">
   <div class="col-sm-7">
-    <p class="lead"><mark>Please ensure to read the following carefully:</mark></p>
+    <p class="lead">
+      <mark>Please ensure to read the following carefully:</mark>
+    </p>
     <p>This is a scientific experiment conducted by the University of Florida.
     The goal is to [...]</p>
     <ul>

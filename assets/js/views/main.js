@@ -22,19 +22,6 @@ export default class MainView {
 
     $('time').timeago();
 
-    // if experiment is in progress, enable "conclude" btn after timer runs out
-    let countdown = $('#timer').data('remaining');
-    if (countdown) {
-      this.timer = setTimeout(() => {
-        clearInterval(this.timer);
-        $('#timer')
-          .text(`Complete Experiment`)
-          .removeAttr('disabled')
-          .removeClass('btn-light')
-          .addClass('btn-success');
-      }, countdown * 1000);
-    }
-
     // enable base tinyMCE instance
     // tinymce.init({
     //   mode: 'none',

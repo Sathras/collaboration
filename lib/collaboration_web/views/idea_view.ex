@@ -56,7 +56,8 @@ defmodule CollaborationWeb.IdeaView do
 
   def render("idea.json", %{idea: i, user: u}) do
 
-    inserted_at = if condition(u) == 0 || i.user_id == u.id, do: i.inserted_at,
+    inserted_at = if u.condition == 0 || i.user_id == u.id,
+      do: i.inserted_at,
       else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition(u)))
 
     my_rating = if Ecto.assoc_loaded?(i.ratings) && i.ratings != [],

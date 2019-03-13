@@ -189,7 +189,11 @@ defmodule Collaboration.Contributions do
 
   # select only ideas that have not been posted yet
   defp get_future(changeset, user) do
-    where changeset, [i], field(i, ^condition(user)) > ^time_passed(user)
+    if user.condition > 0 do
+      where changeset, [i], field(i, ^condition(user)) > ^time_passed(user)
+    else
+      changeset
+    end
   end
 
   # gets the two oldest user_ids
@@ -292,13 +296,6 @@ defmodule Collaboration.Contributions do
     |> Comment.changeset(params)
     |> put_change(:user_id, user.id)
     |> Repo.insert()
-  end
-
-  def update_comment(id, attrs) when is_number(id) do
-    %Comment{}
-    |> Repo.one(id)
-    |> Comment.changeset(attrs)
-    |> Repo.update()
   end
 
   def like_comment(user, id, like?) do

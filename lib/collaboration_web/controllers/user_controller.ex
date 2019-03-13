@@ -1,8 +1,6 @@
 defmodule CollaborationWeb.UserController do
   use CollaborationWeb, :controller
 
-  def complete(conn, _), do: render conn, "complete.html"
-
   # start page to create experiment users
   def new(conn, _params) do
     render conn, "new.html", changeset: change_user()

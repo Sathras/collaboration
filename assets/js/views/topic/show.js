@@ -42,18 +42,6 @@ export default class View extends MainView {
     // window.user.comments.push(cid);
   }
 
-  schedule_comment(idea_id, cid, author, text, delay){
-    if(window.time_passed < delay){
-      const View = this;
-      setTimeout(
-        function(){ View.comment(idea_id, cid, author, text, delay)},
-        1000 * (delay - window.time_passed)
-      )
-    }
-    else
-      this.comment(idea_id, cid, author, text, delay)
-  }
-
   like(comment_id){
     const comment = $(`#comment${comment_id}`)
     const likes = comment.data('likes')
@@ -256,6 +244,15 @@ export default class View extends MainView {
     // connect socket and join topic_channel
     this.joinChannel()
 
+    // if experiment is in progress, enable "finish" btn after timer runs out
+    let countdown = $('#timer').data('remaining');
+    if (countdown) {
+      setTimeout(() => {
+        $('#timer').addClass('d-none');
+        $('#btn-complete').removeClass('d-none');
+      }, countdown * 1000);
+    }
+
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {
       $(e.currentTarget).siblings().toggle()
@@ -280,5 +277,7 @@ export default class View extends MainView {
 
   unmount() {
     super.unmount();
+    $('#timer').remove();
+    $('#btn-complete').remove();
   }
 }
