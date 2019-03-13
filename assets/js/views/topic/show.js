@@ -67,10 +67,14 @@ export default class View extends MainView {
     ratersElm.text(raters +1)
   }
 
+  /**
+   * Schedules an idea and activates it's timeago.
+   * @param i [ number, string ]
+   */
   schedule_idea(i){
-    if(i[1]) setTimeout(() =>
-      { $(`#ideas`).append(i[0]).find('time').first().timeago() }, 1000 * i[1])
-    else $(`#ideas`).append(i[0]).find('time').first().timeago()
+    setTimeout(() => {
+      $(i[1]).prependTo("#ideas").find('time').timeago()
+    }, 1000 * i[0])
   }
 
   schedule_comment(c){

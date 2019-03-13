@@ -158,10 +158,7 @@ defmodule Collaboration.Contributions do
     |> get_future(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
-    |> Enum.map(fn i -> [
-        NaiveDateTime.diff(i.inserted_at, user.inserted_at),
-        render_idea(i, user)
-      ] end)
+    |> Enum.map(fn i -> [ remaining(i.inserted_at), render_idea(i, user) ] end)
   end
 
   def load_idea(idea_id, user) do
