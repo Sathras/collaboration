@@ -43,13 +43,11 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def button_timer(conn) do
-    finish_time = NaiveDateTime.add(current_user(conn).inserted_at, @minTime)
-
-    if remaining(finish_time) > 0 do
-      content_tag :div, content_tag(:time, "", datetime: date(finish_time)),
+    time = NaiveDateTime.add(current_user(conn).inserted_at, @minTime)
+    if remaining(time) > 0 do
+      content_tag :div, content_tag(:time, "", datetime: date(time)),
         id: "timer",
-        class: "btn btn-light disabled ml-2",
-        data_remaining: remaining(finish_time)
+        class: "btn btn-light disabled ml-2"
     end
   end
 

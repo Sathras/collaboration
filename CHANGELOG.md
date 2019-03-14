@@ -151,5 +151,6 @@ Complete Remade of the Application. Working Features:
 ### 2.4.5
 * version of application can now be inspected in a meta tag
 * support for javascript debugging created. Console will now tell (in dev mode):
-  * How many seconds ago experiment was started and in which condition the user is in
+  * How many seconds ago experiment was started, how long it will still take, and in which condition the user is in
+  * once the timer runs out it will display an approriate message
   * all scheduled events and the number of seconds left until they are getting displayed
