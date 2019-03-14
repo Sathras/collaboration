@@ -53,6 +53,10 @@ defmodule CollaborationWeb.LayoutView do
     end
   end
 
+  def debug() do
+    if Mix.env == :dev, do: "window.debug = true;\n"
+  end
+
   def ga_code() do
     if Application.get_env(:collaboration, :env) == :dev,
       do: Application.fetch_env!(:collaboration, :ga_dev_code),
@@ -98,4 +102,6 @@ defmodule CollaborationWeb.LayoutView do
       render LayoutView, "flash.html", color: color, icon: icon, message: msg
     end)
   end
+
+  def version(), do: Mix.Project.config[:version]
 end

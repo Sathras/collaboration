@@ -23,6 +23,10 @@ export function configTimeago() {
   };
 }
 
+export function debug(text) {
+  if(window.debug) console.log(text)
+}
+
 // export function toggleMCE(editorId) {
 //   if (tinymce.get(editorId)) {
 //     tinymce.EditorManager.execCommand('mceFocus', false, editorId);

@@ -2,6 +2,7 @@ import $ from 'jquery'
 import MainView from '../main'
 
 import socket from '../../utils/socket'
+import { debug } from '../../utils/functions'
 
 export default class View extends MainView {
 
@@ -72,6 +73,7 @@ export default class View extends MainView {
    * @param i [ number, string ]
    */
   schedule_idea(i){
+    debug(`Idea scheduled to appear in ${i[0]} seconds.`)
     setTimeout(() => {
       $(i[1]).prependTo("#ideas").find('time').timeago()
     }, 1000 * i[0])
@@ -234,7 +236,8 @@ export default class View extends MainView {
     })
 
     // join and schedule loading of future ideas, comments, likes, and ratings
-    channel.join().receive('ok', ({ ideas, comments, likes, ratings }) => {
+    channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, time }) => {
+      debug(`Experiment started ${time} seconds ago. User condition: ${condition}`)
       for(let i=0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
       for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
       for(let i=0; i < likes.length; i++) this.schedule_like(likes[i]);

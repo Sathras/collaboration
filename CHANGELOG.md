@@ -148,3 +148,8 @@ Complete Remade of the Application. Working Features:
   * Timeago is added only for the current element, instead of refreshing all
   * corrected countdown, when not yet published
 
+### 2.4.5
+* version of application can now be inspected in a meta tag
+* support for javascript debugging created. Console will now tell (in dev mode):
+  * How many seconds ago experiment was started and in which condition the user is in
+  * all scheduled events and the number of seconds left until they are getting displayed
