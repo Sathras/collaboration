@@ -236,10 +236,21 @@ export default class View extends MainView {
     })
 
     // join and schedule loading of future ideas, comments, likes, and ratings
-    channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, time }) => {
-      debug(`Experiment started ${time} seconds ago. User condition: ${condition}`)
+    channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, remaining, started }) => {
 
-      if(condition > 0 && time > 60*10) $('#btn-complete').removeClass('d-none')
+      // Debug some information if experiment user and env=dev
+      if(condition > 0){
+
+        const rtext = (remaining > 0) ? ` and will finish in ${remaining} seconds` : ``
+        debug(`Experiment started ${started} seconds ago${rtext}. User condition: ${condition}`)
+
+        // enable "finish" button, if experiment is done
+        setTimeout(() => {
+          debug(`Experiment Timer ran out. Enabling finish button.`)
+          $('#timer').addClass('d-none')
+          $('#btn-complete').removeClass('d-none')
+        }, Math.max(0, remaining * 1000))
+      }
 
       for(let i=0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
       for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
@@ -253,15 +264,6 @@ export default class View extends MainView {
 
     // connect socket and join topic_channel
     this.joinChannel()
-
-    // if experiment is in progress, enable "finish" btn after timer runs out
-    let countdown = $('#timer').data('remaining');
-    if (countdown) {
-      setTimeout(() => {
-        $('#timer').addClass('d-none');
-        $('#btn-complete').removeClass('d-none');
-      }, countdown * 1000);
-    }
 
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {

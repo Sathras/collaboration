@@ -4,6 +4,8 @@ defmodule CollaborationWeb.TopicChannel do
   alias Phoenix.View
   alias CollaborationWeb.{ IdeaView, CommentView }
 
+  @experiment_duration Application.fetch_env!(:collaboration, :minTime)
+
   def join("topic", _params, socket) do
     t = topic_id(socket)
     u = user(socket)
@@ -15,12 +17,13 @@ defmodule CollaborationWeb.TopicChannel do
     |> assign(:user_comment_ids, get_user_comment_ids(u))
 
     {:ok, %{
+      condition: u.condition,
       ideas: load_future_ideas(t, u),
       comments: get_comment_schedule(socket),
       likes: get_future_likes(u),
       ratings: get_future_ratings(u),
-      time: abs(remaining(u.inserted_at)),
-      condition: u.condition
+      remaining: remaining(u.inserted_at, @experiment_duration),
+      started: -remaining(u.inserted_at)
     }, socket}
   end
 

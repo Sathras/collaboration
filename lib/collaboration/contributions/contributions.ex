@@ -360,13 +360,21 @@ defmodule Collaboration.Contributions do
     end)
   end
 
+  @spec future(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
   def future(date1, date2 \\ NaiveDateTime.utc_now()) do
     remaining(date1, date2) > 0
   end
 
-  def remaining(date1, date2 \\ NaiveDateTime.utc_now()) do
-    NaiveDateTime.diff(date1, date2)
-  end
+  @doc """
+  remaining(date1, delay)
+    adds delay to a NaiveDatetime and then compares to current time
+  remaining(date1, date2)
+    compares two NaiveDatetimes (date2 is by default now)
+  """
+  def remaining(date1, date2 \\ NaiveDateTime.utc_now())
+  def remaining(date1, delay) when is_number(delay),
+    do: remaining(NaiveDateTime.add(date1, delay))
+  def remaining(date1, date2), do: NaiveDateTime.diff(date1, date2)
 
   def render_idea(i, user) do
     View.render_to_string( IdeaView, "idea.html", idea: i, user: user )
