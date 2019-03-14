@@ -238,6 +238,9 @@ export default class View extends MainView {
     // join and schedule loading of future ideas, comments, likes, and ratings
     channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, time }) => {
       debug(`Experiment started ${time} seconds ago. User condition: ${condition}`)
+
+      if(condition > 0 && time > 60*10) $('#btn-complete').removeClass('d-none')
+
       for(let i=0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
       for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
       for(let i=0; i < likes.length; i++) this.schedule_like(likes[i]);
