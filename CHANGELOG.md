@@ -154,3 +154,6 @@ Complete Remade of the Application. Working Features:
   * How many seconds ago experiment was started, how long it will still take, and in which condition the user is in
   * once the timer runs out it will display an approriate message
   * all scheduled events and the number of seconds left until they are getting displayed
+* fixed wrong class that prevented bot generated ideas from appearing
+* fixed wrong selector that prevented comment submission
+* fixed: after sucessful comment submission the text is now deleted and error messages discarded

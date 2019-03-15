@@ -26,10 +26,6 @@ defmodule CollaborationWeb.IdeaView do
       else: nil
   end
 
-  def idea_class(idea) do
-    if future(idea.inserted_at), do: "idea d-none", else: "idea"
-  end
-
   def topic_id(conn), do: Map.get(conn.params, "topic_id", conn.params["id"])
 
   def active?(idea, idea_id) do

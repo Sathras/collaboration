@@ -70,20 +70,31 @@ export default class View extends MainView {
 
   /**
    * Schedules an idea and activates it's timeago.
-   * @param i [ number, string ]
+   * @param i [ delay, string ]
    */
   schedule_idea(i){
     debug(`Idea scheduled to appear in ${i[0]} seconds.`)
     setTimeout(() => {
+      debug(`Idea was posted.`)
       $(i[1]).prependTo("#ideas").find('time').timeago()
     }, 1000 * i[0])
   }
 
+  /**
+   * Schedules a comment and activates it's timeago.
+   * @param i [ idea_id, string, delay ]
+   */
   schedule_comment(c){
-    if(c[2]) setTimeout(() => {
-      $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
-    }, 1000 * c[2])
-    else $(`#idea${c[0]} .comments`).append(c[1]).find('time').last().timeago()
+    if(c[2]){
+      debug(`Comment scheduled to appear in ${c[2]} seconds.`)
+      setTimeout(() => {
+        debug(`Comment was posted.`)
+        $(c[1]).appendTo(`#idea${c[0]} .comments`).find('time').timeago()
+      }, 1000 * c[2])
+    } else {
+      debug(`Comment was posted.`)
+      $(c[1]).appendTo(`#idea${c[0]} .comments`).find('time').timeago()
+    }
   }
 
   schedule_like(like){
@@ -128,8 +139,8 @@ export default class View extends MainView {
     });
 
     // enable posting of comments
-    $('#ideas').on('keypress', '.idea textarea', (e) => {
-
+    $('#ideas').on('keypress', 'textarea', (e) => {
+console.log("TEst")
       // enables to submit feedback with Enter, but not shift enter (new line)
       if(e.which == 13 && !e.shiftKey) {
 
@@ -147,6 +158,7 @@ export default class View extends MainView {
           text: elm.val()
         })
         .receive("ok", ({ comment, feedback }) => {
+          elm.val('').removeClass('is-invalid').siblings().text('')
           // schedule comment and feedback if required
           this.schedule_comment(comment)
           if(feedback) this.schedule_comment(feedback)

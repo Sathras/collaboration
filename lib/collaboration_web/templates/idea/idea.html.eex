@@ -1,4 +1,4 @@
-<div id="idea<%= @idea.id %>" class="card <%= idea_class @idea %>">
+<div id="idea<%= @idea.id %>" class="card">
   <div class="card-body">
     <%= if @user.id != @idea.user_id do %>
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
