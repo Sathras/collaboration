@@ -101,5 +101,5 @@ defmodule CollaborationWeb.LayoutView do
     end)
   end
 
-  def version(), do: Mix.Project.config[:version]
+  def version(), do: Collaboration.Mixfile.project[:version]
 end
