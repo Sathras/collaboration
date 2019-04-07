@@ -64,7 +64,7 @@
                 aria_describedby: "name-help",
                 autocomplete: "off",
                 class: "form-control #{error_class(f, :name)}",
-                placeholder: "Name"
+                placeholder: "Username"
               %>
               <%= error_tag f.source, :name %>
             </div>

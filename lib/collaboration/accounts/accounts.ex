@@ -47,7 +47,7 @@ defmodule Collaboration.Accounts do
 
   def list_participants() do
     from( u in User,
-      select: map(u, ~w(condition name inserted_at completed_at)a),
+      select: map(u, ~w(id condition name inserted_at completed_at)a),
       order_by: u.inserted_at,
       where: u.condition > 0,
       limit: 2000
@@ -56,8 +56,7 @@ defmodule Collaboration.Accounts do
 
   def list_users() do
     from( u in User,
-      select: map(u, ~w(id name inserted_at)a),
-      order_by: u.inserted_at,
+      select: map(u, ~w(id name)a),
       where: u.condition == 0,
       limit: 100
     ) |> Repo.all()

@@ -1,3 +1,20 @@
+/* Navbar */
+nav.navbar{
+  background-color: #1c543d;
+}
+
+nav.navbar .container {
+  background-image: url("/images/logo.png");
+  background-repeat: no-repeat;
+  background-position: 8px -12px;
+  height:40px;
+  padding-left:195px;
+}
+
+nav.navbar li.active a{
+  text-decoration: underline;
+}
+
 div.mce-fullscreen {
   z-index: 1050;
 }

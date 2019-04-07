@@ -157,3 +157,8 @@ Complete Remade of the Application. Working Features:
 * fixed wrong class that prevented bot generated ideas from appearing
 * fixed wrong selector that prevented comment submission
 * fixed: after sucessful comment submission the text is now deleted and error messages discarded
+
+## 2.5
+* redesigned navbar to better fit USF colors, also added usf logo
+* when logged in as admin participants few now shows how long users participated
+* when logged in as admin, user and participants view now shows user ids

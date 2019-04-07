@@ -1,24 +1,21 @@
-<table
-  id="users"
-  class="table table-sm table-hover nowrap"
-  cellspacing="0"
-  cellpadding="0"
->
+<table id="users" class="table table-sm">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Joined</th>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Participated</th>
       <th>Condition</th>
+      <th>Duration [sec]</th>
     </tr>
   </thead>
   <tbody>
   <%= for u <- @users do %>
     <tr>
+      <td><%= u.id %></td>
       <td><%= u.name %></td>
-      <td><%= u.email %></td>
       <td><time datetime="<%= date(u.inserted_at) %>"></time></td>
       <td><%= u.condition %></td>
+      <td><%= duration(u) %></td>
     </tr>
   <% end %>
   </tbody>

@@ -30,18 +30,16 @@
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body data-js-view-name="<%= js_view_name(@conn) %>">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
       <div class="container">
-        <%=  button_home(@conn) %>
-        <%= if admin?(@conn) do %>
-          <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto">
+          <%= if admin?(@conn) do %>
             <%= nav_item(@conn, "Topics", Routes.topic_path(@conn, :index)) %>
             <%= nav_item(@conn, "New Topic", Routes.topic_path(@conn, :new)) %>
             <%= nav_item(@conn, "Users", Routes.user_path(@conn, :index)) %>
             <%= nav_item(@conn, "Participants", Routes.user_path(@conn, :participants)) %>
-          </ul>
-        <% end %>
-
+          <% end %>
+        </ul>
         <%= if current_user(@conn) do %>
           <form class="form-inline">
             <%= if admin?(@conn) do %>

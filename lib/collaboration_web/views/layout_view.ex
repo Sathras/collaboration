@@ -10,7 +10,7 @@ defmodule CollaborationWeb.LayoutView do
 
   def button_abort(conn) do
     link raw("<i class=\"fas fa-power-off\"></i> Abort"),
-      class: "btn btn-outline-danger ml-2",
+      class: "btn btn-danger ml-2",
       to: Routes.session_path(conn, :delete, aborted: "✓"),
       data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
       method: "delete"
@@ -32,14 +32,6 @@ defmodule CollaborationWeb.LayoutView do
       data_toggle: "tooltip",
       method: "delete",
       title: "Sign Out"
-  end
-
-  def button_home(conn) do
-    text = raw "<i class=\"far fa-lightbulb mr-1\"></i>Idea Nexus"
-
-    if current_user(conn),
-      do: content_tag(:span, text, class: "navbar-brand d-none d-md-block"),
-      else: link text, to: Routes.user_path(conn, :new), class: "navbar-brand"
   end
 
   def button_timer(conn) do
@@ -87,7 +79,7 @@ defmodule CollaborationWeb.LayoutView do
 
   def nav_item(conn, text, to) do
     active = if current_path(conn, %{}) === to, do: " active", else: ""
-    content_tag(:li, link(text, to: to, class: "nav-link"),
+    content_tag(:li, link(text, to: to, class: "nav-link text-light"),
       class: "nav-item #{active}")
   end
 
