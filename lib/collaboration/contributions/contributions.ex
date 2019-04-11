@@ -258,6 +258,7 @@ defmodule Collaboration.Contributions do
     ) |> Repo.all()
   end
 
+  # get bot-to-user comments (they do not have an idea_id attached)
   def get_bot_to_user_comments(user) do
     from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id))
     |> Repo.all()
@@ -335,6 +336,7 @@ defmodule Collaboration.Contributions do
   end
 
   def get_future_likes(user) do
+    IO.inspect remaining(user.inserted_at)
     case user.condition do
       6 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
       8 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]

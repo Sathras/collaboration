@@ -34,7 +34,7 @@ defmodule Collaboration.Seeder do
       featured: true,
       desc: "
         <p>Parking and Transportation Services at the University of South Florida Tampa Campus is the division responsible for the overall management of the Bull Runner Transit System and parking facilities and services. At the division we have applied different approaches and solutions to ease commute to and within USF for students, faculty, and visitors. Despite the efforts to improve parking and transportation in past years, we acknowledge the need for innovative ideas and solutions to improve our services. </p>
-        <p>We understand how important and critical its services are to the USF community and would like to hear your ideas to improve their services.
+        <p>We understand how important and critical the transportation and parking services are to the USF community and would like to hear your ideas to improve their services.
         As you are a member of the USF community, we are eager to listen to your perspective. We plan to integrate your ideas in our plans and
         operations. Please share your ideas, comments, and thoughts on how to improve and offer new parking and transportation services. More you
         share, greater the chances that your idea will be incorporated. For more information about our services, please feel free to visit our online page.</p>"
@@ -78,7 +78,7 @@ defmodule Collaboration.Seeder do
       fake_raters: 9,
       fake_rating: 4.1,
       c1: -3600, c3: -3600, c5: -3600, c7: -3600
-    }, t1, u6
+    }, t1, u4
 
     i7 = idea %{
       text: "Is it just me or is everyone is just lazy? Just park far away from my building and walk. Why don’t you push people toward walking by having competitions with Fitbit or other trackers so others might get up from their couches and start to walk instead. They can actually loss weight this way instead of complaining!",
@@ -115,6 +115,7 @@ defmodule Collaboration.Seeder do
     #c2
     comment %{
       text: "That is a great idea too! One more thing that occurs to me. How about if we offer student passes for free or at a better rate? They would be so encouraged to park further and relieve some of the congestion. Win-win for all!",
+      fake_likes: 2,
       c2: -1800, c4: -1800, c6: -1800, c8: -1800
     }, i1, u4
 
@@ -250,20 +251,20 @@ defmodule Collaboration.Seeder do
     }, i8, u6
 
     # bot-to-user comments
-    comment %{ text: "that’s crazy!", c3: 40 }, u1 # 24
-    comment %{ text: "What did I just read?", c3: 120 }, u3 # 25
-    comment %{ text: "Bingo!", c3: 40 }, u6 # 26
-    comment %{ text: "100% agree", c3: 120 }, u6 # 27
-    comment %{ text: "you just won the worst idea award!", c7: 40 }, u7 # 28
-    comment %{ text: "NOPE NOPE NOPE", c7: 400 }, u3 # 29
-    comment %{ text: "This is just dumb", c7: 120 }, u2 # 30
-    comment %{ text: "Feels bad man", c7: 200 }, u4 # 31
-    comment %{ text: "Doesn’t make sense!", c7: 220 }, u5 # 32
-    comment %{ text: "Added points for that idea!", c8: 40 }, u8 # 33
-    comment %{ text: "hire this dude!", c8: 400 }, u10 # 34
-    comment %{ text: "Sounds interesting!", c8: 120 }, u9 # 35
-    comment %{ text: "well said", c8: 200 }, u6 # 36
-    comment %{ text: "I like this!", c8: 220 }, u7 # 37
+    comment %{ c3: 60, text: "that’s crazy!" }, u1 # 24
+    comment %{ c3: 60, text: "What did I just read?" }, u3 # 25
+    comment %{ c4: 60, text: "Bingo!" }, u6 # 26
+    comment %{ c4: 60, text: "100% agree" }, u7 # 27
+    comment %{ c7: 60, text: "you just won the worst idea award!" }, u3 # 28
+    comment %{ c7: 60, text: "NOPE NOPE NOPE" }, u2 # 29
+    comment %{ c7: 60, text: "This is just dumb" }, u4 # 30
+    comment %{ c7: 60, text: "Feels bad man" }, u5 # 31
+    comment %{ c7: 60, text: "Doesn’t make sense!" }, u1 # 32
+    comment %{ c8: 60, text: "Added points for that idea!" }, u8 # 33
+    comment %{ c8: 60, text: "hire this dude!" }, u10 # 34
+    comment %{ c8: 60, text: "Sounds interesting!" }, u9 # 35
+    comment %{ c8: 60, text: "well said" }, u6 # 36
+    comment %{ c8: 60, text: "I like this!" }, u7 # 37
   end
 
   # all users created here will be peer users / admins

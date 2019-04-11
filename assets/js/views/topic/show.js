@@ -49,6 +49,7 @@ export default class View extends MainView {
     comment
       .data('likes', likes + 1)
       .find('.likes').text(likes + 1).removeClass('d-none')
+    debug(`Comment #${comment_id} has been liked.`)
   }
 
   rate(idea_id, newRating){
@@ -98,11 +99,15 @@ export default class View extends MainView {
   }
 
   schedule_like(like){
-    setTimeout(this.like(like[0]), 1000 * like[1])
+    if(!like[1]) this.like(like[0])
+    else {
+      debug(`Comment #${like[0]} will be liked in ${like[1]} sec.`)
+      setTimeout(() => {this.like(like[0])}, 1000 * like[1])
+    }
   }
 
   schedule_rating(rating){
-    setTimeout(this.rate(rating[0], rating[2]), 1000 * rating[1])
+    setTimeout(() => { this.rate(rating[0], rating[2])}, 1000 * rating[1])
   }
 
   checkReload() {
@@ -140,7 +145,7 @@ export default class View extends MainView {
 
     // enable posting of comments
     $('#ideas').on('keypress', 'textarea', (e) => {
-console.log("TEst")
+
       // enables to submit feedback with Enter, but not shift enter (new line)
       if(e.which == 13 && !e.shiftKey) {
 
@@ -199,24 +204,31 @@ console.log("TEst")
     $('#ideas').on('click', '.unrate', (e) => {
 
       const idea_id = $(e.currentTarget).data('idea')
+      const idea = $(`#idea${idea_id}`)
+      console.log("User Rating: ", )
+      if(idea.find('.user-rating strong').text() != ""){
+        channel.push('unrate_idea', { id: idea_id })
+        .receive("ok", ({ raters, rating }) => {
 
-      channel.push('unrate_idea', { id: idea_id })
-      .receive("ok", ({ raters, rating }) => {
-        const idea = $(`#idea${idea_id}`)
+          // update and show overall rating and raters
+          idea.find('.rating').show().children('strong').text(rating)
+          idea.find('.raters').show().children('strong').text(raters)
 
-        // update and show overall rating and raters
-        idea.find('.rating').show().children('strong').text(rating)
-        idea.find('.raters').show().children('strong').text(raters)
+          // update and hide user rating
+          idea.find('.user-rating strong').text('').hide()
+          idea.find('.user-rating small').show()
+          $(`#idea${idea_id} .user-rating i`).removeClass('text-primary')
 
-        // update and hide user rating
-        idea.find('.user-rating strong').text('').hide()
-        idea.find('.user-rating small').show()
-        $(`#idea${idea_id} .user-rating i`).removeClass('text-primary')
-
-        // update and hide stars
+          // update and hide stars
+          idea.find('.star-rating').hide()
+            .find('button').removeClass('text-primary').addClass('text-muted')
+        })
+      } else {
         idea.find('.star-rating').hide()
-          .find('button').removeClass('text-primary').addClass('text-muted')
-      })
+        idea.find('.rating').show()
+        idea.find('.raters').show()
+        idea.find('.user-rating small').show()
+      }
     })
 
     // enable like and unlike
