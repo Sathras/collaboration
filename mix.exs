@@ -5,7 +5,7 @@ defmodule Collaboration.Mixfile do
     [
       app: :collaboration,
       version: "2.4.6",
-      elixir: "~> 1.7",
+      elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -37,17 +37,15 @@ defmodule Collaboration.Mixfile do
       {:phoenix, "~> 1.4"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:ecto_sql, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.13"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.16"},
+      {:gettext, "~> 0.16.1"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       # addons
-      {:comeonin, "~> 4.1"},
-      {:pbkdf2_elixir, "~> 0.12"},
-      {:phoenix_html_sanitizer, "~> 1.1"},
+      {:pbkdf2_elixir, "~> 1.0"},
       # deployment
       {:edeliver, "~> 1.6"},
       {:distillery, "~> 2.0"}

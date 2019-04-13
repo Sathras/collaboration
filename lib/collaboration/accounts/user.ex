@@ -8,7 +8,7 @@ defmodule Collaboration.Accounts.User do
 
   # verify new experiment users via passcode
   @passcode_hash Application.fetch_env!(:collaboration, :passcode)
-    |> Comeonin.Pbkdf2.hashpwsalt()
+    |> Pbkdf2.hash_pwd_salt()
 
   schema "users" do
 
@@ -51,11 +51,11 @@ defmodule Collaboration.Accounts.User do
 
   defp check_passcode(user, params) do
     cond do
-      Comeonin.Pbkdf2.checkpw(params["passcode"], @passcode_hash) ->
+      Pbkdf2.verify_pass(params["passcode"], @passcode_hash) ->
         user
 
       true ->
-        Comeonin.Pbkdf2.dummy_checkpw()
+        Pbkdf2.no_user_verify()
         add_error(user, :passcode, "Passcode is invalid")
     end
   end
