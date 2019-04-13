@@ -8,7 +8,7 @@ defmodule Collaboration.Accounts.User do
 
   # verify new experiment users via passcode
   @passcode_hash Application.fetch_env!(:collaboration, :passcode)
-    |> Pbkdf2.hash_pwd_salt()
+    |> Pbkdf2.add_hash()
 
   schema "users" do
 
