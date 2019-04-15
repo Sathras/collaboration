@@ -336,7 +336,6 @@ defmodule Collaboration.Contributions do
   end
 
   def get_future_likes(user) do
-    IO.inspect remaining(user.inserted_at)
     case user.condition do
       6 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
       8 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]

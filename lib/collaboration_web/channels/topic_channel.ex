@@ -7,11 +7,14 @@ defmodule CollaborationWeb.TopicChannel do
   @experiment_duration Application.fetch_env!(:collaboration, :minTime)
 
   def join("topic", _params, socket) do
-    t = topic_id(socket)
+    t = get_featured_topic_id!()
     u = user(socket)
+
+    send(self, :after_join)
 
     # load bot-to-user comments and user_ideas (id and inserted_at)
     socket = socket
+    |> assign(:topic_id, t)
     |> assign(:bot_to_user_comments, get_bot_to_user_comments(u))
     |> assign(:user_idea_ids, get_user_idea_ids(t, u))
     |> assign(:user_comment_ids, get_user_comment_ids(u))
@@ -25,6 +28,14 @@ defmodule CollaborationWeb.TopicChannel do
       remaining: remaining(u.inserted_at, @experiment_duration),
       started: -remaining(u.inserted_at)
     }, socket}
+  end
+
+  def handle_info(:after_join, socket) do
+
+    # test: send delayed message after 3 sec
+    schedule(socket, "test", 3000, %{ msg: "Test: This message should appear after 3 sec."})
+
+    {:noreply, socket}
   end
 
   def handle_in("create_idea", %{ "text" => text }, socket) do

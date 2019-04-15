@@ -6,6 +6,22 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, options) => ({
+  stats: {
+    colors: true,
+    hash: false,
+    version: false,
+    timings: false,
+    assets: false,
+    chunks: false,
+    modules: false,
+    reasons: false,
+    children: false,
+    source: false,
+    errors: true,
+    errorDetails: true,
+    warnings: true,
+    publicPath: false
+  },
   optimization: {
     minimizer: [
       new UglifyJsPlugin({ cache: true, parallel: true, sourceMap: false }),

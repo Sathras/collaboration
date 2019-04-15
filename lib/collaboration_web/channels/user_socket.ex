@@ -1,9 +1,6 @@
 defmodule CollaborationWeb.UserSocket do
   use Phoenix.Socket
 
-  import Collaboration.Accounts, only: [get_user: 1]
-  import Collaboration.Contributions, only: [get_featured_topic_id!: 0]
-
   channel "topic", CollaborationWeb.TopicChannel
 
   @max_age 2 * 60 * 60 # token is valid for 2 hours
@@ -11,10 +8,7 @@ defmodule CollaborationWeb.UserSocket do
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, "user socket", token, max_age: @max_age) do
       {:ok, user_id} ->
-        socket = socket
-        |> assign(:topic_id, get_featured_topic_id!())
-        |> assign(:user, get_user(user_id))
-        {:ok, socket}
+        {:ok, assign(socket, :user, Collaboration.Accounts.get_user(user_id))}
 
       {:error, _reason} ->
         :error
@@ -24,4 +18,24 @@ defmodule CollaborationWeb.UserSocket do
   def connect(_params, _socket), do: :error
 
   def id(_socket), do: nil
+
+  @doc """
+  Sends event to the socket after a specified amount of time [ms].
+
+  ## Examples
+
+      iex> push(socket, "test", 3000, %{
+        msg: "This message should appear after 3 seconds."
+      })
+      :ok
+
+  """
+  @spec schedule(Socket.t, String.t, integer, map()) :: :ok
+  def schedule(socket, event, delay, data \\ %{}) do
+    spawn(fn ->
+      :timer.sleep(delay);
+      Phoenix.Channel.push(socket, event, data)
+    end)
+    :ok
+  end
 end

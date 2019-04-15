@@ -20,8 +20,8 @@ defmodule CollaborationWeb do
   def channel do
     quote do
       use Phoenix.Channel
-
       import Collaboration.Contributions
+      import CollaborationWeb.UserSocket, only: [schedule: 4]
     end
   end
 

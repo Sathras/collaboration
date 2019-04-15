@@ -259,6 +259,11 @@ export default class View extends MainView {
       })
     })
 
+    // test: receive messages and print to console
+    channel.on('test', ({ msg }) => {
+      console.log(msg)
+    })
+
     // join and schedule loading of future ideas, comments, likes, and ratings
     channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, remaining, started }) => {
 
