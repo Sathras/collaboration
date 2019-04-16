@@ -20,7 +20,7 @@ defmodule CollaborationWeb.UserSocket do
   def id(_socket), do: nil
 
   @doc """
-  Sends event to the socket after a specified amount of time [ms].
+  Sends event to the socket after a specified amount of time [s].
 
   ## Examples
 
@@ -33,7 +33,7 @@ defmodule CollaborationWeb.UserSocket do
   @spec schedule(Socket.t, String.t, integer, map()) :: :ok
   def schedule(socket, event, delay, data \\ %{}) do
     spawn(fn ->
-      :timer.sleep(delay);
+      :timer.sleep(delay * 1000);
       Phoenix.Channel.push(socket, event, data)
     end)
     :ok

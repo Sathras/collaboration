@@ -24,7 +24,7 @@ defmodule CollaborationWeb.Router do
   # protected routes
   scope "/", CollaborationWeb do
     pipe_through [ :browser, :authenticate_user ]
-    get "/", TopicController, :show
+
     delete "/logout", SessionController, :delete
     post "/complete", UserController, :finish
   end
@@ -33,6 +33,7 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through :browser
 
+    get "/", TopicController, :show
 
     get "/aborted", SessionController, :aborted
     get "/complete", SessionController, :complete

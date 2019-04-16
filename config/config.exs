@@ -16,6 +16,16 @@ config :collaboration,
   minTime: 10 * 60,               # minimal experiment time [sec]
   passcode: System.get_env("PASSCODE"),           # passcode for experiment
   password: System.get_env("PASSWORD_DEFAULT"),   # admin user password
+  delayed_likes: %{
+    1 => [],
+    2 => [],
+    3 => [],
+    4 => [],
+    5 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
+    6 => [{  1, 530 }, {  2, 180 }, {  6, 90 }],
+    7 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
+    8 => [{  1, 530 }, {  2, 180 }, {  6, 90 }]
+  },
   survey_codes: %{                # needed for survey upon finishing experiment
     1 => "condition 1 code",
     2 => "condition 2 code",

@@ -84,6 +84,7 @@ defmodule Collaboration.Contributions do
     |> View.render_many(IdeaView, "idea.json", user: user)
     |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
     |> add_past_bot_to_user_comments(user)
+    |> add_past_likes(user)
   end
 
   defp add_past_bot_to_user_comments(ideas, user) do
@@ -151,6 +152,21 @@ defmodule Collaboration.Contributions do
       |> Enum.concat(i.comments)
       |> Enum.sort_by(&(&1.inserted_at))
 
+      Map.put(i, :comments, comments)
+    end
+  end
+
+  defp add_past_likes(ideas, user) do
+    past_liked_comment_ids = get_delayed_likes(user)
+    |> Enum.filter(fn [ _comment_id, delay] -> delay <= 0 end)
+    |> Enum.map(fn [ comment_id, _delay ] -> comment_id end)
+
+    Enum.map ideas, fn i ->
+      comments = Enum.map(i.comments, fn c ->
+        if Enum.member?(past_liked_comment_ids, c.id),
+          do: Map.put(c, :likes, c.likes + 1),
+          else: c
+      end)
       Map.put(i, :comments, comments)
     end
   end
@@ -340,17 +356,17 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  def get_future_likes(user) do
-    case user.condition do
-      6 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
-      8 -> [{ 1, 530 }, { 2, 180 }, { 6, 90 }]
-      5 -> [{ 12, 530 }, { 13, 180 }, { 18, 90 }]
-      7 -> [{ 12, 530 }, { 13, 180 }, { 18, 90 }]
-      _ -> []
-    end
-    |> Enum.map(fn { cid, delay } ->
-      [ cid, max(0, remaining(user.inserted_at) + delay) ]
+  def get_delayed_likes(user) do
+    Application.fetch_env!(:collaboration, :delayed_likes)
+    |> Map.get(user.condition)
+    |> Enum.map(fn { comment_id, delay } ->
+      [ comment_id, remaining(user.inserted_at) + delay ]
     end)
+  end
+
+  def get_future_likes(user) do
+    get_delayed_likes(user)
+    |> Enum.filter(fn [ _comment_id, delay] -> delay > 0 end)
   end
 
   def get_future_ratings(user) do

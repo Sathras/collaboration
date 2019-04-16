@@ -6,16 +6,20 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def show(conn, _) do
-    case get_published_topic() do
-      nil ->
-        conn
-        |> send_resp(404, "No topic is currently published.")
-        |> halt()
+    if current_user(conn) do
+      case get_published_topic() do
+        nil ->
+          conn
+          |> send_resp(404, "No topic is currently published.")
+          |> halt()
 
-      topic ->
-        render conn, "show.html",
-          ideas: load_past_ideas(topic.id, current_user(conn)),
-          topic: topic
+        topic ->
+          render conn, "show.html",
+            ideas: load_past_ideas(topic.id, current_user(conn)),
+            topic: topic
+      end
+    else
+      redirect(conn, to: Routes.user_path(conn, :new))
     end
   end
 

@@ -27,7 +27,6 @@ defmodule CollaborationWeb.TopicChannel do
       condition: u.condition,
       ideas: load_future_ideas(t, u),
       comments: get_comment_schedule(socket),
-      likes: get_future_likes(u),
       ratings: get_future_ratings(u),
       remaining: remaining(u.inserted_at, @experiment_duration),
       started: -remaining(u.inserted_at)

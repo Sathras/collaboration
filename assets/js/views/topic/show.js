@@ -19,7 +19,7 @@ export default class View extends MainView {
       <small>
         <i class="text-primary far fa-thumbs-up"></i>
         <span class="likes badge badge-pill badge-primary mr-1 d-none">0</span>
-        <small class="text-primary" drab-click="like(${cid})" drab="click:like(${cid})">Like</small>
+        <small class="text-primary">Like</small>
         <time class="font-italic float-right" datetime="${date}"></time>
       </small>
     </p>
@@ -41,15 +41,6 @@ export default class View extends MainView {
         });
     }
     // window.user.comments.push(cid);
-  }
-
-  like(comment_id){
-    const comment = $(`#comment${comment_id}`)
-    const likes = comment.data('likes')
-    comment
-      .data('likes', likes + 1)
-      .find('.likes').text(likes + 1).removeClass('d-none')
-    debug(`Comment #${comment_id} has been liked.`)
   }
 
   rate(idea_id, newRating){
@@ -95,14 +86,6 @@ export default class View extends MainView {
     } else {
       debug(`Comment was posted.`)
       $(c[1]).appendTo(`#idea${c[0]} .comments`).find('time').timeago()
-    }
-  }
-
-  schedule_like(like){
-    if(!like[1]) this.like(like[0])
-    else {
-      debug(`Comment #${like[0]} will be liked in ${like[1]} sec.`)
-      setTimeout(() => {this.like(like[0])}, 1000 * like[1])
     }
   }
 
@@ -265,13 +248,18 @@ export default class View extends MainView {
       })
     })
 
-    // test: receive messages and print to console
-    channel.on('test', ({ msg }) => {
-      console.log(msg)
+    // listen for like events
+    channel.on('like', ({ comment_id }) => {
+      console.log("like! ", comment_id)
+      const comment = $(`#comment${comment_id}`)
+      const likes = comment.data('likes')
+      comment
+        .data('likes', likes + 1)
+        .find('.likes').text(likes + 1).removeClass('d-none')
     })
 
     // join and schedule loading of future ideas, comments, likes, and ratings
-    channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, remaining, started }) => {
+    channel.join().receive('ok', ({ ideas, comments, ratings, condition, remaining, started }) => {
 
 
 
@@ -291,7 +279,6 @@ export default class View extends MainView {
 
       for(let i=0; i < ideas.length; i++) this.schedule_idea(ideas[i]);
       for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
-      for(let i=0; i < likes.length; i++) this.schedule_like(likes[i]);
       for(let i=0; i < ratings.length; i++) this.schedule_rating(ratings[i]);
 
       // hide loader when client (re)establishes connection to server

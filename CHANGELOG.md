@@ -164,5 +164,7 @@ Complete Remade of the Application. Working Features:
 * when logged in as admin, user and participants view now shows user ids
 
 ## 2.6
-* started transitioning all loading from channels
 * implemented css loader in topic show view that hides when channel is ready and enables when communication to server is interrupted or not yet loaded.
+* delayed likes are now added via channel event instead of javascript timer
+* delayed likes that should have already been added are added at page load
+
