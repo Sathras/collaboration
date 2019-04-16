@@ -19,7 +19,8 @@ import { configTimeago } from './utils/functions'
 import loadView from './views/loader'
 
 function handleDOMContentLoaded(event) {
-  // Load view class and mount it
+
+  // load view class and mount view
   const ViewClass = loadView($('body').data('js-view-name'))
   const view = new ViewClass()
   view.mount()

@@ -7,10 +7,13 @@ defmodule CollaborationWeb.TopicChannel do
   @experiment_duration Application.fetch_env!(:collaboration, :minTime)
 
   def join("topic", _params, socket) do
-    t = get_featured_topic_id!()
+
+    t = get_published_topic_id!()
     u = user(socket)
 
-    send(self, :after_join)
+    # TODO: load all relevant ideas, comments, ratings, likes
+
+    send(self(), :after_join)
 
     # load bot-to-user comments and user_ideas (id and inserted_at)
     socket = socket

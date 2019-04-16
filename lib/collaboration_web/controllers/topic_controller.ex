@@ -6,7 +6,7 @@ defmodule CollaborationWeb.TopicController do
   end
 
   def show(conn, _) do
-    case get_published_topic!() do
+    case get_published_topic() do
       nil ->
         conn
         |> send_resp(404, "No topic is currently published.")

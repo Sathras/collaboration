@@ -162,3 +162,7 @@ Complete Remade of the Application. Working Features:
 * redesigned navbar to better fit USF colors, also added usf logo
 * when logged in as admin participants few now shows how long users participated
 * when logged in as admin, user and participants view now shows user ids
+
+## 2.6
+* started transitioning all loading from channels
+* implemented css loader in topic show view that hides when channel is ready and enables when communication to server is interrupted or not yet loaded.

@@ -28,11 +28,16 @@ defmodule Collaboration.Contributions do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
-  def get_featured_topic_id!() do
+  def get_published_topic_id!() do
     Repo.one from(t in Topic, select: t.id, where: t.featured)
   end
 
-  def get_published_topic!, do: Repo.one from(t in Topic, where: t.featured)
+  def get_published_topic() do
+    Repo.one from(t in Topic,
+      select: %{ id: t.id, title: t.title, desc: t.desc },
+      where: t.featured
+    )
+  end
 
   def create_topic(attrs \\ %{}) do
     %Topic{}

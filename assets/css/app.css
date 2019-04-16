@@ -1,5 +1,6 @@
 /* This file is for your main application css. */
 
 @import "./layout.css";
+@import "./spinner.css";
 @import "./overwrites.css";
 @import "./rating.css";

@@ -116,7 +116,13 @@ export default class View extends MainView {
   }
 
   joinChannel(){
+
+    // since we only use socket in this view no need to connect socket before
     socket.connect()
+
+    // show loader when client looses connection to server
+    socket.onError(() => { $('#spinner-wrapper').show() })
+
     const channel = socket.channel("topic")
 
     // enable posting of ideas
@@ -267,6 +273,8 @@ export default class View extends MainView {
     // join and schedule loading of future ideas, comments, likes, and ratings
     channel.join().receive('ok', ({ ideas, comments, likes, ratings, condition, remaining, started }) => {
 
+
+
       // Debug some information if experiment user and env=dev
       if(condition > 0){
 
@@ -285,10 +293,14 @@ export default class View extends MainView {
       for(let i=0; i < comments.length; i++) this.schedule_comment(comments[i]);
       for(let i=0; i < likes.length; i++) this.schedule_like(likes[i]);
       for(let i=0; i < ratings.length; i++) this.schedule_rating(ratings[i]);
+
+      // hide loader when client (re)establishes connection to server
+      $('#spinner-wrapper').hide()
     })
   }
 
   mount() {
+
     super.mount();
 
     // connect socket and join topic_channel

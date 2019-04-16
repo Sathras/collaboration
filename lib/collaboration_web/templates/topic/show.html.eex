@@ -1,3 +1,5 @@
+<div id="spinner-wrapper"><div id="spinner"></div></div>
+
 <h2 class="text-center"><%= @topic.title %></h2>
 <div class="row card-group">
   <div class="col-lg-7"><%= raw @topic.desc %></div>
