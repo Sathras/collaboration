@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.TopicChannel do
   use CollaborationWeb, :channel
 
+  require Logger
+
   alias Phoenix.View
   alias CollaborationWeb.{ IdeaView, CommentView }
 
@@ -11,16 +13,15 @@ defmodule CollaborationWeb.TopicChannel do
     t = get_published_topic_id!()
     u = user(socket)
 
-    # TODO: load all relevant ideas, comments, ratings, likes
-
-    send(self(), :after_join)
-
     # load bot-to-user comments and user_ideas (id and inserted_at)
     socket = socket
     |> assign(:topic_id, t)
     |> assign(:bot_to_user_comments, get_bot_to_user_comments(u))
     |> assign(:user_idea_ids, get_user_idea_ids(t, u))
     |> assign(:user_comment_ids, get_user_comment_ids(u))
+
+    # schedule delayed events
+    send(self(), :after_join)
 
     {:ok, %{
       condition: u.condition,
@@ -33,10 +34,23 @@ defmodule CollaborationWeb.TopicChannel do
     }, socket}
   end
 
+  @doc """
+  Schedule delayed events after socket has connected.
+  """
   def handle_info(:after_join, socket) do
 
+    # TODO: Schedule delayed events
+    u = user(socket)
+
+    # schedule future likes.
+    # TODO: do not schedule passed likes, instead put them on topic load
+    Enum.each(get_future_likes(u), fn([comment_id, delay]) ->
+      Logger.debug "Like for comment ##{comment_id} scheduled in #{delay} sec."
+      schedule(socket, "like", delay, %{ comment_id:  comment_id })
+    end)
+
     # test: send delayed message after 3 sec
-    schedule(socket, "test", 3000, %{ msg: "Test: This message should appear after 3 sec."})
+
 
     {:noreply, socket}
   end

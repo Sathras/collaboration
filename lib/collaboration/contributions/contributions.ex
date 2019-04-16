@@ -172,21 +172,21 @@ defmodule Collaboration.Contributions do
     |> View.render_many(IdeaView, "idea.json", user: user)
   end
 
+  def get_inserted_at(idea_id) do
+    from(i in Idea, select: i.inserted_at)
+    |> Repo.get(idea_id)
+  end
+
   # select only ideas/comments that have already been published
   defp get_past(changeset, user) do
     if user.condition > 0 do
       # normal users: show ideas for condition that should be posted by now
       where changeset, [i],
-        (field(i, ^condition(user)) < ^time_passed(user) and field(i, ^condition(user)) != 0) or i.user_id == ^user.id
+        field(i, ^condition(user)) <= ^time_passed(user) or i.user_id == ^user.id
     else
-      # admins: show all peer ideas
+      # admins: show all peer and own ideas
       where changeset, [i], i.user_id <= 11
     end
-  end
-
-  def get_inserted_at(idea_id) do
-    from(i in Idea, select: i.inserted_at)
-    |> Repo.get(idea_id)
   end
 
   # select only ideas that have not been posted yet
