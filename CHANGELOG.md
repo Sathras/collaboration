@@ -168,4 +168,5 @@ Complete Remade of the Application. Working Features:
 * delayed likes are now added via channel event instead of javascript timer
 * delayed likes that should have already been added are added at page load
 * delayed likes are now configured in config file, instead of being hardcoded
+* client javascript for like handling optimized
 

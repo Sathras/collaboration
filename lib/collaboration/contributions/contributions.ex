@@ -34,7 +34,7 @@ defmodule Collaboration.Contributions do
 
   def get_published_topic() do
     Repo.one from(t in Topic,
-      select: %{ id: t.id, title: t.title, desc: t.desc },
+      select: map(t, [:id, :title, :desc]),
       where: t.featured
     )
   end

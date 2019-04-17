@@ -43,6 +43,20 @@ export default class View extends MainView {
     // window.user.comments.push(cid);
   }
 
+  like(comment_id, likeBtn=false){
+    const elm = $(`#comment${comment_id} .likes`)
+    elm.text(parseInt(elm.text()) + 1).removeClass('d-none')
+    if(likeBtn) likeBtn.text("Unlike")
+  }
+
+  unlike(comment_id, likeBtn=false){
+    const elm = $(`#comment${comment_id} .likes`)
+    const val = parseInt(elm.text()) - 1
+    elm.text(val)
+    if(!val) elm.addClass('d-none')
+    if(likeBtn) likeBtn.text("Like")
+  }
+
   rate(idea_id, newRating){
     const ratingElm = $(`#idea${idea_id} .rating strong`)
     const ratersElm = $(`#idea${idea_id} .raters strong`)
@@ -223,40 +237,19 @@ export default class View extends MainView {
     // enable like and unlike
     $('#ideas').on('click', 'a.like', (e) => {
       e.preventDefault()
+
       const elm = $(e.target)
-      channel.push('like', {
-        comment_id: elm.data('comment-id'),
-        like: elm.text() != "Unlike"
-      }).receive("ok", () => {
+      const comment_id = elm.data('comment-id')
+      const like = elm.text() != "Unlike"
 
-        const elmLikes = elm.siblings('span')
-        let likes = parseInt(elmLikes.text())
-
-        // was unliked
-        if(elm.text() == "Unlike"){
-          likes--;
-          elmLikes.text(likes)
-          elm.text("Like")
-          if(likes == 0) elmLikes.addClass('d-none')
-        }
-        // was liked
-        else {
-          likes++;
-          elmLikes.text(likes).removeClass('d-none')
-          elm.text("Unlike")
-        }
+      channel.push('like', { comment_id, like })
+      .receive("ok", () => {
+        like ? this.like(comment_id, elm) : this.unlike(comment_id, elm)
       })
     })
 
     // listen for like events
-    channel.on('like', ({ comment_id }) => {
-      console.log("like! ", comment_id)
-      const comment = $(`#comment${comment_id}`)
-      const likes = comment.data('likes')
-      comment
-        .data('likes', likes + 1)
-        .find('.likes').text(likes + 1).removeClass('d-none')
-    })
+    channel.on('like', ({ comment_id }) => like(comment_id))
 
     // join and schedule loading of future ideas, comments, likes, and ratings
     channel.join().receive('ok', ({ ideas, comments, ratings, condition, remaining, started }) => {
