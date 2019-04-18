@@ -5,14 +5,6 @@ defmodule CollaborationWeb.CommentView do
     if future(comment.inserted_at), do: "comment d-none", else: "comment"
   end
 
-  def like_button(comment) do
-    text = if comment.liked, do: "Unlike", else: "Like"
-    content_tag :a, text,
-      class: "like",
-      href: "#",
-      data_comment_id: comment.id
-  end
-
   def render("comment.json", %{comment: c, user: u}) do
 
     inserted_at = if u.condition == 0 || c.user_id == u.id, do: c.inserted_at,

@@ -317,20 +317,19 @@ defmodule Collaboration.Contributions do
     |> Repo.insert()
   end
 
-  def like_comment(user, id, like?) do
-    comment = Repo.get(Comment, id)
-    |> Repo.preload(:likes)
+  def toggle_like(comment_id, user, like) do
+    comment = Repo.get(Comment, comment_id)
+    |> Repo.preload([:likes, :user])
     |> change()
 
-    case like? do
-      true ->
-        comment
-        |> put_assoc(:likes, comment.data.likes ++ [user])
-        |> Repo.update()
-      false ->
-        comment
-        |> put_assoc(:likes, List.delete(comment.data.likes, user))
-        |> Repo.update()
+    if like do
+      comment
+      |> put_assoc(:likes, comment.data.likes ++ [user])
+      |> Repo.update()
+    else
+      comment
+      |> put_assoc(:likes, List.delete(comment.data.likes, user))
+      |> Repo.update()
     end
   end
 

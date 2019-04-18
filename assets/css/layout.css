@@ -88,6 +88,13 @@ textarea.card-text {
   line-height: 120%;
 }
 
-.comments .mb-0{
-  line-height: 88%;
+/* COMMENTS */
+
+.comment p{
+  line-height: 120%;
 }
+
+.comment a:after { content: "Like" }
+.comment[data-liked="true"] a:after { content: "Unlike" }
+
+.comment[data-likes="0"] .likes { display: none!important; }
