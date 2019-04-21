@@ -45,8 +45,8 @@
             <%= if admin?(@conn) do %>
               <%= button_logout(@conn) %>
             <% else %>
-              <%= button_complete(@conn) %>
               <%= button_timer(@conn) %>
+              <%= button_complete(@conn) %>
               <%= button_abort(@conn) %>
             <% end %>
           </form>

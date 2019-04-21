@@ -8,9 +8,17 @@ defmodule Collaboration.Accounts do
   # returns the condition of a user as an atom
   def condition(user), do: String.to_atom("c#{user.condition}")
 
-  def get_user(id) do
-    Repo.get(User, id)
+  def create_user(params) do
+    User.register_changeset(%User{}, params)
+    |> Repo.insert()
   end
+
+  def create_user(params, :admin) do
+    User.admin_changeset(%User{}, params)
+    |> Repo.insert!()
+  end
+
+  def get_user(id), do: Repo.get(User, id)
 
   def get_user_by_username(username) do
     from(u in User, join: c in assoc(u, :credential),
@@ -25,24 +33,12 @@ defmodule Collaboration.Accounts do
     cond do
       user && Pbkdf2.verify_pass(given_pass, user.credential.password_hash) ->
         {:ok, user}
-
       user ->
         {:error, :unauthorized}
-
       true ->
         Pbkdf2.no_user_verify()
         {:error, :not_found}
     end
-  end
-
-  def change_user(user \\ %User{}, params \\ %{}) do
-    User.changeset user, params
-  end
-
-  def create_participant(params) do
-    %User{}
-    |> User.experiment_changeset(params)
-    |> Repo.insert()
   end
 
   def list_participants() do
@@ -62,33 +58,8 @@ defmodule Collaboration.Accounts do
     ) |> Repo.all()
   end
 
-  def update_user!(user, params) do
-    Repo.update! change_user(user, params)
-  end
-
-  def register_user!(attrs \\ %{}) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert!()
-  end
-
-  # TODO: delete or verify all these below:
-
-  def select_random_user(user_id) do
-    from( u in User,
-      order_by: fragment("RANDOM()"),
-      where: u.id != ^user_id and u.condition == 0,
-      limit: 1)
-    |> Repo.all()
-    |> List.first()
-  end
-
-  def get_user!(id) do
-    Repo.get!(User, id)
-  end
-
-  def update_user(user, params) do
-    Repo.update(change_user(user, params))
+  def complete_user(user, completed) do
+    Repo.update! User.complete_changeset(user, %{ completed: completed })
   end
 
   def time_passed(u) do

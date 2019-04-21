@@ -1,8 +1,6 @@
 defmodule CollaborationWeb.SessionController do
   use CollaborationWeb, :controller
 
-  @survey_codes Application.fetch_env!(:collaboration, :survey_codes)
-
   def aborted(conn, _), do: render conn, "aborted.html"
   def complete(conn, _), do: render conn, "complete.html"
 
@@ -18,17 +16,23 @@ defmodule CollaborationWeb.SessionController do
     end
   end
 
-  def delete(conn, %{ "completed" => _ }) do
-    user = current_user(conn)
-    update_user! user, %{ completed_at: NaiveDateTime.utc_now() }
-    code = @survey_codes[user.condition]
+  def delete(conn, %{ "completed" => test }) do
+    IO.inspect test
+
+    current_user(conn)
+    |> complete_user(true)
 
     conn
     |> CollaborationWeb.Auth.logout()
-    |> redirect(to: Routes.session_path(conn, :complete, surveycode: code))
+    |> redirect(to: Routes.session_path(conn, :complete))
   end
 
-  def delete(conn, %{ "aborted" => _ }) do
+  def delete(conn, %{ "aborted" => test }) do
+    IO.inspect test
+
+    current_user(conn)
+    |> complete_user(false)
+
     conn
     |> CollaborationWeb.Auth.logout()
     |> redirect(to: Routes.session_path(conn, :aborted))

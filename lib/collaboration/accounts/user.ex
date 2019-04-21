@@ -7,16 +7,17 @@ defmodule Collaboration.Accounts.User do
   alias Collaboration.Contributions.{ Idea, Comment, Rating }
 
   # verify new experiment users via passcode
-  @passcode_hash Application.fetch_env!(:collaboration, :passcode)
-    |> Pbkdf2.hash_pwd_salt()
+  # @passcode_hash Application.fetch_env!(:collaboration, :passcode)
+  #   |> Pbkdf2.hash_pwd_salt()
 
   schema "users" do
 
     field :name, :string
+    field :completed, :boolean
     field :condition, :integer, default: 0
+    # field :passcode, :string, virtual: true
+    field :uid, :integer
     timestamps()
-    field :completed_at, :naive_datetime
-    field :passcode, :string, virtual: true
 
     has_one :credential, Credential
 
@@ -27,38 +28,44 @@ defmodule Collaboration.Accounts.User do
     many_to_many :likes, Comment, join_through: "likes", on_delete: :delete_all
   end
 
-  def changeset(user, attrs) do
-    user
-    |> cast(attrs, [:name, :completed_at, :passcode])
-    |> validate_length(:name, min: 3, max: 20)
-  end
+  def changeset(user), do: cast(user, %{}, [:name, :uid])
 
-  def experiment_changeset(user, params) do
+  def admin_changeset(user, params) do
     user
-    |> changeset(params)
-    |> validate_required([:name, :passcode])
-    |> check_passcode(params)
-    |> put_condition(params)
-  end
-
-  def registration_changeset(user, params) do
-    user
-    |> changeset(params)
+    |> cast(params, [:name])
     |> validate_required([:name])
     |> put_change(:condition, 0)
     |> put_credential(params)
   end
 
-  defp check_passcode(user, params) do
-    cond do
-      Pbkdf2.verify_pass(params["passcode"], @passcode_hash) ->
-        user
-
-      true ->
-        Pbkdf2.no_user_verify()
-        add_error(user, :passcode, "Passcode is invalid")
-    end
+  def complete_changeset(user, params) do
+    user
+    |> cast(params, [:completed])
+    |> validate_required([:completed])
+    |> validate_inclusion(:completed, [true, false])
   end
+
+  def register_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:name, :uid])
+    |> validate_required([:name, :uid])
+    |> validate_length(:name, min: 3, max: 20)
+    |> validate_number(:uid, greater_than: 9999999, less_than: 100000000, message: "must consist of exactly 8 numeric digits, without the leading 'U'")
+    # |> check_passcode(params)
+    |> put_condition(params)
+    |> unique_constraint(:uid, message: "This UID was already used for this experiment")
+  end
+
+  # defp check_passcode(user, params) do
+  #   cond do
+  #     Pbkdf2.verify_pass(params["passcode"], @passcode_hash) ->
+  #       user
+
+  #     true ->
+  #       Pbkdf2.no_user_verify()
+  #       add_error(user, :passcode, "Passcode is invalid")
+  #   end
+  # end
 
   defp put_condition(user, params) do
     case Map.get(params, "name") do

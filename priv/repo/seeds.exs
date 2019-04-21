@@ -269,14 +269,14 @@ defmodule Collaboration.Seeder do
 
   # all users created here will be peer users / admins
   defp user(name) do
-    register_user! %{ name: name }
+    create_user %{ name: name }, :admin
   end
 
   defp user(name, username) do
-    register_user! %{
+    create_user %{
       name: name,
       credential: %{ username: username, password: @password }
-    }
+    }, :admin
   end
 
   defp topic(params) do

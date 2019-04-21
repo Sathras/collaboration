@@ -170,4 +170,8 @@ Complete Remade of the Application. Working Features:
 * delayed likes are now configured in config file, instead of being hardcoded
 * split up like and unlike into separate functions
 * client javascript for like handling optimized
+* depreciated passcode and survey code and replaced it with UID (USF ID). A uid can only once be used for the experiment
+* removed completed_at field in user table as updated_at can be used for same purpose
+* added completed (boolean) field that indicates graceful completion
+* survey link now configurable in config and set to qualtrics
 

@@ -11,7 +11,7 @@ defmodule CollaborationWeb.LayoutView do
   def button_abort(conn) do
     link raw("<i class=\"fas fa-power-off\"></i> Abort"),
       class: "btn btn-danger ml-2",
-      to: Routes.session_path(conn, :delete, aborted: "✓"),
+      to: Routes.session_path(conn, :delete, completed: false),
       data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
       method: "delete"
   end
@@ -19,9 +19,9 @@ defmodule CollaborationWeb.LayoutView do
   def button_complete(conn) do
     button "Complete Experiment",
       id: "btn-complete",
-      class: "btn btn-success d-none",
+      class: "btn btn-success ml-2",
       data_confirm: "Are you sure? This will move you to the survey!",
-      to: Routes.session_path(conn, :delete, completed: "✓"),
+      to: Routes.session_path(conn, :delete, completed: true),
       method: "delete"
   end
 

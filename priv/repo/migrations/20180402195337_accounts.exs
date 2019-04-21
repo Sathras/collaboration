@@ -18,9 +18,12 @@ defmodule Collaboration.Repo.Migrations.Accounts do
     create table(:users) do
       add :name, :string, null: false
       add :condition, :integer, null: false
-      timestamps()
-      add :completed_at, :naive_datetime
+      add :uid, :integer        # USF U ID
+      add :completed, :boolean  # true if finished, false if aborted
+      timestamps()              # updated_at used for experiment duration
     end
+
+    create unique_index(:users, [:uid])
 
     create table(:credentials) do
       add :username, :string, null: false
