@@ -30,4 +30,4 @@ config :phoenix, :json_library, Jason
 import_config "#{Mix.env()}.exs"
 
 # Import Application Settings
-import_config "app.exs"
+import_config "settings.exs"
