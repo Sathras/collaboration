@@ -174,4 +174,5 @@ Complete Remade of the Application. Working Features:
 * removed completed_at field in user table as updated_at can be used for same purpose
 * added completed (boolean) field that indicates graceful completion
 * survey link now configurable in config and set to qualtrics
+* improved configuration and put experiment settings in its own file
 

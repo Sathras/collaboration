@@ -46,3 +46,6 @@ config :collaboration, Collaboration.Repo,
   database: "collaboration_dev",
   hostname: "localhost",
   pool_size: 1
+
+config :collaboration,
+  ga_code: "UA-119119225-1" # Google Analytics Code

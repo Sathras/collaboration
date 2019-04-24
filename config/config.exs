@@ -8,25 +8,7 @@ use Mix.Config
 # General application configuration
 config :collaboration,
   ecto_repos: [Collaboration.Repo],
-  env: Mix.env,
-
-  # own configuration
-  ga_dev_code: "UA-119119225-1",  # Google Analytics Dev Code
-  ga_prod_code: "UA-119138942-1", # Google Analytics Production Code
-  minTime: 10 * 60,               # minimal experiment time [sec]
-  # passcode: System.get_env("PASSCODE"),           # passcode for experiment
-  password: System.get_env("PASSWORD_DEFAULT"),   # admin user password,
-  survey_link: "https://usf.az1.qualtrics.com/jfe/form/SV_cUdM8cbGDj6tnvf",
-  delayed_likes: %{
-    1 => [],
-    2 => [],
-    3 => [],
-    4 => [],
-    5 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
-    6 => [{  1, 530 }, {  2, 180 }, {  6, 90 }],
-    7 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
-    8 => [{  1, 530 }, {  2, 180 }, {  6, 90 }]
-  }
+  env: Mix.env
 
 # Configures the endpoint
 config :collaboration, CollaborationWeb.Endpoint,
@@ -46,3 +28,6 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
+# Import Application Settings
+import_config "app.exs"

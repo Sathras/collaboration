@@ -30,5 +30,8 @@ config :collaboration, Collaboration.Repo,
   database: "collaboration_prod",
   pool_size: 5
 
+config :collaboration,
+  ga_code: "UA-119138942-1" # Google Analytics Code
+
 # This line appears further down. Do not forget to uncomment it!
 config :phoenix, :serve_endpoints, true

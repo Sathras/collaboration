@@ -47,11 +47,12 @@ defmodule CollaborationWeb.LayoutView do
     if Mix.env == :dev, do: "window.debug = true;\n"
   end
 
-  def ga_code() do
-    if Application.get_env(:collaboration, :env) == :dev,
-      do: Application.fetch_env!(:collaboration, :ga_dev_code),
-      else: Application.fetch_env!(:collaboration, :ga_prod_code)
-  end
+
+  @doc """
+  Returns the Google Analytics code for the current env defined in the config.
+  """
+  @spec ga_code() :: String.t()
+  def ga_code(), do: Application.fetch_env!(:collaboration, :ga_code)
 
   @doc """
   Generates name for the JavaScript view we want to use
