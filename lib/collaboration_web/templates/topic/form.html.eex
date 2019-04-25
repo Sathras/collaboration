@@ -1,17 +1,16 @@
-<%= form_for @changeset, @action, fn f -> %>
-<%= if @changeset.action do %>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <strong>Error</strong>
-    Invalid Form Data. Please check the errors below:
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-<% end %>
+<%= form_for @changeset, @action, [], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>Error</strong>
+      Invalid Form Data. Please check the errors below:
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
 
   <div class="form-group">
     <%= label f, :title, class: "font-weight-bold control-label" %>
-
     <%= text_input f, :title, class: "form-control #{error_class f, :title}" %>
     <%= error_tag f, :title %>
   </div>
