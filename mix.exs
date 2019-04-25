@@ -34,7 +34,7 @@ defmodule Collaboration.Mixfile do
   defp deps do
     [
       # phoenix
-      {:phoenix, "~> 1.4"},
+      {:phoenix, "~> 1.4.3"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.1"},
