@@ -18,7 +18,10 @@ defmodule Collaboration.Accounts do
     |> Repo.insert!()
   end
 
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id) do
+    from(u in User, preload: [ :credential ])
+    |> Repo.get(id)
+  end
 
   def get_user_by_username(username) do
     from(u in User, join: c in assoc(u, :credential),
@@ -43,7 +46,7 @@ defmodule Collaboration.Accounts do
 
   def list_participants() do
     from( u in User,
-      select: map(u, ~w(id condition name inserted_at completed_at)a),
+      select: map(u, ~w(id condition name inserted_at updated_at)a),
       order_by: u.inserted_at,
       where: u.condition > 0,
       limit: 2000

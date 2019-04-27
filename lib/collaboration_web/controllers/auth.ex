@@ -2,6 +2,8 @@ defmodule CollaborationWeb.Auth do
 
   use CollaborationWeb, :controller
 
+  import Collaboration.Accounts
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
@@ -35,6 +37,11 @@ defmodule CollaborationWeb.Auth do
   end
 
   def logout(conn) do
+    configure_session(conn, drop: true)
+  end
+
+  def logout(conn, completed) do
+    complete_user(current_user(conn), completed)
     configure_session(conn, drop: true)
   end
 

@@ -51,21 +51,18 @@ defmodule Collaboration.Accounts.User do
     |> validate_required([:name, :uid])
     |> validate_length(:name, min: 3, max: 20)
     |> validate_number(:uid, greater_than: 9999999, less_than: 100000000, message: "must consist of exactly 8 numeric digits, without the leading 'U'")
-    # |> check_passcode(params)
     |> put_condition(params)
-    |> unique_constraint(:uid, message: "This UID was already used for this experiment")
+    |> unique_uid()
   end
 
-  # defp check_passcode(user, params) do
-  #   cond do
-  #     Pbkdf2.verify_pass(params["passcode"], @passcode_hash) ->
-  #       user
-
-  #     true ->
-  #       Pbkdf2.no_user_verify()
-  #       add_error(user, :passcode, "Passcode is invalid")
-  #   end
-  # end
+  defp unique_uid(user) do
+    if Application.fetch_env!(:collaboration, :allow_multiple_submissions?) do
+      user
+    else
+      unique_constraint user, :uid,
+        message: "This UID was already used for this experiment"
+    end
+  end
 
   defp put_condition(user, params) do
     case Map.get(params, "name") do

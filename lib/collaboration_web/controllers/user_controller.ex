@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.UserController do
   use CollaborationWeb, :controller
 
+  import Collaboration.Accounts
+
   alias Collaboration.Accounts.User
 
   # start page to create experiment users

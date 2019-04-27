@@ -1,11 +1,13 @@
 defmodule CollaborationWeb.SessionController do
   use CollaborationWeb, :controller
 
-  def aborted(conn, _), do: render conn, "aborted.html"
+  alias CollaborationWeb.Auth
+
+  def abort(conn, _), do: render conn, "abort.html"
   def complete(conn, _), do: render conn, "complete.html"
 
-  def create(conn, %{"session" => %{"username" => username, "password" => pass}}) do
-    case CollaborationWeb.Auth.login_by_username_and_pass(conn, username, pass) do
+  def create(conn, %{"session" => %{"username" => u, "password" => p}}) do
+    case Auth.login_by_username_and_pass(conn, u, p) do
       {:ok, conn} ->
         redirect conn, to: Routes.topic_path(conn, :show)
 
@@ -16,35 +18,32 @@ defmodule CollaborationWeb.SessionController do
     end
   end
 
-  def delete(conn, %{ "completed" => test }) do
-    IO.inspect test
-
-    current_user(conn)
-    |> complete_user(true)
-
+  @doc """
+  Logout user that completed the experiment and update their completion status.
+  """
+  def delete(conn, %{ "completed" => "true"}) do
     conn
-    |> CollaborationWeb.Auth.logout()
+    |> Auth.logout(true)
     |> redirect(to: Routes.session_path(conn, :complete))
   end
 
-  def delete(conn, %{ "aborted" => test }) do
-    IO.inspect test
-
-    current_user(conn)
-    |> complete_user(false)
-
+  @doc """
+  Logout users that aborted the experiment and update their completion status.
+  """
+  def delete(conn, %{ "completed" => "false"}) do
     conn
-    |> CollaborationWeb.Auth.logout()
-    |> redirect(to: Routes.session_path(conn, :aborted))
+    |> Auth.logout(false)
+    |> redirect(to: Routes.session_path(conn, :abort))
   end
 
+  @doc """
+  Logout admin and redirect to (admin) login page.
+  """
   def delete(conn, _) do
     conn
-    |> CollaborationWeb.Auth.logout()
+    |> Auth.logout()
     |> redirect(to: Routes.session_path(conn, :new))
   end
 
-  def new(conn, _) do
-    render conn, "new.html"
-  end
+  def new(conn, _), do: render conn, "new.html"
 end

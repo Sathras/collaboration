@@ -34,6 +34,7 @@
       <div class="container">
         <ul class="navbar-nav mr-auto">
           <%= if admin?(@conn) do %>
+            <%= nav_item(@conn, "Admin", Routes.download_path(@conn, :index)) %>
             <%= nav_item(@conn, "Topics", Routes.topic_path(@conn, :index)) %>
             <%= nav_item(@conn, "New Topic", Routes.topic_path(@conn, :new)) %>
             <%= nav_item(@conn, "Users", Routes.user_path(@conn, :index)) %>

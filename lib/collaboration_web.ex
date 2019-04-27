@@ -20,16 +20,14 @@ defmodule CollaborationWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import Collaboration.Contributions
-      import CollaborationWeb.UserSocket, only: [schedule: 4]
     end
   end
 
   def controller do
     quote do
       use Phoenix.Controller, namespace: CollaborationWeb
+
       import Plug.Conn
-      import Collaboration.{ Accounts, Contributions }
       import CollaborationWeb.ViewHelpers
 
       alias CollaborationWeb.Router.Helpers, as: Routes

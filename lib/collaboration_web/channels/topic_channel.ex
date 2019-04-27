@@ -3,6 +3,9 @@ defmodule CollaborationWeb.TopicChannel do
 
   require Logger
 
+  import Collaboration.Contributions
+  import CollaborationWeb.UserSocket, only: [schedule: 4]
+
   alias Phoenix.View
   alias CollaborationWeb.{ IdeaView, CommentView }
 
