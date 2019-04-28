@@ -9,7 +9,7 @@ defmodule CollaborationWeb.TopicController do
 
   def show(conn, _) do
     user = current_user(conn)
-    IO.inspect user
+
     cond do
       # admin users should be redirected to admin page.
       user && not is_nil(user.credential) ->

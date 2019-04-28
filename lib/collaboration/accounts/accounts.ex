@@ -8,6 +8,10 @@ defmodule Collaboration.Accounts do
   # returns the condition of a user as an atom
   def condition(user), do: String.to_atom("c#{user.condition}")
 
+  def change_user(%User{} = user) do
+    User.changeset(user, %{})
+  end
+
   def create_user(params) do
     User.register_changeset(%User{}, params)
     |> Repo.insert()
@@ -46,7 +50,7 @@ defmodule Collaboration.Accounts do
 
   def list_participants() do
     from( u in User,
-      select: map(u, ~w(id condition name inserted_at updated_at)a),
+      select: map(u, ~w(uid condition name inserted_at updated_at)a),
       order_by: u.inserted_at,
       where: u.condition > 0,
       limit: 2000
@@ -62,7 +66,7 @@ defmodule Collaboration.Accounts do
   end
 
   def complete_user(user, completed) do
-    Repo.update! User.complete_changeset(user, %{ completed: completed })
+    Repo.update! User.changeset(user, %{ completed: completed })
   end
 
   def time_passed(u) do

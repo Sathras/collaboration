@@ -16,7 +16,7 @@
       <div class="card-body text-center">
         <h5 class="card-title">Start Experiment</h5>
         <%= form_for @changeset, Routes.user_path(@conn, :create), [], fn f -> %>
-          <div class="form-group">
+          <%= label f, :uid, [class: "form-group w-100"] do %>
             <small id="uid-help" class="form-text text-muted">
               Your USF ID
             </small>
@@ -35,11 +35,9 @@
               %>
               <%= error_tag f.source, :uid %>
             </div>
-          </div>
-          <div class="form-group">
-            <small id="name-help" class="form-text text-muted">
-              How would you like to be called?
-            </small>
+          <% end %>
+          <%= label f, :name, [class: "form-group w-100"] do %>
+            <small id="name-help" class="form-text text-muted">How would you like to be called?</small>
             <div class="input-group">
               <div class="input-group-prepend" style="width: 40px;">
                 <div class="input-group-text">
@@ -54,8 +52,17 @@
               %>
               <%= error_tag f.source, :name %>
             </div>
+          <% end %>
+          <div class="form-group">
+            <div class="form-check pl-0">
+              <%= label f, :terms_of_use, [class: "form-check-label w-100"] do %>
+                <%= checkbox f, :terms_of_use, class: "form-check-input" %>
+                I agree to the following terms:<br>
+              <% end %>
+              <%= error_tag f, :terms_of_use %>
+              <small>All information is given voluntarily and may be used for scientific research. A session cookie is temporarily stored on this computer.</small>
+            </div>
           </div>
-          <p><small>By submitting this form you accept that all information given is voluntarily and may be used for scientific research. You further agree that a session cookie is temporarily stored on this computer.</small></p>
           <%= submit "Start", class: "btn btn-primary" %>
         <% end %>
       </div>

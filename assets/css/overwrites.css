@@ -2,6 +2,8 @@ body {
   padding-top: 70px;
 }
 
+.form-check .invalid-feedback { display: block; }
+
 /* Disables steppers in number input fields */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

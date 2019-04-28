@@ -177,4 +177,6 @@ Complete Remade of the Application. Working Features:
 * improved configuration and put experiment settings in its own file
 * added config setting: "allow_multiple_submissions?"
 * users that abort the experiment can now still complete the survey
+* before starting experiment users now have to agree to the terms
+* improved the user changesets and added documentation
 
