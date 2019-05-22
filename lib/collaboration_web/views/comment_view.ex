@@ -5,6 +5,15 @@ defmodule CollaborationWeb.CommentView do
     if future(comment.inserted_at), do: "comment d-none", else: "comment"
   end
 
+  def like_link(conn, comment) do
+    cond do
+      current_user(conn).id == comment.user_id -> ""
+      true ->
+        text = if comment.liked, do: "Unlike", else: "Like"
+        link text, to: Routes.comment_path(conn, :toggle_like, comment.id), method: :put
+    end
+  end
+
   def render("comment.json", %{comment: c, user: u}) do
 
     inserted_at = if u.condition == 0 || c.user_id == u.id, do: c.inserted_at,
