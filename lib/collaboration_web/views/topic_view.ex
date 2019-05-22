@@ -24,4 +24,11 @@ defmodule CollaborationWeb.TopicView do
         method: "post"
     end
   end
+
+  @doc """
+  Determines after how many milliseconds the page should be autorefreshed.
+  This can happen when bots create new comment / like / rating / ideas.
+  """
+  def reload_in(conn) do
+  end
 end

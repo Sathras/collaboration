@@ -26,7 +26,7 @@ defmodule Collaboration.Contributions.Comment do
   end
 
   @doc false
-  def changeset(comment, attrs) do
+  def changeset(comment, attrs \\ %{}) do
     comment
     |> cast(attrs, ~w(text fake_likes c1 c2 c3 c4 c5 c6 c7 c8 idea_id)a)
     |> validate_required([:text])

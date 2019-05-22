@@ -1,6 +1,8 @@
 defmodule CollaborationWeb.CommentView do
   use CollaborationWeb, :view
 
+  alias Collaboration.Contributions.Comment
+
   def comment_class(comment) do
     if future(comment.inserted_at), do: "comment d-none", else: "comment"
   end

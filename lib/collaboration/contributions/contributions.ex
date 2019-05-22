@@ -269,6 +269,10 @@ defmodule Collaboration.Contributions do
     }
   end
 
+  def comment_changeset() do
+    Comment.changeset(%Comment{})
+  end
+
   # gets the two oldest user_ids
   def get_user_comment_ids(user) do
     from(c in Comment,

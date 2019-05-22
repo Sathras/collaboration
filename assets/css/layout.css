@@ -67,7 +67,7 @@ h5.card-title,
 }
 
 .auto-size,
-text-area.form-control,
+textarea.form-control,
 textarea.card-text {
   resize: none;
   overflow: hidden;

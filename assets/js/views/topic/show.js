@@ -111,56 +111,56 @@ export default class View extends MainView {
     this.channel = channel
 
     // enable posting of ideas
-    $('#idea-form').on('submit', (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if ($('#idea-form')[0].checkValidity() === false)
-        $('#idea-form').addClass('was-validated')
-      else {
-        channel.push('create_idea', { text: $(e.target).find('textarea').val()})
-        .receive("ok", ({ idea, feedback }) => {
+    // $('#idea-form').on('submit', (e) => {
+    //   e.preventDefault()
+    //   e.stopPropagation()
+    //   if ($('#idea-form')[0].checkValidity() === false)
+    //     $('#idea-form').addClass('was-validated')
+    //   else {
+    //     channel.push('create_idea', { text: $(e.target).find('textarea').val()})
+    //     .receive("ok", ({ idea, feedback }) => {
 
-          // schedule idea and feedback if required
-          this.schedule_idea([idea])
-          if(feedback) this.schedule_comment(feedback)
+    //       // schedule idea and feedback if required
+    //       this.schedule_idea([idea])
+    //       if(feedback) this.schedule_comment(feedback)
 
-          // append idea
-          $('#ideas').prepend(idea).find('time').first().timeago()
+    //       // append idea
+    //       $('#ideas').prepend(idea).find('time').first().timeago()
 
-          // reset submit idea form
-          $(e.target).find('textarea').val('')
-          $(e.target).removeClass('was-validated')
-        })
-      }
-    });
+    //       // reset submit idea form
+    //       $(e.target).find('textarea').val('')
+    //       $(e.target).removeClass('was-validated')
+    //     })
+    //   }
+    // });
 
     // enable posting of comments
-    $('#ideas').on('keypress', 'textarea', (e) => {
+    // $('#ideas').on('keypress', 'textarea', (e) => {
 
-      // enables to submit feedback with Enter, but not shift enter (new line)
-      if(e.which == 13 && !e.shiftKey) {
+    //   // enables to submit feedback with Enter, but not shift enter (new line)
+    //   if(e.which == 13 && !e.shiftKey) {
 
-        const elm = $(e.target)
+    //     const elm = $(e.target)
 
-        if(elm.val().length < 10 || elm.val().length > 500){
-          elm.addClass('is-invalid')
-          elm.siblings('.invalid-feedback')
-            .text('Comment need to have between 10 and 200 characters.')
-          return false;
-        }
+    //     if(elm.val().length < 10 || elm.val().length > 500){
+    //       elm.addClass('is-invalid')
+    //       elm.siblings('.invalid-feedback')
+    //         .text('Comment need to have between 10 and 200 characters.')
+    //       return false;
+    //     }
 
-        channel.push('create_comment', {
-          idea_id: elm.data('idea_id'),
-          text: elm.val()
-        })
-        .receive("ok", ({ comment, feedback }) => {
-          elm.val('').removeClass('is-invalid').siblings().text('')
-          // schedule comment and feedback if required
-          this.schedule_comment(comment)
-          if(feedback) this.schedule_comment(feedback)
-        })
-      }
-    })
+    //     channel.push('create_comment', {
+    //       idea_id: elm.data('idea_id'),
+    //       text: elm.val()
+    //     })
+    //     .receive("ok", ({ comment, feedback }) => {
+    //       elm.val('').removeClass('is-invalid').siblings().text('')
+    //       // schedule comment and feedback if required
+    //       this.schedule_comment(comment)
+    //       if(feedback) this.schedule_comment(feedback)
+    //     })
+    //   }
+    // })
 
     // enable rating of ideas
     $('#ideas').on('click', '.rate', (e) => {
@@ -252,6 +252,31 @@ export default class View extends MainView {
     localStorage.setItem('scroll-pos', $(window).scrollTop())
   }
 
+  /**
+   * When typing a comment:
+   * 1) submit form on check for an enter (not shift + enter)
+   * 2) automatically resize textarea
+   * 3) auto-enable and disable error message
+   **/
+  type_comment(e){
+    const elm = $(e.target)
+
+    if(e.which == 13 && !e.shiftKey){
+
+      elm.val(elm.val().slice(0, -1))
+
+      if(elm.val().length < 10 || elm.val().length > 500)
+        return elm.addClass('is-invalid')
+      else
+        elm.parent().submit()
+
+    } else {
+      elm.removeClass('is-invalid')
+      e.target.style.height = '30px';
+      e.target.style.height = e.target.scrollHeight + 'px';
+    }
+  }
+
   mount() {
 
     super.mount();
@@ -266,6 +291,11 @@ export default class View extends MainView {
     // safe scroll position on form submissions
     document.body.addEventListener("phoenix.link.click", this.safeScrollPos)
     document.body.addEventListener("submit", this.safeScrollPos)
+
+    // posting comments: resize field on keystroke and submit on ENTER.
+    $('#ideas').on('keyup', 'textarea', e => { this.type_comment(e) })
+
+    // TODO: REVIEW
 
     // connect socket and join topic_channel
     // this.joinChannel()

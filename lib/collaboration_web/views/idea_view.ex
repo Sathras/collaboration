@@ -7,6 +7,10 @@ defmodule CollaborationWeb.IdeaView do
       else: "text-muted"
   end
 
+  def comment_changeset() do
+    Collaboration.Contributions.comment_changeset()
+  end
+
   def base_rating(rating, raters) do
     cond do
       raters === 0 ->  "base0"

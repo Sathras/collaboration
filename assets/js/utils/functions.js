@@ -38,12 +38,6 @@ export function debug(text) {
 
 // EXPOSE GLOBAL FUNCTIONS
 
-// autogrow text input when editing ideas or comments
-window.auto_grow = element => {
-  element.style.height = '30px';
-  element.style.height = element.scrollHeight + 'px';
-};
-
 window.unrate = ( id ) => {
   if($(`#idea${id} .user-rating strong`).text() != ''){
     const elm = `#idea${id} .raters strong`
