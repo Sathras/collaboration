@@ -44,21 +44,6 @@ export default class View extends MainView {
   }
 
   // enable like (removed jQuery dependency)
-  toggleLike(e){
-    e.preventDefault()
-    const comment = $(e.target).closest('.comment')
-    const like = comment.attr('data-liked') == 'false'
-
-    this.channel.push('toggleLike', { comment_id: comment.data('id'), like })
-    .receive("ok", () => {
-
-      let likes = parseInt(comment.attr('data-likes'))
-      likes = like ? likes + 1 : likes - 1
-      comment.attr('data-likes', likes).attr('data-liked', like)
-      comment.find('.likes').text(likes)
-    })
-  }
-
   rate(idea_id, newRating){
     const ratingElm = $(`#idea${idea_id} .rating strong`)
     const ratersElm = $(`#idea${idea_id} .raters strong`)
@@ -124,11 +109,6 @@ export default class View extends MainView {
 
     const channel = socket.channel("topic")
     this.channel = channel
-
-    // handle various click functionality
-    document.addEventListener('click', (e) => {
-      if(e.target.classList.contains('like')) return this.toggleLike(e)
-    }, false)
 
     // enable posting of ideas
     $('#idea-form').on('submit', (e) => {
@@ -242,11 +222,6 @@ export default class View extends MainView {
       }
     })
 
-    channel.on('like', ({ comment_id }) => {
-      const elm = $(`.comment[data-id=${comment_id}] .likes`)
-      elm.text(parseInt(elm.text()) + 1).removeClass('d-none')
-    })
-
     // join and schedule loading of future ideas, comments, likes, and ratings
     channel.join().receive('ok', ({ ideas, comments, ratings, condition, remaining, started }) => {
 
@@ -273,12 +248,28 @@ export default class View extends MainView {
     })
   }
 
+  safeScrollPos(){
+    localStorage.setItem('scroll-pos', $(window).scrollTop())
+  }
+
   mount() {
 
     super.mount();
 
+    // load saved scroll position and reset
+    const pos = localStorage.getItem('scroll-pos');
+    if (pos){
+      $(window).scrollTop(pos)
+      localStorage.removeItem('scroll-pos');
+    }
+
+    // safe scroll position on form submissions
+    document.body.addEventListener("phoenix.link.click", this.safeScrollPos)
+    document.body.addEventListener("submit", this.safeScrollPos)
+
     // connect socket and join topic_channel
-    this.joinChannel()
+    // this.joinChannel()
+    $('#spinner-wrapper').hide() // TODO: remove
 
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {

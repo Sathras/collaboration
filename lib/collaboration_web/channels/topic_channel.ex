@@ -125,15 +125,6 @@ defmodule CollaborationWeb.TopicChannel do
     {:reply, {:ok, unrate_idea!(id, socket.assigns.user.id) }, socket}
   end
 
-  def handle_in("toggleLike", %{"comment_id" => id, "like" => like }, socket) do
-    case toggle_like id, socket.assigns.user, like do
-      {:ok, _} ->
-        {:reply, :ok, socket}
-      {:error, _} ->
-        {:reply, :error, socket}
-    end
-  end
-
   # returns a list of ids for automated comments that have yet to be published,
   # includes both bot-to-bot and bot-to-user responses
   defp get_comment_schedule(socket) do

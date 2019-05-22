@@ -30,6 +30,6 @@
 </div>
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
-    <%= render IdeaView, "idea.html", user: @current_user, idea: i %>
+    <%= render IdeaView, "idea.html", conn: @conn, user: @current_user, idea: i %>
   <% end %>
 </div>

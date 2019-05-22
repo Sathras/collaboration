@@ -44,9 +44,7 @@ defmodule Collaboration.Mixfile do
       {:gettext, "~> 0.16.1"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
-      # addons
       {:pbkdf2_elixir, "~> 1.0"},
-      # deployment
       {:edeliver, "~> 1.6"},
       {:distillery, "~> 2.0"}
     ]

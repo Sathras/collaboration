@@ -5,7 +5,7 @@ defmodule Collaboration.Accounts.User do
   import Ecto.Changeset
 
   alias Collaboration.Accounts.Credential
-  alias Collaboration.Contributions.{ Idea, Comment, Rating }
+  alias Collaboration.Contributions.{ Idea, Comment, Like, Rating }
 
   schema "users" do
 
@@ -14,14 +14,15 @@ defmodule Collaboration.Accounts.User do
     field :completed, :boolean
     field :condition, :integer
     field :uid, :integer
-    timestamps()
 
     has_one :credential, Credential
     has_many :comments, Comment, on_delete: :delete_all
     has_many :ideas, Idea, on_delete: :delete_all
     has_many :ratings, Rating, on_delete: :delete_all
 
-    many_to_many :likes, Comment, join_through: "likes", on_delete: :delete_all
+    many_to_many :likes, Comment, join_through: Like, on_delete: :delete_all
+
+    timestamps()
   end
 
   @doc """

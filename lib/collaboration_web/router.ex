@@ -26,6 +26,8 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through [ :browser, :authenticate_user ]
 
+    put "comments/:id/toggle_like", CommentController, :toggle_like
+
     delete "/logout", SessionController, :delete
     post "/complete", UserController, :finish
   end

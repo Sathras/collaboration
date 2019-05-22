@@ -46,7 +46,7 @@
   </div>
   <ul class="comments list-group list-group-flush">
     <%= for c <- @idea.comments do %>
-      <%= render CommentView, "comment.html", comment: c, user: @user %>
+      <%= render CommentView, "comment.html", conn: @conn, comment: c, user: @user %>
     <% end %>
   </ul>
   <div class="card-footer">

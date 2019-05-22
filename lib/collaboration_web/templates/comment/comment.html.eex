@@ -9,12 +9,15 @@
     <strong class="mr-1"><%= @comment.user %></strong><%= @comment.text %>
   </p>
   <p class='small mb-1'>
-    <%= if @comment.likes > 0 || @comment.user_id !== @user.id do %>
+    <%= if @comment.likes > 0 || @comment.user_id != @user.id do %>
       <i class="text-primary far fa-thumbs-up"></i>
     <% end %>
     <span class="likes badge badge-pill badge-primary mr-1"><%= @comment.likes %>
     </span>
-    <a class="like" href="#"></a>
+
+    <%= if @comment.user_id != @user.id do %>
+      <%= link "", to: Routes.comment_path(@conn, :toggle_like, @comment.id), method: :put %>
+    <% end %>
 
     <time class="font-italic float-right"
       datetime="<%= date(@comment.inserted_at) %>"></time>

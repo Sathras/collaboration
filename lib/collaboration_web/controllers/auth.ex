@@ -36,12 +36,12 @@ defmodule CollaborationWeb.Auth do
     |> assign(:user_token, token)
   end
 
-  def logout(conn) do
+  def logout(conn, completed) do
+    complete_user(current_user(conn), completed)
     configure_session(conn, drop: true)
   end
 
-  def logout(conn, completed) do
-    complete_user(current_user(conn), completed)
+  def logout(conn) do
     configure_session(conn, drop: true)
   end
 

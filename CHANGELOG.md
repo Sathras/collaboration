@@ -180,3 +180,6 @@ Complete Remade of the Application. Working Features:
 * before starting experiment users now have to agree to the terms
 * improved the user changesets and added documentation
 
+### 2.6.1
+* Liking and Unliking now done again via form submission, The time when a comment was liked is now also stored in database
+

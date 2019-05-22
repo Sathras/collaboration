@@ -8,7 +8,7 @@ defmodule Collaboration.Contributions do
 
   alias Phoenix.View
   alias Collaboration.Repo
-  alias Collaboration.Contributions.{ Topic, Idea, Comment, Rating }
+  alias Collaboration.Contributions.{ Topic, Idea, Comment, Like, Rating }
   alias CollaborationWeb.{ IdeaView, CommentView }
 
   # TOPICS
@@ -317,19 +317,14 @@ defmodule Collaboration.Contributions do
     |> Repo.insert()
   end
 
-  def toggle_like(comment_id, user, like) do
-    comment = Repo.get(Comment, comment_id)
-    |> Repo.preload([:likes, :user])
-    |> change()
-
-    if like do
-      comment
-      |> put_assoc(:likes, comment.data.likes ++ [user])
-      |> Repo.update()
-    else
-      comment
-      |> put_assoc(:likes, List.delete(comment.data.likes, user))
-      |> Repo.update()
+  def toggle_like_comment(comment_id, user_id) do
+    case Repo.get_by(Like, [comment_id: comment_id, user_id: user_id]) do
+      nil ->
+        %Like{}
+        |> Like.changeset(%{comment_id: comment_id, user_id: user_id})
+        |> Repo.insert(on_conflict: :nothing)
+      like ->
+        Repo.delete(like)
     end
   end
 

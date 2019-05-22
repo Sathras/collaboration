@@ -52,7 +52,9 @@ defmodule Collaboration.Repo.Migrations.Contributions do
     create table(:likes) do
       add :user_id, references(:users, on_delete: :delete_all)
       add :comment_id, references(:comments, on_delete: :delete_all)
+      timestamps()
     end
+
     create unique_index(:likes, [:user_id, :comment_id])
   end
 end
