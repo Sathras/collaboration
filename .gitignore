@@ -15,6 +15,7 @@ mix.lock
 # editor & operating system
 .DS_store
 .elixir_ls/
+*.code-workspace
 
 # fix to allow phx.digest to work properly
 /priv/static/**/*
