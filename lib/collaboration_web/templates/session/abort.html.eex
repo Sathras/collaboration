@@ -1,0 +1,8 @@
+<div class="text-center">
+  <h2>Experiment Aborted</h2>
+  <p class="lead">We are sorry you left but thank you for your time.</p>
+  <p>This website can now be closed.<br />
+  Alternatively, you can still proceed to the survey:</p>
+  <a class="btn btn-primary" href="<%= survey_link() %>">To Survey</a>
+</div>
+

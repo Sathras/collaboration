@@ -3,6 +3,9 @@ use Mix.Config
 # General application configuration
 config :collaboration,
 
+  # if false than an experiment can only be started once with a given user id
+  allow_multiple_submissions?: true,
+
   # suggested experiment time [sec]
   minTime: 10 * 60,
 

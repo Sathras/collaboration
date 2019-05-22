@@ -23,8 +23,6 @@ defmodule Collaboration.Repo.Migrations.Accounts do
       timestamps()              # updated_at used for experiment duration
     end
 
-    create unique_index(:users, [:uid])
-
     create table(:credentials) do
       add :username, :string, null: false
       add :password_hash, :string, null: false

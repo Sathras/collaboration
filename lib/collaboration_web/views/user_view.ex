@@ -2,10 +2,10 @@ defmodule CollaborationWeb.UserView do
   use CollaborationWeb, :view
 
   def duration(user) do
-    if is_nil(user.completed_at) do
+    if is_nil(user.updated_at) do
       "not completed"
     else
-      NaiveDateTime.diff(user.completed_at, user.inserted_at)
+      NaiveDateTime.diff(user.updated_at, user.inserted_at)
     end
   end
 
@@ -15,7 +15,7 @@ defmodule CollaborationWeb.UserView do
       name: u.name,
       condition: u.condition,
       inserted_at: date(u.inserted_at),
-      completed_at: date(u.completed_at)
+      completed_at: date(u.updated_at)
     }
   end
 end

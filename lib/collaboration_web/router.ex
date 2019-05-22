@@ -19,6 +19,7 @@ defmodule CollaborationWeb.Router do
     resources "/users",  UserController, only: [:index, :update]
     post "/feature/:id", TopicController, :feature
     get "/participants", UserController, :participants
+    get "/admin", DownloadController, :index
   end
 
   # protected routes
@@ -35,7 +36,7 @@ defmodule CollaborationWeb.Router do
 
     get "/", TopicController, :show
 
-    get "/aborted", SessionController, :aborted
+    get "/abort", SessionController, :abort
     get "/complete", SessionController, :complete
 
     get "/login", SessionController, :new

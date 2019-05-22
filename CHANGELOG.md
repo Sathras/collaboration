@@ -175,4 +175,8 @@ Complete Remade of the Application. Working Features:
 * added completed (boolean) field that indicates graceful completion
 * survey link now configurable in config and set to qualtrics
 * improved configuration and put experiment settings in its own file
+* added config setting: "allow_multiple_submissions?"
+* users that abort the experiment can now still complete the survey
+* before starting experiment users now have to agree to the terms
+* improved the user changesets and added documentation
 

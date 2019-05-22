@@ -4,4 +4,3 @@
   <p>Please continue to the final step of the study, our survey.</p>
   <a class="btn btn-primary" href="<%= survey_link() %>">To Survey</a>
 </div>
-

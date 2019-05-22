@@ -1,25 +1,37 @@
 defmodule CollaborationWeb.TopicController do
   use CollaborationWeb, :controller
 
+  import Collaboration.Contributions
+
   def index(conn, _) do
     render conn, "index.html", topics: list_topics()
   end
 
   def show(conn, _) do
-    if current_user(conn) do
-      case get_published_topic() do
-        nil ->
-          conn
-          |> send_resp(404, "No topic is currently published.")
-          |> halt()
+    user = current_user(conn)
 
-        topic ->
-          render conn, "show.html",
-            ideas: load_past_ideas(topic.id, current_user(conn)),
-            topic: topic
-      end
-    else
-      redirect(conn, to: Routes.user_path(conn, :new))
+    cond do
+      # admin users should be redirected to admin page.
+      user && not is_nil(user.credential) ->
+        redirect(conn, to: Routes.download_path(conn, :index))
+
+      # normal users should see the experiment.
+      user ->
+        case get_published_topic() do
+          nil ->
+            conn
+            |> send_resp(404, "No topic is currently published.")
+            |> halt()
+
+          topic ->
+            render conn, "show.html",
+              ideas: load_past_ideas(topic.id, current_user(conn)),
+              topic: topic
+        end
+
+        # anonymous users should be redirected to experiment start page.
+      true ->
+        redirect conn, to: Routes.user_path(conn, :new)
     end
   end
 

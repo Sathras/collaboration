@@ -10,9 +10,7 @@
       "request": "launch",
       "projectDir": "${workspaceRoot}",
       "task": "phx.server",
-      "env": {
-        "projectDir": "."
-      }
+      "internalConsoleOptions": "openOnSessionStart",
     }
   ]
 }
