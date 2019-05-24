@@ -1,14 +1,20 @@
 defmodule CollaborationWeb.IdeaView do
   use CollaborationWeb, :view
 
+  alias Collaboration.Contributions.Comment
+
   def color(idea, value) do
     if idea.my_rating && idea.my_rating >= value,
       do: "text-primary",
       else: "text-muted"
   end
 
-  def comment_changeset() do
-    Collaboration.Contributions.comment_changeset()
+  def changeset(idea, changeset) do
+    if is_nil(changeset) || idea.id != changeset.changes.idea_id do
+      Collaboration.Contributions.change_comment(%Comment{})
+    else
+      changeset
+    end
   end
 
   def base_rating(rating, raters) do

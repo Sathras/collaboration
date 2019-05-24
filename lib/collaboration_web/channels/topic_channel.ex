@@ -57,65 +57,65 @@ defmodule CollaborationWeb.TopicChannel do
     {:noreply, socket}
   end
 
-  def handle_in("create_idea", %{ "text" => text }, socket) do
-    u = user(socket)
-    case create_idea(text, topic_id(socket), u) do
-      { :ok, idea } ->
+  # def handle_in("create_idea", %{ "text" => text }, socket) do
+  #   u = user(socket)
+  #   case create_idea(text, topic_id(socket), u) do
+  #     { :ok, idea } ->
 
-        # add idea_id to idea_ids in socket
-        ids = user_idea_ids(socket)
-        socket = assign socket, :user_idea_ids, ids ++ [idea.id]
+  #       # add idea_id to idea_ids in socket
+  #       ids = user_idea_ids(socket)
+  #       socket = assign socket, :user_idea_ids, ids ++ [idea.id]
 
-        # determine if a response comment should be prepared
-        f = case Enum.at(idea_response_ids(u.condition), Enum.count(ids)) do
-          nil -> nil
-          rid -> case get_bot_comment(socket, rid, idea.inserted_at) do
-            nil -> nil
-            c -> [ idea.id, render_comment(c, u), c.delay ]
-          end
-        end
+  #       # determine if a response comment should be prepared
+  #       f = case Enum.at(idea_response_ids(u.condition), Enum.count(ids)) do
+  #         nil -> nil
+  #         rid -> case get_bot_comment(socket, rid, idea.inserted_at) do
+  #           nil -> nil
+  #           c -> [ idea.id, render_comment(c, u), c.delay ]
+  #         end
+  #       end
 
-        # prepare idea for socket
-        idea = idea
-        |> View.render_one(IdeaView, "idea.json", user: u )
-        |> render_idea(u)
+  #       # prepare idea for socket
+  #       idea = idea
+  #       |> View.render_one(IdeaView, "idea.json", user: u )
+  #       |> render_idea(u)
 
-        {:reply, {:ok, %{ idea: idea, feedback: f }}, socket}
+  #       {:reply, {:ok, %{ idea: idea, feedback: f }}, socket}
 
-      {:error, _changeset } ->
-        {:reply, :error, socket}
-    end
-  end
+  #     {:error, _changeset } ->
+  #       {:reply, :error, socket}
+  #   end
+  # end
 
-  def handle_in("create_comment", params, socket) do
-    u = user(socket)
-    case create_comment(params, u) do
-      {:ok, comment} ->
+  # def handle_in("create_comment", params, socket) do
+  #   u = user(socket)
+  #   case create_comment(params, u) do
+  #     {:ok, comment} ->
 
-        # add comment_id to comment_ids in socket
-        ids = user_comment_ids(socket)
-        socket = assign socket, :user_comment_ids, ids ++ [comment.id]
+  #       # add comment_id to comment_ids in socket
+  #       ids = user_comment_ids(socket)
+  #       socket = assign socket, :user_comment_ids, ids ++ [comment.id]
 
-        # determine if a response comment should be prepared
-        f = case Enum.at(comment_response_ids(u.condition), Enum.count(ids)) do
-          nil -> nil
-          rid -> case get_bot_comment(socket, rid, comment.inserted_at) do
-            nil -> nil
-            c -> [ comment.idea_id, render_comment(c, u), c.delay ]
-          end
-        end
+  #       # determine if a response comment should be prepared
+  #       f = case Enum.at(comment_response_ids(u.condition), Enum.count(ids)) do
+  #         nil -> nil
+  #         rid -> case get_bot_comment(socket, rid, comment.inserted_at) do
+  #           nil -> nil
+  #           c -> [ comment.idea_id, render_comment(c, u), c.delay ]
+  #         end
+  #       end
 
-        # prepare comment for socket
-        c = comment
-        |> View.render_one(CommentView, "comment.json", user: u )
-        |> render_comment(u)
+  #       # prepare comment for socket
+  #       c = comment
+  #       |> View.render_one(CommentView, "comment.json", user: u )
+  #       |> render_comment(u)
 
-        { :reply, {:ok, %{ comment: [ comment.idea_id, c ], feedback: f }}, socket}
+  #       { :reply, {:ok, %{ comment: [ comment.idea_id, c ], feedback: f }}, socket}
 
-      {:error, _changeset} ->
-        {:reply, :error, socket}
-    end
-  end
+  #     {:error, _changeset} ->
+  #       {:reply, :error, socket}
+  #   end
+  # end
 
   def handle_in("rate_idea", %{"id" => id, "rating" => rating }, socket) do
     {:reply, {:ok, rate_idea!(rating, id, socket.assigns.user.id) }, socket }

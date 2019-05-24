@@ -8,6 +8,7 @@ defmodule Collaboration.Contributions do
 
   alias Phoenix.View
   alias Collaboration.Repo
+  alias Collaboration.Accounts.User
   alias Collaboration.Contributions.{ Topic, Idea, Comment, Like, Rating }
   alias CollaborationWeb.{ IdeaView, CommentView }
 
@@ -32,12 +33,7 @@ defmodule Collaboration.Contributions do
     Repo.one from(t in Topic, select: t.id, where: t.featured)
   end
 
-  def get_published_topic() do
-    Repo.one from(t in Topic,
-      select: map(t, [:id, :title, :desc]),
-      where: t.featured
-    )
-  end
+  def get_published_topic(), do: Repo.get_by(Topic, featured: true)
 
   def create_topic(attrs \\ %{}) do
     %Topic{}
@@ -58,7 +54,7 @@ defmodule Collaboration.Contributions do
     |> Repo.update()
   end
 
-  def change_topic(topic \\ %Topic{}), do: Topic.changeset(topic, %{})
+  def change_topic(%Topic{} = topic), do: Topic.changeset(topic, %{})
 
   # IDEAS
 
@@ -228,15 +224,15 @@ defmodule Collaboration.Contributions do
       end)
   end
 
-  def change_idea(idea \\ %Idea{}), do: Idea.changeset(idea, %{})
-
-  def create_idea(text, topic_id, user ) do
+  def create_idea(%User{} = user, %Topic{} = topic, attrs \\ %{}) do
     %Idea{}
-    |> Idea.changeset(%{ text: text })
-    |> put_change(:topic_id, topic_id)
-    |> put_change(:user_id, user.id)
+    |> Idea.changeset(attrs)
+    |> put_topic(topic)
+    |> put_user(user)
     |> Repo.insert()
   end
+
+  def change_idea(%Idea{} = idea), do: Idea.changeset(idea, %{})
 
   def rate_idea!(rating, idea_id, user_id) do
     rating = case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
@@ -314,12 +310,14 @@ defmodule Collaboration.Contributions do
     |> View.render_one(CommentView, "comment.json", user: user)
   end
 
-  def create_comment(params, user) do
+  def create_comment(%User{} = user, attrs \\ %{}) do
     %Comment{}
-    |> Comment.changeset(params)
-    |> put_change(:user_id, user.id)
+    |> Comment.changeset(attrs)
+    |> put_user(user)
     |> Repo.insert()
   end
+
+  def change_comment(%Comment{} = comment), do: Comment.changeset(comment, %{})
 
   def toggle_like_comment(comment_id, user_id) do
     case Repo.get_by(Like, [comment_id: comment_id, user_id: user_id]) do
@@ -403,4 +401,8 @@ defmodule Collaboration.Contributions do
   def render_comment(c, user) do
     View.render_to_string( CommentView, "comment.html", comment: c, user: user )
   end
+
+  defp put_topic(changeset, topic), do: put_assoc(changeset, :topic, topic)
+
+  defp put_user(changeset, user), do: put_assoc(changeset, :user, user)
 end

@@ -5,11 +5,19 @@ defmodule CollaborationWeb.ErrorHelpers do
 
   use Phoenix.HTML
 
-  def error_class(form, field) do
-    if !form.source.action do
-      ""
-    else
-      if has_error?(form, field), do: " is-invalid", else: " is-valid"
+  alias Phoenix.HTML.Form
+
+  # Automatically add HTML5 validations to form fields.
+
+  def textarea(form, field, opts \\ []) do
+    Form.textarea(form, field, opts ++ Form.input_validations(form, field))
+  end
+
+  def field_class(form, field) do
+    cond do
+      is_nil(form.source.action) -> "form-control"
+      has_error?(form, field) -> "form-control is-invalid"
+      true -> "form-control is-valid"
     end
   end
 

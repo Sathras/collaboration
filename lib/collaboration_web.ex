@@ -47,6 +47,8 @@ defmodule CollaborationWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      import Phoenix.HTML.Form, except: [textarea: 3]
+
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
 

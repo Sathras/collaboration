@@ -3,6 +3,8 @@ defmodule CollaborationWeb.TopicController do
 
   import Collaboration.Contributions
 
+  alias Collaboration.Contributions.{Topic, Idea, Comment}
+
   def index(conn, _) do
     render conn, "index.html", topics: list_topics()
   end
@@ -24,7 +26,11 @@ defmodule CollaborationWeb.TopicController do
             |> halt()
 
           topic ->
+            comment_changeset = change_comment(%Comment{})
+
             render conn, "show.html",
+              comment_changeset: nil,
+              idea_changeset: change_idea(%Idea{}),
               ideas: load_past_ideas(topic.id, current_user(conn)),
               topic: topic
         end
@@ -35,7 +41,7 @@ defmodule CollaborationWeb.TopicController do
     end
   end
 
-  def new(conn, _), do: render(conn, "new.html", changeset: change_topic())
+  def new(conn, _), do: render(conn, "new.html", changeset: change_topic(%Topic{}))
 
   def edit(conn, %{"id" => id}) do
     topic = get_topic!(id)

@@ -264,11 +264,7 @@ export default class View extends MainView {
     if(e.which == 13 && !e.shiftKey){
 
       elm.val(elm.val().slice(0, -1))
-
-      if(elm.val().length < 10 || elm.val().length > 500)
-        return elm.addClass('is-invalid')
-      else
-        elm.parent().submit()
+      elm.parent().submit()
 
     } else {
       elm.removeClass('is-invalid')

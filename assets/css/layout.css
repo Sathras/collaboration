@@ -66,6 +66,12 @@ h5.card-title,
   white-space: nowrap;
 }
 
+/* Idea textarea */
+#idea_text{
+  min-height:125px;
+  border-radius:0;
+}
+
 .auto-size,
 textarea.form-control,
 textarea.card-text {

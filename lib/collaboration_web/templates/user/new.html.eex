@@ -29,7 +29,7 @@
               <%= text_input f, :uid,
                 aria_describedby: "uid-help",
                 autocomplete: "off",
-                class: "form-control #{error_class(f, :uid)}",
+                class: field_class(@changeset, :uid),
                 placeholder: "U ID",
                 type: "number"
               %>
@@ -47,7 +47,7 @@
               <%= text_input f, :name,
                 aria_describedby: "name-help",
                 autocomplete: "off",
-                class: "form-control #{error_class(f, :name)}",
+                class: field_class(@changeset, :name),
                 placeholder: "Username"
               %>
               <%= error_tag f.source, :name %>

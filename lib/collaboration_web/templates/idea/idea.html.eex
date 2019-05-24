@@ -50,16 +50,15 @@
     <% end %>
   </ul>
   <div class="card-footer">
-    <%= form_for comment_changeset(), Routes.comment_path(@conn, :create), fn f -> %>
+    <%= form_for changeset(@idea, @comment_changeset), Routes.comment_path(@conn, :create), fn f -> %>
       <%= hidden_input(f, :idea_id, value: @idea.id) %>
       <%= textarea f, :text,
+        id: false,
         placeholder: "Leave feedback...",
-        class: "form-control form-control-sm",
-        style: "height:29px;",
-        pattern: ".{10,200}",
-        required: true
+        class: field_class(f, :text) <> " form-control-sm",
+        style: "height:29px;"
       %>
-      <div class="invalid-feedback">Comment needs to have between 10 and 200 characters.</div>
+      <%= error_tag f, :text %>
     <% end %>
   </div>
 </div>

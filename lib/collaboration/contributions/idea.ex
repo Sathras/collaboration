@@ -40,4 +40,5 @@ defmodule Collaboration.Contributions.Idea do
     |> validate_number(:fake_rating, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_number(:fake_raters, greater_than_or_equal_to: 0)
   end
+
 end

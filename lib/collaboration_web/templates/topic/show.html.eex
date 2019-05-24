@@ -4,19 +4,17 @@
 <div class="row card-group">
   <div class="col-lg-7"><%= raw @topic.desc %></div>
   <div class="col-lg-5">
-    <form action='/' method='post' id='idea-form' novalidate>
+
+    <%= form_for @idea_changeset, Routes.idea_path(@conn, :create), [novalidate: true], fn f -> %>
       <div class="card mb-3 position-sticky">
+
         <h5 class="card-header text-center">New Idea</h5>
         <div class="card-body p-0 text-center">
-          <textarea
-            class="form-control"
-            style="min-height:125px; border-radius:0;"
-            placeholder="Please describe your idea here"
-            minLength=40
-            maxLength=999
-            required
-          ></textarea>
-          <div class="invalid-feedback">Must be between 40 and 999 characters long.</div>
+          <%= textarea f, :text,
+            placeholder: "Please describe your idea here",
+            class: field_class(f, :text)
+          %>
+          <%= error_tag f, :text %>
         </div>
         <div class="card-footer">
           <div class="form-inline d-flex justify-content-around">
@@ -24,12 +22,17 @@
           </div>
         </div>
       </div>
-    </form>
+    <% end %>
   </div>
   <hr class="mt-0"/>
 </div>
 <div id="ideas" class="card-columns">
   <%= for i <- @ideas do %>
-    <%= render IdeaView, "idea.html", conn: @conn, user: @current_user, idea: i %>
+    <%= render IdeaView, "idea.html",
+      conn: @conn,
+      comment_changeset: @comment_changeset,
+      user: @current_user,
+      idea: i
+    %>
   <% end %>
 </div>
