@@ -1,9 +1,11 @@
-.ratings-wrapper span {
-  font-size: 12px;
+button[name="rating[rating]"] {
+  border:0;
+  padding:0;
+  margin-right:-4px;
 }
 
-.rating i {
-  color: orange;
+.ratings-wrapper span {
+  font-size: 12px;
 }
 
 .user-rating {
@@ -20,6 +22,14 @@
 .star-rating {
   float: left;
   padding: 0 8px;
+}
+
+.rating i {
+  color: orange;
+}
+
+.star-rating form {
+  display: inline-block;
 }
 
 .star-rating button:not(:first-of-type):hover{

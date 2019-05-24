@@ -181,7 +181,7 @@ Complete Remade of the Application. Working Features:
 * improved the user changesets and added documentation
 
 ### 2.6.1
-* Posting Ideas and Comments,Liking and Unliking now done again via form submission
+* Posting Ideas and Comments, Rating, Liking and Unliking now done again via form submission
 * HTML5 validation tags are now automatically determined and added
 * The time when a comment was liked is now also stored in database
 

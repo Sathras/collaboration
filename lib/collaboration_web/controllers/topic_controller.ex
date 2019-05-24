@@ -3,7 +3,7 @@ defmodule CollaborationWeb.TopicController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Topic, Idea, Comment}
+  alias Collaboration.Contributions.{Topic, Idea, Comment, Rating}
 
   def index(conn, _) do
     render conn, "index.html", topics: list_topics()
@@ -31,6 +31,7 @@ defmodule CollaborationWeb.TopicController do
             render conn, "show.html",
               comment_changeset: nil,
               idea_changeset: change_idea(%Idea{}),
+              rating_changeset: change_rating(%Rating{}),
               ideas: load_past_ideas(topic.id, current_user(conn)),
               topic: topic
         end

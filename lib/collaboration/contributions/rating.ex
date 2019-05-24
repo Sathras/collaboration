@@ -10,7 +10,7 @@ defmodule Collaboration.Contributions.Rating do
 
   @doc false
   def changeset(rating, attrs) do
-    fields = ~w(rating idea_id user_id)a
+    fields = ~w(rating idea_id)a
     rating
     |> cast(attrs, fields)
     |> validate_required(fields)

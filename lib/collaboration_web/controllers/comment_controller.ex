@@ -3,7 +3,7 @@ defmodule CollaborationWeb.CommentController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Comment, Idea}
+  alias Collaboration.Contributions.{Comment, Idea, Rating}
 
   def create(conn, %{"comment" => comment_params}) do
 
@@ -17,7 +17,6 @@ defmodule CollaborationWeb.CommentController do
 
       {:error, changeset} ->
 
-        IO.inspect changeset
         topic = get_published_topic()
 
         conn
@@ -25,6 +24,7 @@ defmodule CollaborationWeb.CommentController do
         |> render( "show.html",
             comment_changeset: changeset,
             idea_changeset: change_idea(%Idea{}),
+            rating_changeset: change_rating(%Rating{}),
             ideas: load_past_ideas(topic.id, user),
             topic: topic
           )

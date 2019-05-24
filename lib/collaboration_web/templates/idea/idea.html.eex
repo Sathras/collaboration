@@ -3,28 +3,37 @@
     <%= if @user.id != @idea.user_id do %>
     <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
       <div class="star-rating" style="display:none;">
-        <button
-          class='unrate btn btn-link pointer p-0'
-          data-idea='<%= @idea.id %>'>
-          <i class='fas fa-minus-circle pointer text-danger'></i>
-        </button> |
-        <%= for x <- 1..5 do %>
-          <button
-            class="rate btn btn-link <%= color(@idea, x) %> pointer p-0"
-            data-idea='<%= @idea.id %>'
-            data-rating='<%= x %>'
-          >
-            <i class='fas fa-star pointer'></i>
-          </button>
+        <%=
+          if @idea.my_rating do
+            button "",
+              to: Routes.idea_path(@conn, :unrate, @idea.id),
+              method: "delete",
+              class: "btn fas fa-minus-circle pointer text-danger p-0"
+          end
+        %>
+        <%= form_for @rating_changeset, Routes.idea_path(@conn, :rate), fn f -> %>
+          <%= hidden_input(f, :idea_id, value: @idea.id) %>
+          <%= for x <- 1..5 do %>
+            <%=
+              submit "",
+                class: "btn fas fa-star pointer #{color(@idea, x)}",
+                name: "rating[rating]",
+                value: x
+            %>
+          <% end %>
         <% end %>
       </div>
-      <div class="rating" title="Overall Rating" data-toggle="tooltip">
-        <i class='fas fa-star'></i>
-        <strong><%= @idea.rating %></strong><span>/5</span>
-      </div>
-      <div class="raters" title="Raters" data-toggle="tooltip">
-        <i class='fas fa-user mr-1'></i><strong><%= @idea.raters %></strong>
-      </div>
+
+      <%= if @idea.raters > 0 do %>
+        <div class="rating" title="Overall Rating" data-toggle="tooltip">
+          <i class='fas fa-star'></i>
+          <strong><%= @idea.rating %></strong>
+          <small>/ <%= @idea.raters %> Raters</small>
+        </div>
+      <% else %>
+        No Ratings yet.
+      <% end %>
+
 
       <div class="user-rating pointer" title="My Rating" data-toggle="tooltip">
         <i class='fas fa-star<%= if @idea.my_rating do " text-primary" end %>'></i>

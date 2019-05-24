@@ -31,6 +31,7 @@
     <%= render IdeaView, "idea.html",
       conn: @conn,
       comment_changeset: @comment_changeset,
+      rating_changeset: @rating_changeset,
       user: @current_user,
       idea: i
     %>

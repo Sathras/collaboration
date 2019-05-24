@@ -28,6 +28,8 @@ defmodule CollaborationWeb.Router do
 
     post "/", IdeaController, :create
     post "/comment", CommentController, :create
+    post "/rate", IdeaController, :rate
+    delete "/rate/:idea_id", IdeaController, :unrate
 
     put "/comments/:id/toggle_like", CommentController, :toggle_like
 

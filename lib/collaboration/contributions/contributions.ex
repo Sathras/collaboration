@@ -234,35 +234,23 @@ defmodule Collaboration.Contributions do
 
   def change_idea(%Idea{} = idea), do: Idea.changeset(idea, %{})
 
-  def rate_idea!(rating, idea_id, user_id) do
-    rating = case Repo.get_by(Rating, idea_id: idea_id, user_id: user_id) do
-      nil -> %Rating{}
-      rating -> rating
+  def change_rating(%Rating{} = rating), do: Rating.changeset(rating, %{})
+
+  def rate_idea(%User{} = user, attrs) do
+    rating = case Repo.get_by(Rating, idea_id: attrs["idea_id"], user_id: user.id) do
+      nil ->
+        %Rating{}
+        |> Rating.changeset(attrs)
+        |> put_user(user)
+      rating ->
+        Rating.changeset(rating, attrs)
     end
-    |> Rating.changeset(%{ rating: rating, idea_id: idea_id, user_id: user_id })
-    |> Repo.insert_or_update!()
-    |> Repo.preload([:idea])
-
-    my_rating = rating.rating
-    { rating, raters } =
-      IdeaView.calc_rating(rating.idea.fake_rating, rating.idea.fake_raters, my_rating)
-
-    %{
-      rating: Float.round(rating, 1),
-      raters: raters,
-      my_rating: my_rating
-    }
+    |> Repo.insert_or_update()
   end
 
-  def unrate_idea!(idea_id, user_id) do
-    rating = Repo.get_by!(Rating, idea_id: idea_id, user_id: user_id)
-    |> Repo.delete!()
-    |> Repo.preload([:idea])
-
-    %{
-      rating: if is_nil(rating.idea.fake_rating) do nil else Float.round(rating.idea.fake_rating, 1) end,
-      raters: rating.idea.fake_raters,
-    }
+  def unrate_idea(%User{} = user, idea_id) do
+    rating = Repo.get_by!(Rating, idea_id: idea_id, user_id: user.id)
+    |> Repo.delete()
   end
 
   def comment_changeset() do
