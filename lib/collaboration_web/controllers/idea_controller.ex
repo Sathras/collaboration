@@ -3,11 +3,11 @@ defmodule CollaborationWeb.IdeaController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Comment,Rating}
+  alias Collaboration.Contributions.Rating
 
   def create(conn, %{"idea" => idea_params}) do
 
-    topic = get_published_topic()
+    topic = current_topic(conn)
     user = current_user(conn)
 
     case create_idea(user, topic, idea_params) do
@@ -16,14 +16,10 @@ defmodule CollaborationWeb.IdeaController do
 
       {:error, changeset} ->
         conn
+        |> CollaborationWeb.TopicController.prepare_topic()
+        |> assign(:idea_changeset, changeset)
         |> put_view(CollaborationWeb.TopicView)
-        |> render( "show.html",
-            comment_changeset: nil,
-            idea_changeset: changeset,
-            rating_changeset: change_rating(%Rating{}),
-            ideas: load_past_ideas(topic.id, user),
-            topic: topic
-          )
+        |> render("show.html")
     end
   end
 
@@ -37,7 +33,7 @@ defmodule CollaborationWeb.IdeaController do
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "An error occurred while rating this idea.")
-        |> redirect to: Routes.topic_path(conn, :show)
+        |> redirect(to: Routes.topic_path(conn, :show))
     end
   end
 
@@ -49,7 +45,7 @@ defmodule CollaborationWeb.IdeaController do
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "An error occurred while removing the rating for this idea.")
-        |> redirect to: Routes.topic_path(conn, :show)
+        |> redirect(to: Routes.topic_path(conn, :show))
     end
   end
 end

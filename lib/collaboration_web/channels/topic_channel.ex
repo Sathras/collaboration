@@ -10,27 +10,29 @@ defmodule CollaborationWeb.TopicChannel do
 
   def join("topic", _params, socket) do
 
-    t = get_published_topic_id!()
-    u = user(socket)
+    # t = get_published_topic_id!()
+    # u = user(socket)
 
-    # load bot-to-user comments and user_ideas (id and inserted_at)
-    socket = socket
-    |> assign(:topic_id, t)
-    |> assign(:bot_to_user_comments, get_bot_to_user_comments(u))
-    |> assign(:user_idea_ids, get_user_idea_ids(t, u))
-    |> assign(:user_comment_ids, get_user_comment_ids(u))
+    # # load bot-to-user comments and user_ideas (id and inserted_at)
+    # socket = socket
+    # |> assign(:topic_id, t)
+    # |> assign(:bot_to_user_comments, get_bot_to_user_comments(u))
+    # |> assign(:user_idea_ids, get_user_idea_ids(t, u))
+    # |> assign(:user_comment_ids, get_user_comment_ids(u))
 
-    # schedule delayed events
-    send(self(), :after_join)
+    # # schedule delayed events
+    # send(self(), :after_join)
 
-    {:ok, %{
-      condition: u.condition,
-      ideas: load_future_ideas(t, u),
-      comments: get_comment_schedule(socket),
-      ratings: get_future_ratings(u),
-      remaining: remaining(u.inserted_at, @experiment_duration),
-      started: -remaining(u.inserted_at)
-    }, socket}
+    # {:ok, %{
+    #   condition: u.condition,
+    #   ideas: load_future_ideas(t, u),
+    #   comments: get_comment_schedule(socket),
+    #   ratings: get_future_ratings(u),
+    #   remaining: remaining(u.inserted_at, @experiment_duration),
+    #   started: -remaining(u.inserted_at)
+    # }, socket}
+
+    {:ok, %{}, socket}
   end
 
   @doc """

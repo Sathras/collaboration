@@ -3,43 +3,39 @@ defmodule CollaborationWeb.TopicController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Topic, Idea, Comment, Rating}
+  alias Collaboration.Contributions.{Topic, Idea, Rating}
+
+  @doc """
+  Function plug that adds the currently published topic to the conn or displays a flash error.
+  """
+  def add_topic(conn, _opts) do
+    case get_published_topic() do
+      nil ->
+        conn
+        |> assign(:topic, nil)
+        |> put_flash(:error, "Experiment participation is currently disabled.")
+      topic ->
+        assign(conn, :topic, topic)
+    end
+  end
+
+  # # controller serves as plug to add published topic to conn.assigns
+  # def init(opts), do: opts
+
+  # def call(conn, _opts) do
+  #   conn
+
+  # end
+  # # End: Plug code
 
   def index(conn, _) do
     render conn, "index.html", topics: list_topics()
   end
 
   def show(conn, _) do
-    user = current_user(conn)
-
-    cond do
-      # admin users should be redirected to admin page.
-      user && not is_nil(user.credential) ->
-        redirect(conn, to: Routes.download_path(conn, :index))
-
-      # normal users should see the experiment.
-      user ->
-        case get_published_topic() do
-          nil ->
-            conn
-            |> send_resp(404, "No topic is currently published.")
-            |> halt()
-
-          topic ->
-            comment_changeset = change_comment(%Comment{})
-
-            render conn, "show.html",
-              comment_changeset: nil,
-              idea_changeset: change_idea(%Idea{}),
-              rating_changeset: change_rating(%Rating{}),
-              ideas: load_past_ideas(topic.id, current_user(conn)),
-              topic: topic
-        end
-
-        # anonymous users should be redirected to experiment start page.
-      true ->
-        redirect conn, to: Routes.user_path(conn, :new)
-    end
+    conn
+    |> prepare_topic()
+    |> render("show.html")
   end
 
   def new(conn, _), do: render(conn, "new.html", changeset: change_topic(%Topic{}))
@@ -82,5 +78,17 @@ defmodule CollaborationWeb.TopicController do
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
     end
+  end
+
+  def prepare_topic(conn) do
+    topic = current_topic(conn)
+
+    merge_assigns(conn,
+      topic: topic,
+      comment_changeset: nil,
+      idea_changeset: change_idea(%Idea{}),
+      rating_changeset: change_rating(%Rating{}),
+      ideas: load_past_ideas(topic.id, current_user(conn))
+    )
   end
 end

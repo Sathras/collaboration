@@ -29,11 +29,7 @@ defmodule Collaboration.Contributions do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
-  def get_published_topic_id!() do
-    Repo.one from(t in Topic, select: t.id, where: t.featured)
-  end
-
-  def get_published_topic(), do: Repo.get_by(Topic, featured: true)
+  def get_published_topic, do: Repo.get_by(Topic, featured: true)
 
   def create_topic(attrs \\ %{}) do
     %Topic{}
@@ -237,7 +233,7 @@ defmodule Collaboration.Contributions do
   def change_rating(%Rating{} = rating), do: Rating.changeset(rating, %{})
 
   def rate_idea(%User{} = user, attrs) do
-    rating = case Repo.get_by(Rating, idea_id: attrs["idea_id"], user_id: user.id) do
+    case Repo.get_by(Rating, idea_id: attrs["idea_id"], user_id: user.id) do
       nil ->
         %Rating{}
         |> Rating.changeset(attrs)
@@ -249,7 +245,8 @@ defmodule Collaboration.Contributions do
   end
 
   def unrate_idea(%User{} = user, idea_id) do
-    rating = Repo.get_by!(Rating, idea_id: idea_id, user_id: user.id)
+    Rating
+    |> Repo.get_by!(idea_id: idea_id, user_id: user.id)
     |> Repo.delete()
   end
 

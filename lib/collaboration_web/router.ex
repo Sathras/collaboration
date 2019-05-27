@@ -7,12 +7,22 @@ defmodule CollaborationWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :add_topic
     plug CollaborationWeb.Auth
+  end
+
+  pipeline :protected do
+    plug :add_topic
+    plug :authenticate_user
+  end
+
+  pipeline :admin do
+    plug :authenticate_admin
   end
 
   # admin routes
   scope "/", CollaborationWeb do
-    pipe_through [ :browser, :authenticate_user, :authenticate_admin ]
+    pipe_through [ :browser, :protected, :admin ]
 
     resources "/topics", TopicController,
       only: [:index, :new, :create, :edit, :update]
@@ -24,8 +34,9 @@ defmodule CollaborationWeb.Router do
 
   # protected routes
   scope "/", CollaborationWeb do
-    pipe_through [ :browser, :authenticate_user ]
+    pipe_through [ :browser, :add_topic, :protected ]
 
+    get "/", TopicController, :show
     post "/", IdeaController, :create
     post "/comment", CommentController, :create
     post "/rate", IdeaController, :rate
@@ -40,8 +51,6 @@ defmodule CollaborationWeb.Router do
   # public routes
   scope "/", CollaborationWeb do
     pipe_through :browser
-
-    get "/", TopicController, :show
 
     get "/abort", SessionController, :abort
     get "/complete", SessionController, :complete

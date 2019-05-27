@@ -63,8 +63,8 @@ defmodule CollaborationWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
-      import CollaborationWeb.Auth,
-        only: [authenticate_user: 2, authenticate_admin: 2]
+      import CollaborationWeb.Auth, only: [authenticate_user: 2, authenticate_admin: 2]
+      import CollaborationWeb.TopicController, only: [add_topic: 2]
     end
   end
 

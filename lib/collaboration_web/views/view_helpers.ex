@@ -11,7 +11,9 @@ defmodule CollaborationWeb.ViewHelpers do
   """
   def date(datetime), do: datetime && NaiveDateTime.to_iso8601(datetime) <> "Z"
 
+  def current_topic(conn), do: conn.assigns.topic
   def current_user(conn), do: conn.assigns.current_user
+
   def admin?(conn), do: user_cond(conn) == 0
 
   # get details of current user (no check)

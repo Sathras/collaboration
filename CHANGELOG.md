@@ -184,4 +184,6 @@ Complete Remade of the Application. Working Features:
 * Posting Ideas and Comments, Rating, Liking and Unliking now done again via form submission
 * HTML5 validation tags are now automatically determined and added
 * The time when a comment was liked is now also stored in database
+* Topic is now always put into conn. If no topic is published, experiment registration will be disabled.
+
 

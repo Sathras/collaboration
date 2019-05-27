@@ -3,31 +3,19 @@ defmodule CollaborationWeb.CommentController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Comment, Idea, Rating}
+  alias Collaboration.Contributions.{Idea, Rating}
 
   def create(conn, %{"comment" => comment_params}) do
-
-    user = current_user(conn)
-
-    case create_comment(user, comment_params) do
-
-
+    case create_comment(current_user(conn), comment_params) do
       {:ok, _comment} ->
         redirect conn, to: Routes.topic_path(conn, :show)
 
       {:error, changeset} ->
-
-        topic = get_published_topic()
-
         conn
+        |> CollaborationWeb.TopicController.prepare_topic()
+        |> assign(:comment_changeset, changeset)
         |> put_view(CollaborationWeb.TopicView)
-        |> render( "show.html",
-            comment_changeset: changeset,
-            idea_changeset: change_idea(%Idea{}),
-            rating_changeset: change_rating(%Rating{}),
-            ideas: load_past_ideas(topic.id, user),
-            topic: topic
-          )
+        |> render("show.html")
     end
   end
 

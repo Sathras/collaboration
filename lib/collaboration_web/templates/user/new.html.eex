@@ -26,12 +26,14 @@
                   <i class="fas fa-key"></i>
                 </div>
               </div>
-              <%= text_input f, :uid,
-                aria_describedby: "uid-help",
-                autocomplete: "off",
-                class: field_class(f, :uid),
-                placeholder: "U ID",
-                type: "number"
+              <%=
+                text_input f, :uid,
+                  aria_describedby: "uid-help",
+                  autocomplete: "off",
+                  class: field_class(f, :uid),
+                  placeholder: "U ID",
+                  type: "number",
+                  disabled: is_nil(@conn.assigns.topic)
               %>
               <%= error_tag f.source, :uid %>
             </div>
@@ -44,11 +46,13 @@
                   <i class="far fa-user"></i>
                 </div>
               </div>
-              <%= text_input f, :name,
-                aria_describedby: "name-help",
-                autocomplete: "off",
-                class: field_class(f, :name),
-                placeholder: "Username"
+              <%=
+                text_input f, :name,
+                  aria_describedby: "name-help",
+                  autocomplete: "off",
+                  class: field_class(f, :name),
+                  placeholder: "Username",
+                  disabled: is_nil(@conn.assigns.topic)
               %>
               <%= error_tag f.source, :name %>
             </div>
@@ -56,14 +60,18 @@
           <div class="form-group">
             <div class="form-check pl-0">
               <%= label f, :terms_of_use, [class: "form-check-label w-100"] do %>
-                <%= checkbox f, :terms_of_use, class: "form-check-input" %>
+                <%=
+                  checkbox f, :terms_of_use,
+                    class: "form-check-input",
+                    disabled: is_nil(@conn.assigns.topic)
+                %>
                 I agree to the following terms:<br>
               <% end %>
               <%= error_tag f, :terms_of_use %>
               <small>All information is given voluntarily and may be used for scientific research. A session cookie is temporarily stored on this computer.</small>
             </div>
           </div>
-          <%= submit "Start", class: "btn btn-primary" %>
+          <%= submit "Start", class: "btn btn-primary", disabled: is_nil(@conn.assigns.topic) %>
         <% end %>
       </div>
     </div>
