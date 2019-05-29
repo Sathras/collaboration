@@ -49,6 +49,7 @@ defmodule CollaborationWeb do
 
       import Phoenix.HTML.Form, except: [textarea: 3]
 
+      import CollaborationWeb.Gettext
       import CollaborationWeb.ErrorHelpers
       import CollaborationWeb.ViewHelpers
 

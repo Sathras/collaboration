@@ -4,10 +4,6 @@ button[name="rating[rating]"] {
   margin-right:-4px;
 }
 
-.ratings-wrapper span {
-  font-size: 12px;
-}
-
 .user-rating {
   z-index: 10;
 }

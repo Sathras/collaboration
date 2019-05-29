@@ -43,6 +43,6 @@ function handleDocumentUnload() {
 configTimeago();
 
 // initialize TurboLinks
-document.addEventListener('turbolinks:load', handleDOMContentLoaded)
+document.addEventListener('turbolinks:load', handleDOMContentLoaded, false)
 document.addEventListener('turbolinks:before-visit', handleDocumentUnload)
 Turbolinks.start()

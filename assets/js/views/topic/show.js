@@ -57,7 +57,7 @@ export default class View extends MainView {
       elm.parent().submit()
 
     } else {
-      elm.removeClass('is-invalid')
+      // elm.removeClass('is-invalid')
       e.target.style.height = '30px';
       e.target.style.height = e.target.scrollHeight + 'px';
     }
@@ -67,24 +67,37 @@ export default class View extends MainView {
 
     super.mount();
 
-    // load saved scroll position and reset
-    const pos = localStorage.getItem('scroll-pos');
-    if (pos){
-      $(window).scrollTop(pos)
-      localStorage.removeItem('scroll-pos');
-    }
+    this.focus = false
 
     // safe scroll position on form submissions
     document.body.addEventListener("phoenix.link.click", this.safeScrollPos)
     document.body.addEventListener("submit", this.safeScrollPos)
 
-    // posting comments: resize field on keystroke and submit on ENTER.
-    $('#ideas').on('keyup', 'textarea', e => { this.type_comment(e) })
+    // prevent page from automatically  reloading if writing idea
+    $('#idea_text').keyup(e => { this.focus = true })
+
+
+    // posting comments: resize field on keystroke and submit on ENTER, also prevent reloading
+    $('#ideas').on('keyup', 'textarea', e => {
+      this.focus = true
+      this.type_comment(e)
+    })
 
     // toggles star rating for submitting a user rating
     $("body").on('click', '.user-rating', (e) => {
       $(e.currentTarget).siblings().toggle()
     })
+
+    // reload page after server-determined amount of milliseconds.
+    // reload only, if not currently focusing on a textarea.
+    const reload_in = $('body').data('reload-in')
+
+    if(reload_in > 0){
+      console.log(`reloading in ${reload_in/1000} seconds...`)
+      setTimeout(() => { if(!this.focus) this.reload() }, reload_in)
+    }
+
+
 
     // Disable Spinner
     $('#spinner-wrapper').hide()

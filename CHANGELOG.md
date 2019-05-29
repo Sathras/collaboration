@@ -185,5 +185,7 @@ Complete Remade of the Application. Working Features:
 * HTML5 validation tags are now automatically determined and added
 * The time when a comment was liked is now also stored in database
 * Topic is now always put into conn. If no topic is published, experiment registration will be disabled.
+* added a reload mechansim that is more robust and auto-updates the page if no idea or comment is
+currently being written. Preserves scroll position and does not flicker on reload.
 
 

@@ -12,6 +12,8 @@ msgstr ""
 "Plural-Forms: nplurals=2\n"
 
 #, elixir-format
-#: lib/collaboration_web/templates/page/index.html.eex:2
-msgid "Welcome to %{name}!"
-msgstr ""
+#: lib/collaboration_web/views/idea_view.ex:7
+msgid "rating"
+msgid_plural "ratings"
+msgstr[0] ""
+msgstr[1] ""

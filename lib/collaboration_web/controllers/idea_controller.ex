@@ -3,8 +3,6 @@ defmodule CollaborationWeb.IdeaController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.Rating
-
   def create(conn, %{"idea" => idea_params}) do
 
     topic = current_topic(conn)

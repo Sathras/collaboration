@@ -3,6 +3,10 @@ defmodule CollaborationWeb.IdeaView do
 
   alias Collaboration.Contributions.Comment
 
+  def raters(idea) do
+    raw "/ #{idea.raters} #{ngettext "rating", "ratings", idea.raters}"
+  end
+
   def color(idea, value) do
     if idea.my_rating && idea.my_rating >= value,
       do: "text-primary",

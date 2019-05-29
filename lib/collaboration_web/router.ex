@@ -38,7 +38,7 @@ defmodule CollaborationWeb.Router do
 
     get "/", TopicController, :show
     post "/", IdeaController, :create
-    post "/comment", CommentController, :create
+    resources "/comment", CommentController, only: [:index, :create]
     post "/rate", IdeaController, :rate
     delete "/rate/:idea_id", IdeaController, :unrate
 

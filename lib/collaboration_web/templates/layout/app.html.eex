@@ -20,6 +20,7 @@
     <meta name="description" content="A collaboration tool">
     <meta name="author" content="Alexander Fuchsberger">
     <meta name="version" content="<%= version() %>">
+    <meta name="turbolinks-cache-control" content="no-preview">
 
     <%# JS files %>
     <%= render LayoutView, "google_analytics.js" %>
@@ -29,7 +30,7 @@
     </script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
-  <body data-js-view-name="<%= js_view_name(@conn) %>">
+  <body data-js-view-name="<%= js_view_name(@conn) %>" data-reload-in="2000">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
       <div class="container">
         <ul class="navbar-nav mr-auto">

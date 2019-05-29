@@ -1,7 +1,7 @@
 <div id="idea<%= @idea.id %>" class="card">
   <div class="card-body">
     <%= if @user.id != @idea.user_id do %>
-    <div class="ratings-wrapper lead d-flex flex-wrap justify-content-between">
+    <div class="d-flex flex-wrap justify-content-between">
       <div class="star-rating" style="display:none;">
         <%=
           if @idea.my_rating do
@@ -24,24 +24,24 @@
         <% end %>
       </div>
 
-      <%= if @idea.raters > 0 do %>
-        <div class="rating" title="Overall Rating" data-toggle="tooltip">
-          <i class='fas fa-star'></i>
-          <strong><%= @idea.rating %></strong>
-          <small>/ <%= @idea.raters %> Raters</small>
-        </div>
-      <% else %>
-        No Ratings yet.
-      <% end %>
+      <div class="lead rating" title="Overall Rating" data-toggle="tooltip">
+        <i class='fas fa-star'></i>
+        <%= if @idea.raters > 0 do %>
+            <strong><%= @idea.rating %></strong>
+            <small><%= raters(@idea) %></small>
+        <% else %>
+          <small>no ratings yet</small>
+        <% end %>
+      </div>
 
-
-      <div class="user-rating pointer" title="My Rating" data-toggle="tooltip">
-        <i class='fas fa-star<%= if @idea.my_rating do " text-primary" end %>'></i>
-        <strong><%= @idea.my_rating %></strong>
-        <small
-          class='text-primary'
-          style='<%= if @idea.my_rating do "display:none;" end %>'
-        >Rate</small>
+      <div class="lead user-rating pointer" title="My Rating" data-toggle="tooltip">
+        <%= if @idea.my_rating do %>
+          <i class='fas fa-star text-primary'></i>
+          <strong><%= @idea.my_rating %></strong>
+        <% else %>
+          <i class='fas fa-star text-secondary'></i>
+          <small class='text-primary'>Rate</small>
+        <% end %>
       </div>
     </div>
     <hr class="mt-1 mb-2">

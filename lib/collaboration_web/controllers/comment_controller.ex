@@ -3,7 +3,9 @@ defmodule CollaborationWeb.CommentController do
 
   import Collaboration.Contributions
 
-  alias Collaboration.Contributions.{Idea, Rating}
+  def index(conn, _params) do
+    redirect conn, to: Routes.topic_path(conn, :show)
+  end
 
   def create(conn, %{"comment" => comment_params}) do
     case create_comment(current_user(conn), comment_params) do
