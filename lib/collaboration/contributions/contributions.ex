@@ -85,8 +85,6 @@ defmodule Collaboration.Contributions do
       next_bot_like_in
     )
 
-    IO.inspect reload_in
-
     # load normal ideas with associated comments
     comments_query = where_condition_matches(from(c in Comment, preload: [ :likes, :user ]), user)
 
@@ -102,14 +100,16 @@ defmodule Collaboration.Contributions do
       |> add_bot_to_user_comments(user)
       |> add_past_likes(bot_likes)
 
+    # determine next idea to be posted
+
     {reload_in, ideas}
   end
 
   defp add_bot_to_user_comments(ideas, user) do
 
     # get bot-to-user response ids and comments
-    i_rids = idea_response_ids(user.condition)
-    c_rids = comment_response_ids(user.condition)
+    i_rids = idea_response_ids(user)
+    c_rids = comment_response_ids(user)
     bot_comments = get_bot_to_user_comments(user)
 
     # get the id's of the first two user_ideas
@@ -274,30 +274,22 @@ defmodule Collaboration.Contributions do
   end
 
   # bot-to-user comment_ids on ideas
-  def idea_response_ids(condition) do
-    case condition do
-      3 -> [24]
-      4 -> [25]
-      7 -> [26, 36]
-      8 -> [27, 37]
-      _ -> []
-    end
+  def idea_response_ids(user) do
+    :collaboration
+    |> Application.fetch_env!(:idea_response_ids)
+    |> Map.get(user.condition, [])
   end
 
   # bot-to-user comment_ids on comments
-  def comment_response_ids(condition) do
-    case condition do
-      3 -> [28]
-      4 -> [29]
-      7 -> [30, 32, 34]
-      8 -> [31, 33, 35]
-      _ -> []
-    end
+  def comment_response_ids(user) do
+    :collaboration
+    |> Application.fetch_env!(:comment_response_ids)
+    |> Map.get(user.condition, [])
   end
 
   def get_bot_likes(user) do
     Application.fetch_env!(:collaboration, :delayed_likes)
-    |> Map.get(user.condition)
+    |> Map.get(user.condition, [])
     |> Enum.map(fn { comment_id, delay } -> [comment_id, remaining(user.inserted_at) + delay] end)
   end
 
