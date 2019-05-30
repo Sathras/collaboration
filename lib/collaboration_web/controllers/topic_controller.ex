@@ -5,8 +5,6 @@ defmodule CollaborationWeb.TopicController do
 
   alias Collaboration.Contributions.{Topic, Idea, Rating}
 
-  @minTime Application.fetch_env!(:collaboration, :minTime)
-
   @doc """
   Function plug that adds the currently published topic to the conn or displays a flash error.
   """
@@ -77,11 +75,7 @@ defmodule CollaborationWeb.TopicController do
 
     topic = current_topic(conn)
     user = current_user(conn)
-    reload_in = max(0, - NaiveDateTime.diff(
-      NaiveDateTime.utc_now(),
-      NaiveDateTime.add(user.inserted_at, @minTime),
-      :milliseconds
-    ))
+    {reload_in, ideas} = load_ideas(topic, user)
 
     merge_assigns(conn,
       topic: topic,
@@ -89,7 +83,7 @@ defmodule CollaborationWeb.TopicController do
       idea_changeset: change_idea(%Idea{}),
       rating_changeset: change_rating(%Rating{}),
       reload_in: reload_in,
-      ideas: load_ideas(topic, user)
+      ideas: ideas
     )
   end
 end

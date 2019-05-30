@@ -189,5 +189,9 @@ Complete Remade of the Application. Working Features:
 currently being written. Preserves scroll position and does not flicker on reload.
 * added plural support for rating / ratings
 * if an idea currently does not have your rating and can be rated, the user-star is greyed out instead of blue.
+* removed spinner and socket/channel system
+* fixed some timing issues in condition 7 and 8
+* gzip static resources for faster page load (now > 400 msec including all assets)
+
 
 

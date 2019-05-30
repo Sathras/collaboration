@@ -56,9 +56,6 @@ export default class View extends MainView {
       console.log(`reloading in ${reload_in/1000} seconds...`)
       setTimeout(() => { if(!this.focus) this.reload() }, reload_in)
     }
-
-    // Disable Spinner
-    $('#spinner-wrapper').hide()
   }
 
   unmount() {

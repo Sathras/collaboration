@@ -13,6 +13,7 @@ config :collaboration,
   survey_link: "https://usf.az1.qualtrics.com/jfe/form/SV_cUdM8cbGDj6tnvf",
 
   # bot likes comments after a specified delay
+  # make sure they are ordered with lowest delay first
   # Example: 5 => [{12, 530}, {13, 180}]
   # a user in condition 5 will observe a like for comment #12 after 530 seconds,
   # and another one for comment #13 after 180 seconds since start of experiment.
@@ -21,8 +22,8 @@ config :collaboration,
     2 => [],
     3 => [],
     4 => [],
-    5 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
-    6 => [{  1, 530 }, {  2, 180 }, {  6, 90 }],
-    7 => [{ 12, 530 }, { 13, 180 }, { 18, 90 }],
-    8 => [{  1, 530 }, {  2, 180 }, {  6, 90 }]
+    5 => [{ 18, 90 }, { 13, 180 }, { 12, 530 }],
+    6 => [{  6, 90 }, {  2, 180 }, {  1, 530 }],
+    7 => [{ 18, 90 }, { 13, 180 }, { 12, 530 }],
+    8 => [{  6, 90 }, {  2, 180 }, {  1, 530 }]
   }

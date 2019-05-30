@@ -4,13 +4,15 @@ defmodule Collaboration.Contributions do
   """
   import Ecto.Changeset
   import Ecto.Query, warn: false
-  import Collaboration.Accounts, only: [condition: 1, time_passed: 1]
+  import Collaboration.Accounts, only: [condition: 1]
 
   alias Phoenix.View
   alias Collaboration.Repo
   alias Collaboration.Accounts.User
   alias Collaboration.Contributions.{ Topic, Idea, Comment, Like, Rating }
   alias CollaborationWeb.{ IdeaView, CommentView }
+
+  @minTime Application.fetch_env!(:collaboration, :minTime)
 
   # TOPICS
 
@@ -60,19 +62,47 @@ defmodule Collaboration.Contributions do
   """
   def load_ideas(topic, user) do
 
+    # load delayed likes and set reload_in accordingly
+    bot_likes = get_bot_likes(user)
+
+    next_bot_like_in =
+      bot_likes
+        |> Enum.map(fn x -> List.last(x) end)
+        |> Enum.filter(fn x -> x > 0 end)
+        |> List.first()
+    next_bot_like_in =
+      case next_bot_like_in do
+        nil -> 0
+        time -> time * 1000
+      end
+
+    reload_in = min(
+      max(0, - NaiveDateTime.diff(
+        NaiveDateTime.utc_now(),
+        NaiveDateTime.add(user.inserted_at, @minTime),
+        :millisecond
+      )),
+      next_bot_like_in
+    )
+
+    IO.inspect reload_in
+
     # load normal ideas with associated comments
     comments_query = where_condition_matches(from(c in Comment, preload: [ :likes, :user ]), user)
 
-    ideas = from(i in Idea,
-      preload: [ :ratings, :user, comments: ^comments_query ],
-      where: [topic_id: ^topic.id]
-    )
-    |> where_condition_matches(user)
-    |> Repo.all()
-    |> View.render_many(IdeaView, "idea.json", user: user)
-    |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
-    |> add_bot_to_user_comments(user)
-    |> add_past_likes(user)
+    ideas =
+      from(i in Idea,
+        preload: [ :ratings, :user, comments: ^comments_query ],
+        where: [topic_id: ^topic.id]
+      )
+      |> where_condition_matches(user)
+      |> Repo.all()
+      |> View.render_many(IdeaView, "idea.json", user: user)
+      |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
+      |> add_bot_to_user_comments(user)
+      |> add_past_likes(bot_likes)
+
+    {reload_in, ideas}
   end
 
   defp add_bot_to_user_comments(ideas, user) do
@@ -135,10 +165,11 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  defp add_past_likes(ideas, user) do
-    past_liked_comment_ids = get_delayed_likes(user)
-    |> Enum.filter(fn [ _comment_id, delay] -> delay <= 0 end)
-    |> Enum.map(fn [ comment_id, _delay ] -> comment_id end)
+  defp add_past_likes(ideas, bot_likes) do
+    past_liked_comment_ids =
+      bot_likes
+      |> Enum.filter(fn [ _comment_id, delay] -> delay <= 0 end)
+      |> Enum.map(fn [ comment_id, _delay ] -> comment_id end)
 
     Enum.map ideas, fn i ->
       comments = Enum.map(i.comments, fn c ->
@@ -264,16 +295,15 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  def get_delayed_likes(user) do
+  def get_bot_likes(user) do
     Application.fetch_env!(:collaboration, :delayed_likes)
     |> Map.get(user.condition)
-    |> Enum.map(fn { comment_id, delay } ->
-      [ comment_id, remaining(user.inserted_at) + delay ]
-    end)
+    |> Enum.map(fn { comment_id, delay } -> [comment_id, remaining(user.inserted_at) + delay] end)
   end
 
   def get_future_likes(user) do
-    get_delayed_likes(user)
+    user
+    |> get_bot_likes()
     |> Enum.filter(fn [ _comment_id, delay] -> delay > 0 end)
   end
 
@@ -300,11 +330,13 @@ defmodule Collaboration.Contributions do
     adds delay to a NaiveDatetime and then compares to current time
   remaining(date1, date2)
     compares two NaiveDatetimes (date2 is by default now)
+
+  Example: remaining(user.inserted_at, 100), experiment was started 60 seconds ago.
+  Result: 40 (x-60+100 - x)
   """
-  def remaining(date1, date2 \\ NaiveDateTime.utc_now())
-  def remaining(date1, delay) when is_number(delay),
-    do: remaining(NaiveDateTime.add(date1, delay))
-  def remaining(date1, date2), do: NaiveDateTime.diff(date1, date2)
+  def remaining(date, date2 \\ NaiveDateTime.utc_now())
+  def remaining(date, delay) when is_number(delay), do: remaining(NaiveDateTime.add(date, delay))
+  def remaining(date, date2), do: NaiveDateTime.diff(date, date2)
 
   def render_idea(i, user) do
     View.render_to_string( IdeaView, "idea.html", idea: i, user: user )

@@ -13,8 +13,7 @@ config :collaboration,
 # Configures the endpoint
 config :collaboration, CollaborationWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base:
-    "Rm2mIp4+FjNMBwPx9+pnMZ8AAEE4/diJQZ0NSBqZlE3BAo2+0rV7cDNmlrEbt9KO",
+  secret_key_base: "Rm2mIp4+FjNMBwPx9+pnMZ8AAEE4/diJQZ0NSBqZlE3BAo2+0rV7cDNmlrEbt9KO",
   render_errors: [view: CollaborationWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Collaboration.PubSub, adapter: Phoenix.PubSub.PG2]
 
