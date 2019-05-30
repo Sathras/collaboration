@@ -24,13 +24,6 @@ defmodule CollaborationWeb.CommentView do
       else: false
     likes = if liked, do: c.fake_likes + 1, else: c.fake_likes
 
-    # if user was not preloaded check if id matches current user
-    user = cond do
-      Ecto.assoc_loaded?(c.user) -> c.user.name
-      c.user_id == u.id -> u.name
-      true -> "Unknown"
-    end
-
     %{
       id: c.id,
       inserted_at: inserted_at,
@@ -40,7 +33,7 @@ defmodule CollaborationWeb.CommentView do
       likes: likes,
       idea_id: c.idea_id,
       user_id: c.user_id,
-      user: user
+      user: c.user.name
     }
   end
 end

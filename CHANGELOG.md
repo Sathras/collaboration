@@ -192,6 +192,7 @@ currently being written. Preserves scroll position and does not flicker on reloa
 * removed spinner and socket/channel system
 * fixed some timing issues in condition 7 and 8
 * gzip static resources for faster page load (now > 400 msec including all assets)
+* page will now correctly reload when a new bot-comment has been published
 
 
 

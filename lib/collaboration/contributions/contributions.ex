@@ -57,8 +57,7 @@ defmodule Collaboration.Contributions do
   # IDEAS
 
   @doc """
-  Loads all pre- and user-generated ideas with comments
-  and those that are bot-generated and already published
+  Loads all pre- and user-generated ideas with comments and add relevant bot-generated comments
   """
   def load_ideas(topic, user) do
 
@@ -95,74 +94,18 @@ defmodule Collaboration.Contributions do
       )
       |> where_condition_matches(user)
       |> Repo.all()
-      |> View.render_many(IdeaView, "idea.json", user: user)
+      |> View.render_many(IdeaView, "idea.json", user: user, bot_comments: get_bot_comments(user))
       |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
-      |> add_bot_to_user_comments(user)
       |> add_past_likes(bot_likes)
 
-    # determine next idea to be posted
+    reload_in2 =
+      ideas
+      |> Enum.map(fn i -> i.reload_in end)
+      |> Enum.min()
+
+    reload_in = min(reload_in, reload_in2)
 
     {reload_in, ideas}
-  end
-
-  defp add_bot_to_user_comments(ideas, user) do
-
-    # get bot-to-user response ids and comments
-    i_rids = idea_response_ids(user)
-    c_rids = comment_response_ids(user)
-    bot_comments = get_bot_to_user_comments(user)
-
-    # get the id's of the first two user_ideas
-    i_uids = ideas
-      |> Enum.filter(fn i -> i.user_id == user.id end)
-      |> Enum.map(fn i -> i.id end)
-      |> Enum.sort()
-      |> Enum.slice(0, Enum.count(i_rids))
-
-    Enum.map ideas, fn i ->
-      # add bot-to-user comment on posting ideas
-      i = case Enum.find_index(i_uids, fn x -> x == i.id end) do
-        nil -> i
-        index ->
-          cid = Enum.at(i_rids, index)
-          case Enum.find(bot_comments, fn c -> c.id == cid end) do
-            nil -> i
-            c ->
-              inserted_at = NaiveDateTime.add(i.inserted_at, c.delay)
-              c = Map.put(c, :inserted_at, inserted_at)
-              Map.put(i, :comments, i.comments ++ [c])
-          end
-      end
-
-      # get the id's of the first three user_comments
-      c_uids = ideas
-      |> Enum.map(fn i ->
-          Enum.filter(i.comments, fn c -> c.user_id == user.id end)
-          |> Enum.map(fn c -> c.id end)
-        end)
-      |> Enum.flat_map(fn c -> c end)
-      |> Enum.sort()
-      |> Enum.slice(0, Enum.count(c_rids))
-
-      # add bot-to-user comment on posting comment
-      comments = Enum.map(c_uids, fn id ->
-        index = Enum.find_index(c_uids, fn x -> x == id end)
-        cid = Enum.at(c_rids, index)
-
-        case { Enum.find(i.comments, fn c -> c.id == id end), Enum.find(bot_comments, fn c -> c.id == cid end)} do
-          { nil, _ } -> nil
-          { _, nil } -> nil
-          { c, feedback } ->
-            inserted_at = NaiveDateTime.add(c.inserted_at, feedback.delay)
-            Map.put(feedback, :inserted_at, inserted_at)
-        end
-      end)
-      |> Enum.reject(fn x -> x == nil end)
-      |> Enum.concat(i.comments)
-      |> Enum.sort_by(&(&1.inserted_at))
-
-      Map.put(i, :comments, comments)
-    end
   end
 
   defp add_past_likes(ideas, bot_likes) do
@@ -224,33 +167,17 @@ defmodule Collaboration.Contributions do
 
   def comment_changeset, do: Comment.changeset(%Comment{})
 
-  # gets the two oldest user_ids
-  def get_user_comment_ids(user) do
-    from(c in Comment,
-      select: c.idea_id,
-      where: c.user_id == ^user.id,
-      order_by: c.inserted_at,
-      limit: 3
-    ) |> Repo.all()
-  end
+  # get bot-to-user comments
+  def get_bot_comments(user) do
 
-  # get bot-to-user comments (they do not have an idea_id attached)
-  def get_bot_to_user_comments(user) do
-    from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id))
-    |> Repo.all()
-    |> View.render_many(CommentView, "comment.json", user: user)
-  end
+    # find all bot-to-user comments (they do not have an idea_id attached)
+    bot_comments =
+      Repo.all(from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id)))
 
-  def load_comment(comment, user) when is_number(comment) do
-    from(c in Comment, preload: [:likes, :user])
-    |> Repo.get(comment)
-    |> View.render_one(CommentView, "comment.json", user: user)
-  end
-
-  def load_comment(comment, user) when is_map(comment) do
-    comment
-    |> Repo.preload([:likes, :user ])
-    |> View.render_one(CommentView, "comment.json", user: user)
+    # select the ones that match the list of comment responses in the settings file
+    user
+    |> comment_response_ids()
+    |> Enum.map(fn id -> Enum.find(bot_comments, fn c -> c.id == id end) end)
   end
 
   def create_comment(%User{} = user, attrs \\ %{}) do

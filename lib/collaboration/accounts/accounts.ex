@@ -3,6 +3,7 @@ defmodule Collaboration.Accounts do
   import Ecto.Query
 
   alias Collaboration.Accounts.User
+  alias Collaboration.Contributions.{Comment, Idea}
   alias Collaboration.Repo
 
   # returns the condition of a user as an atom
@@ -23,7 +24,16 @@ defmodule Collaboration.Accounts do
   end
 
   def get_user(id) do
-    from(u in User, preload: [ :credential ])
+    #TODO: remove hardcoded limit (used for getting the first few comments to match bot-to-user)
+    ideas_query = from(i in Idea, select: i.id, order_by: i.inserted_at, limit: 2)
+    comments_query = from(c in Comment, select: c.id, order_by: c.inserted_at, limit: 3)
+
+    from(u in User,
+      preload: [
+        :credential,
+        comments: ^comments_query,
+        ideas: ^ideas_query,
+      ])
     |> Repo.get(id)
   end
 

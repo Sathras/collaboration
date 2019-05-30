@@ -31,7 +31,7 @@ config :collaboration,
     8 => [27, 37]
   },
 
-  commment_response_ids: %{
+  comment_response_ids: %{
     3 => [28],
     4 => [29],
     7 => [30, 32, 34],

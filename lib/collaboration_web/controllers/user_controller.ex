@@ -23,7 +23,6 @@ defmodule CollaborationWeb.UserController do
         |> redirect(to: Routes.topic_path(conn, :show))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect changeset
         render conn, "new.html", changeset: changeset
     end
   end
