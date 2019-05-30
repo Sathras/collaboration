@@ -250,21 +250,31 @@ defmodule Collaboration.Seeder do
       c5: 540, c7: 540
     }, i8, u6
 
-    # bot-to-user comments
-    comment %{ c3: 60, text: "that’s crazy!" }, u1 # 24
-    comment %{ c3: 60, text: "What did I just read?" }, u3 # 25
-    comment %{ c4: 60, text: "Bingo!" }, u6 # 26
-    comment %{ c4: 60, text: "100% agree" }, u7 # 27
-    comment %{ c7: 60, text: "you just won the worst idea award!" }, u3 # 28
-    comment %{ c7: 60, text: "NOPE NOPE NOPE" }, u2 # 29
-    comment %{ c7: 60, text: "This is just dumb" }, u4 # 30
-    comment %{ c7: 60, text: "Feels bad man" }, u5 # 31
-    comment %{ c7: 60, text: "Doesn’t make sense!" }, u1 # 32
-    comment %{ c8: 60, text: "Added points for that idea!" }, u8 # 33
-    comment %{ c8: 60, text: "hire this dude!" }, u10 # 34
-    comment %{ c8: 60, text: "Sounds interesting!" }, u9 # 35
-    comment %{ c8: 60, text: "well said" }, u6 # 36
-    comment %{ c8: 60, text: "I like this!" }, u7 # 37
+    # BOT-TO-USER COMMENTS
+
+    # reponses to when the user posts his first idea.
+    comment %{ c3: 40, text: "that’s crazy!" }, u1 # 24
+    comment %{ c4: 40, text: "Bingo!" }, u6 # 25
+    comment %{ c7: 40, text: "you just won the worst idea award!" }, u3 # 26
+    comment %{ c8: 40, text: "Added points for that idea!" }, u8 # 27
+
+    # responses to when the user posts his first comment.
+    comment %{ c3: 120, text: "What did I just read?" }, u3 # 28
+    comment %{ c4: 120, text: "100% agree" }, u7 # 29
+    comment %{ c7: 120, text: "This is just dumb" }, u4 # 30
+    comment %{ c8: 120, text: "Sounds interesting!" }, u9 # 31
+
+    # responses to when the user posts his second comment.
+    comment %{ c7: 200, text: "Feels bad man" }, u5 # 32
+    comment %{ c8: 200, text: "hire this dude!" }, u10 # 33
+
+    # responses to when the user posts his third comment.
+    comment %{ c7: 220, text: "Doesn’t make sense!" }, u1 # 34
+    comment %{ c8: 220, text: "well said" }, u6 # 35
+
+    # responses to when the user posts his second idea.
+    comment %{ c7: 400, text: "NOPE NOPE NOPE" }, u2 # 36
+    comment %{ c8: 400, text: "I like this!" }, u7 # 37
   end
 
   # all users created here will be peer users / admins

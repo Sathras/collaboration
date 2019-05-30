@@ -4,10 +4,14 @@ import 'bootstrap'
 
 export default class MainView {
 
+  safeScrollPos(){
+    localStorage.setItem('scroll-pos', $(window).scrollTop())
+  }
+
   // reload page preserving scroll position and preventing the creation of a new history entry
   // https://github.com/turbolinks/turbolinks/issues/329#issuecomment-341699031
   reload() {
-    localStorage.setItem('scroll-pos', $(window).scrollTop());
+    this.safeScrollPos()
     Turbolinks.visit(window.location, { action: 'replace' })
   }
 
@@ -30,40 +34,8 @@ export default class MainView {
       trigger: 'hover'
     });
 
+    // enable timeago
     $('time').timeago();
-
-    // enable base tinyMCE instance
-    // tinymce.init({
-    //   mode: 'none',
-    //   branding: false,
-    //   menubar: false,
-    //   statusbar: false,
-    //   toolbar: `styleselect forecolor | indent outdent | hr | bullist numlist | link unlink | image table | preview code_toggle fullscreen`,
-    //   plugins: `hr link lists image fullscreen preview textcolor table`,
-    //   external_plugins: {
-    //     // code_toggle: '/js/utils/tinymce-ace-editor.js'
-    //   },
-    //   style_formats: [
-    //     {
-    //       title: 'Image Left',
-    //       selector: 'img',
-    //       styles: {
-    //         float: 'left',
-    //         margin: '0 10px 0 10px'
-    //       }
-    //     },
-    //     {
-    //       title: 'Image Right',
-    //       selector: 'img',
-    //       styles: {
-    //         float: 'right',
-    //         margin: '0 0 10px 10px'
-    //       },
-    //       theme: 'modern'
-    //     }
-    //   ],
-    //   style_formats_merge: true
-    // });
 
     // enable form validation removal on change for all bootstrap input fields
     $('body').on('keyup', '.form-control', (e) => {
@@ -75,8 +47,6 @@ export default class MainView {
 
   unmount() {
     // This will be executed when the document unloads...
-
-    clearInterval(this.timer);
     $('body').off();
   }
 }

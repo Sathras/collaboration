@@ -21,15 +21,6 @@ defmodule CollaborationWeb.TopicController do
     end
   end
 
-  # # controller serves as plug to add published topic to conn.assigns
-  # def init(opts), do: opts
-
-  # def call(conn, _opts) do
-  #   conn
-
-  # end
-  # # End: Plug code
-
   def index(conn, _) do
     render conn, "index.html", topics: list_topics()
   end
@@ -98,7 +89,7 @@ defmodule CollaborationWeb.TopicController do
       idea_changeset: change_idea(%Idea{}),
       rating_changeset: change_rating(%Rating{}),
       reload_in: reload_in,
-      ideas: load_past_ideas(topic.id, current_user(conn))
+      ideas: load_ideas(topic, user)
     )
   end
 end

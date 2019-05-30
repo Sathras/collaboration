@@ -54,32 +54,28 @@ defmodule Collaboration.Contributions do
 
   # IDEAS
 
-  def count_ideas(user_id) do
-    from(i in Idea, where: i.user_id == ^user_id)
-    |> Repo.aggregate(:count, :id)
-  end
-
   @doc """
   Loads all pre- and user-generated ideas with comments
   and those that are bot-generated and already published
   """
-  def load_past_ideas(topic_id, user) do
-    comments_query = from(c in Comment, preload: [ :likes, :user ])
-    |> get_past(user)
+  def load_ideas(topic, user) do
 
-    from(i in Idea,
+    # load normal ideas with associated comments
+    comments_query = where_condition_matches(from(c in Comment, preload: [ :likes, :user ]), user)
+
+    ideas = from(i in Idea,
       preload: [ :ratings, :user, comments: ^comments_query ],
-      where: [topic_id: ^topic_id]
+      where: [topic_id: ^topic.id]
     )
-    |> get_past(user)
+    |> where_condition_matches(user)
     |> Repo.all()
     |> View.render_many(IdeaView, "idea.json", user: user)
     |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
-    |> add_past_bot_to_user_comments(user)
+    |> add_bot_to_user_comments(user)
     |> add_past_likes(user)
   end
 
-  defp add_past_bot_to_user_comments(ideas, user) do
+  defp add_bot_to_user_comments(ideas, user) do
 
     # get bot-to-user response ids and comments
     i_rids = idea_response_ids(user.condition)
@@ -94,22 +90,17 @@ defmodule Collaboration.Contributions do
       |> Enum.slice(0, Enum.count(i_rids))
 
     Enum.map ideas, fn i ->
-      # potentially add bot-to-user comment on posting idea
+      # add bot-to-user comment on posting ideas
       i = case Enum.find_index(i_uids, fn x -> x == i.id end) do
         nil -> i
         index ->
           cid = Enum.at(i_rids, index)
-          case Enum.find(bot_comments, fn c -> c.id == cid and
-            not future(i.inserted_at) end) do
+          case Enum.find(bot_comments, fn c -> c.id == cid end) do
             nil -> i
             c ->
               inserted_at = NaiveDateTime.add(i.inserted_at, c.delay)
-              if remaining(inserted_at) <= 0 do
-                c = Map.put(c, :inserted_at, inserted_at)
-                Map.put(i, :comments, i.comments ++ [c])
-              else
-                i
-              end
+              c = Map.put(c, :inserted_at, inserted_at)
+              Map.put(i, :comments, i.comments ++ [c])
           end
       end
 
@@ -123,7 +114,7 @@ defmodule Collaboration.Contributions do
       |> Enum.sort()
       |> Enum.slice(0, Enum.count(c_rids))
 
-      # potentially add bot-to-user comment on posting comment
+      # add bot-to-user comment on posting comment
       comments = Enum.map(c_uids, fn id ->
         index = Enum.find_index(c_uids, fn x -> x == id end)
         cid = Enum.at(c_rids, index)
@@ -133,11 +124,7 @@ defmodule Collaboration.Contributions do
           { _, nil } -> nil
           { c, feedback } ->
             inserted_at = NaiveDateTime.add(c.inserted_at, feedback.delay)
-            if remaining(inserted_at) <= 0 do
-              Map.put(feedback, :inserted_at, inserted_at)
-            else
-              nil
-            end
+            Map.put(feedback, :inserted_at, inserted_at)
         end
       end)
       |> Enum.reject(fn x -> x == nil end)
@@ -163,61 +150,15 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  @doc """
-  Loads bot-generated ideas that have not yet been published
-  """
-  def load_future_ideas(topic_id, user) do
-    from(i in Idea, preload: [:ratings, :user], where: [topic_id: ^topic_id] )
-    |> get_future(user)
-    |> Repo.all()
-    |> View.render_many(IdeaView, "idea.json", user: user)
-    |> Enum.map(fn i -> [ remaining(i.inserted_at), render_idea(i, user) ] end)
-  end
-
-  def load_idea(idea_id, user) do
-    from(i in Idea, preload: [:ratings, :user ])
-    |> Repo.get(idea_id)
-    |> View.render_many(IdeaView, "idea.json", user: user)
-  end
-
-  def get_inserted_at(idea_id) do
-    from(i in Idea, select: i.inserted_at)
-    |> Repo.get(idea_id)
-  end
-
-  # select only ideas/comments that have already been published
-  defp get_past(changeset, user) do
+  defp where_condition_matches(changeset, user) do
     if user.condition > 0 do
-      # normal users: show ideas for condition that should be posted by now
+      # normal users: show elements that are present in condition of user or user elements
       where changeset, [i],
-        field(i, ^condition(user)) <= ^time_passed(user) or i.user_id == ^user.id
+        field(i, ^condition(user)) != 0 or i.user_id == ^user.id
     else
       # admins: show all peer and own ideas
       where changeset, [i], i.user_id <= 11
     end
-  end
-
-  # select only ideas that have not been posted yet
-  defp get_future(changeset, user) do
-    if user.condition > 0 do
-      where changeset, [i], field(i, ^condition(user)) > ^time_passed(user)
-    else
-      changeset
-    end
-  end
-
-  # gets the two oldest user_ids
-  def get_user_idea_ids(topic_id, user) do
-    from(i in Idea,
-      select: {i.id, i.inserted_at},
-      where: i.topic_id == ^topic_id and i.user_id == ^user.id,
-      order_by: i.inserted_at,
-      limit: 2
-    )
-    |> Repo.all()
-    |> Enum.map(fn {id, inserted_at} ->
-        { id, NaiveDateTime.diff(inserted_at, NaiveDateTime.utc_now())}
-      end)
   end
 
   def create_idea(%User{} = user, %Topic{} = topic, attrs \\ %{}) do
@@ -250,9 +191,7 @@ defmodule Collaboration.Contributions do
     |> Repo.delete()
   end
 
-  def comment_changeset() do
-    Comment.changeset(%Comment{})
-  end
+  def comment_changeset, do: Comment.changeset(%Comment{})
 
   # gets the two oldest user_ids
   def get_user_comment_ids(user) do
@@ -269,18 +208,6 @@ defmodule Collaboration.Contributions do
     from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id))
     |> Repo.all()
     |> View.render_many(CommentView, "comment.json", user: user)
-  end
-
-  def get_bot_to_bot_comments(user) do
-    from(c in Comment, preload: [:likes, :user], where: not is_nil(c.idea_id))
-    |> get_future(user)
-    |> Repo.all()
-    |> View.render_many(CommentView, "comment.json", user: user)
-    |> Enum.map(fn c -> [
-        c.idea_id,
-        render_comment(c, user),
-        remaining(c.inserted_at)
-      ] end)
   end
 
   def load_comment(comment, user) when is_number(comment) do
@@ -319,9 +246,9 @@ defmodule Collaboration.Contributions do
   def idea_response_ids(condition) do
     case condition do
       3 -> [24]
-      4 -> [26]
-      7 -> [28, 29]
-      8 -> [33, 34]
+      4 -> [25]
+      7 -> [26, 36]
+      8 -> [27, 37]
       _ -> []
     end
   end
@@ -329,10 +256,10 @@ defmodule Collaboration.Contributions do
   # bot-to-user comment_ids on comments
   def comment_response_ids(condition) do
     case condition do
-      3 -> [25]
-      4 -> [27]
-      7 -> [30, 31, 32]
-      8 -> [35, 36, 37]
+      3 -> [28]
+      4 -> [29]
+      7 -> [30, 32, 34]
+      8 -> [31, 33, 35]
       _ -> []
     end
   end
