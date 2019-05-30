@@ -9,6 +9,9 @@ config :collaboration,
   # suggested experiment time [sec]
   minTime: 10 * 60,
 
+  # default reaction time [sec]
+  reaction_time: 60,
+
   # survey link after completing / aborting the experiment
   survey_link: "https://usf.az1.qualtrics.com/jfe/form/SV_cUdM8cbGDj6tnvf",
 

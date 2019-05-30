@@ -3,6 +3,8 @@ defmodule CollaborationWeb.IdeaView do
 
   alias Collaboration.Contributions.Comment
 
+  @reaction_time Application.fetch_env!(:collaboration, :reaction_time)
+
   def raters(idea) do
     raw "/ #{idea.raters} #{ngettext "rating", "ratings", idea.raters}"
   end
@@ -66,7 +68,6 @@ defmodule CollaborationWeb.IdeaView do
 
   def render("idea.json", %{ idea: i, user: u, bot_comments: bot_comments }) do
 
-
     inserted_at = if u.condition == 0 || i.user_id == u.id,
       do: i.inserted_at,
       else: NaiveDateTime.add(u.inserted_at, Map.get(i, condition(u)))
@@ -77,14 +78,34 @@ defmodule CollaborationWeb.IdeaView do
 
     { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
 
-    comments =
-      # add relevant bot comments
+    # add relevant bot-to-idea comment
+    bot_to_idea_comments =
+      if Enum.member?(u.ideas, i.id) do
+        comment = Enum.fetch!(bot_comments, Enum.find_index(u.ideas, fn x -> x == i.id end))
+        [Map.put(comment, :inserted_at, NaiveDateTime.add(i.inserted_at, @reaction_time))]
+      else
+        []
+      end
+
+    bot_to_comment_comments =
       i.comments
       |> Enum.filter(fn c -> Enum.member?(u.comments, c.id) end)
-      |> Enum.map(fn c -> Enum.find_index(u.comments, fn x -> x == c.id end) end)
-      |> Enum.map(fn i -> Enum.fetch!(bot_comments, i) end)
-      # and existing comments for current idea
-      |> Enum.concat(i.comments)
+      |> Enum.map(fn c -> {
+          Enum.find_index(u.comments, fn x -> x == c.id end),
+          NaiveDateTime.add(c.inserted_at, 60)}
+        end)
+      |> Enum.map(fn {i, inserted_at} ->
+          bot_comments
+          |> Enum.fetch!(i)
+          |> Map.put(:inserted_at, inserted_at)
+        end)
+    IO.inspect bot_to_comment_comments
+
+    comments =
+      # add relevant bot-to-comment comments
+      i.comments
+      |> Enum.concat(bot_to_idea_comments)
+      |> Enum.concat(bot_to_comment_comments)
       |> View.render_many(CommentView, "comment.json", user: u)
       |> Enum.sort_by(fn(c) -> c.inserted_at end)
 
