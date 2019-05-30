@@ -22,31 +22,3 @@ export function configTimeago() {
     numbers: []
   };
 }
-
-export function debug(text) {
-  if(window.debug) console.log(text)
-}
-
-// export function toggleMCE(editorId) {
-//   if (tinymce.get(editorId)) {
-//     tinymce.EditorManager.execCommand('mceFocus', false, editorId);
-//     tinymce.EditorManager.execCommand('mceRemoveEditor', true, editorId);
-//   } else {
-//     tinymce.EditorManager.execCommand('mceAddEditor', false, editorId);
-//   }
-// }
-
-// EXPOSE GLOBAL FUNCTIONS
-
-window.unrate = ( id ) => {
-  if($(`#idea${id} .user-rating strong`).text() != ''){
-    const elm = `#idea${id} .raters strong`
-    let raters = parseInt($(elm).text())
-    $(elm).text(raters-1)
-  }
-
-  $(`#idea${id} .star-rating input`).removeAttr('checked');
-  $(`#idea${id} .user-rating strong`).text('');
-  $(`#idea${id} .user-rating small`).show();
-  $(`#idea${id} .user-rating`).siblings().toggle();
-}

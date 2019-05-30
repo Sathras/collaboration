@@ -43,11 +43,6 @@ defmodule CollaborationWeb.LayoutView do
     end
   end
 
-  def debug() do
-    if Mix.env == :dev, do: "window.debug = true;\n"
-  end
-
-
   @doc """
   Returns the Google Analytics code for the current env defined in the config.
   """
@@ -83,6 +78,8 @@ defmodule CollaborationWeb.LayoutView do
     content_tag(:li, link(text, to: to, class: "nav-link text-light"),
       class: "nav-item #{active}")
   end
+
+  def reload_in(conn), do: Map.get(conn.assigns, :reload_in, 0)
 
   def render_flash(conn) do
     Enum.map(get_flash(conn), fn { type, msg } ->

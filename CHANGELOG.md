@@ -187,5 +187,7 @@ Complete Remade of the Application. Working Features:
 * Topic is now always put into conn. If no topic is published, experiment registration will be disabled.
 * added a reload mechansim that is more robust and auto-updates the page if no idea or comment is
 currently being written. Preserves scroll position and does not flicker on reload.
+* added plural support for rating / ratings
+* if an idea currently does not have your rating and can be rated, the user-star is greyed out instead of blue.
 
 

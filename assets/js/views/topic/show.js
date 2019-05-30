@@ -26,11 +26,11 @@ export default class View extends MainView {
       if(condition > 0){
 
         const rtext = (remaining > 0) ? ` and will finish in ${remaining} seconds` : ``
-        debug(`Experiment started ${started} seconds ago${rtext}. User condition: ${condition}`)
+        // debug(`Experiment started ${started} seconds ago${rtext}. User condition: ${condition}`)
 
         // enable "finish" button, if experiment is done
         setTimeout(() => {
-          debug(`Experiment Timer ran out. Enabling finish button.`)
+          // debug(`Experiment Timer ran out. Enabling finish button.`)
           $('#timer').addClass('d-none')
           $('#btn-complete').removeClass('d-none')
         }, Math.max(0, remaining * 1000))

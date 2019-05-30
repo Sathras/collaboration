@@ -24,13 +24,10 @@
 
     <%# JS files %>
     <%= render LayoutView, "google_analytics.js" %>
-    <script>
-      <%= debug() %>
-      window.userToken = "<%= assigns[:user_token] %>";
-    </script>
+    <script> window.userToken = "<%= assigns[:user_token] %>"; </script>
     <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
-  <body data-js-view-name="<%= js_view_name(@conn) %>" data-reload-in="2000">
+  <body data-js-view-name="<%= js_view_name(@conn) %>" data-reload-in="<%= reload_in(@conn) %>">
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
       <div class="container">
         <ul class="navbar-nav mr-auto">
