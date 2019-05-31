@@ -49,13 +49,11 @@ defmodule CollaborationWeb.Auth do
     cond do
       current_user(conn) ->
         conn
-      current_path(conn) == "/" ->
-        conn
-        |> redirect(to: Routes.user_path(conn, :new))
       true ->
         conn
         |> put_flash(:error, "You must be logged in to access that page")
         |> redirect(to: Routes.user_path(conn, :new))
+        |> halt()
     end
   end
 
