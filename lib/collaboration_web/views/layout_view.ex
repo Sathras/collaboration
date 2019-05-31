@@ -9,7 +9,7 @@ defmodule CollaborationWeb.LayoutView do
   @minTime Application.fetch_env!(:collaboration, :minTime)
 
   def button_abort(conn) do
-    link raw("<i class=\"fas fa-power-off\"></i> Abort"),
+    button raw("<i class=\"fas fa-power-off\"></i> Abort"),
       class: "btn btn-danger ml-2",
       to: Routes.session_path(conn, :delete, completed: false),
       data_confirm: "Are you sure? You will not be able to continue on your contributions and you will not receive any payout!",
@@ -26,7 +26,7 @@ defmodule CollaborationWeb.LayoutView do
   end
 
   def button_logout(conn) do
-    link content_tag(:i, "", class: "fas fa-power-off"),
+    button content_tag(:i, "", class: "fas fa-power-off"),
       to: Routes.session_path(conn, :delete),
       class: "nav-link text-light",
       data_toggle: "tooltip",

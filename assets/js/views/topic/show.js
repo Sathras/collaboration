@@ -13,12 +13,9 @@ export default class View extends MainView {
     const elm = $(e.target)
 
     if(e.which == 13 && !e.shiftKey){
-
       elm.val(elm.val().slice(0, -1))
       elm.parent().submit()
-
     } else {
-      // elm.removeClass('is-invalid')
       e.target.style.height = '30px';
       e.target.style.height = e.target.scrollHeight + 'px';
     }
@@ -51,11 +48,7 @@ export default class View extends MainView {
     // reload page after server-determined amount of milliseconds.
     // reload only, if not currently focusing on a textarea.
     const reload_in = $('body').data('reload-in')
-
-    if(reload_in > 0){
-      console.log(`reloading in ${reload_in/1000} seconds...`)
-      setTimeout(() => { if(!this.focus) this.reload() }, reload_in)
-    }
+    if(reload_in > 0) setTimeout(() => { if(!this.focus) this.reload() }, 5 * 1000)
   }
 
   unmount() {

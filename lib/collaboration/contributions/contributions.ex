@@ -63,6 +63,7 @@ defmodule Collaboration.Contributions do
 
     # load delayed likes and set reload_in accordingly
     bot_likes = get_bot_likes(user)
+    bot_ratings = get_bot_ratings(user)
 
     next_bot_like_in =
       bot_likes
@@ -72,17 +73,19 @@ defmodule Collaboration.Contributions do
     next_bot_like_in =
       case next_bot_like_in do
         nil -> 0
-        time -> time * 1000
+        time -> time
       end
 
+    # determine if a rating or like is about to happen and decrease timer if so
     reload_in = min(
-      max(0, - NaiveDateTime.diff(
-        NaiveDateTime.utc_now(),
-        NaiveDateTime.add(user.inserted_at, @minTime),
-        :millisecond
-      )),
+      max(0, remaining(user.inserted_at, @minTime)),
       next_bot_like_in
     )
+
+    {_idea_id, delay, _rating } = List.first(bot_ratings)
+    reload_in = if remaining(user.inserted_at, delay) > 0,
+      do: min(reload_in, remaining(user.inserted_at, delay)),
+      else: reload_in
 
     # load normal ideas with associated comments
     comments_query = where_condition_matches(from(c in Comment, preload: [ :likes, :user ]), user)
@@ -94,7 +97,11 @@ defmodule Collaboration.Contributions do
       )
       |> where_condition_matches(user)
       |> Repo.all()
-      |> View.render_many(IdeaView, "idea.json", user: user, bot_comments: get_bot_comments(user))
+      |> View.render_many(IdeaView, "idea.json",
+          user: user,
+          bot_ratings: bot_ratings,
+          responses: get_responses(user)
+        )
       |> Enum.sort_by(&(&1.inserted_at), &>/2) # sort newest first
       |> add_past_likes(bot_likes)
 
@@ -167,17 +174,37 @@ defmodule Collaboration.Contributions do
 
   def comment_changeset, do: Comment.changeset(%Comment{})
 
-  # get bot-to-user comments
-  def get_bot_comments(user) do
-
+  # get relevant bot-to-user comments
+  def get_responses(user) do
     # find all bot-to-user comments (they do not have an idea_id attached)
-    bot_comments =
-      Repo.all(from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id)))
+    comments = Repo.all(from(c in Comment, preload: [ :likes, :user ], where: is_nil(c.idea_id)))
 
     # select the ones that match the list of comment responses in the settings file
-    user
-    |> comment_response_ids()
-    |> Enum.map(fn id -> Enum.find(bot_comments, fn c -> c.id == id end) end)
+    idea_responses =
+      user
+      |> idea_response_ids()
+      |> Enum.map(fn id -> Enum.find(comments, fn c -> c.id == id end) end)
+
+    comment_responses =
+      user
+      |> comment_response_ids()
+      |> Enum.map(fn id -> Enum.find(comments, fn c -> c.id == id end) end)
+
+    { idea_responses, comment_responses }
+  end
+
+  # bot-to-user comment_ids on ideas
+  defp idea_response_ids(user) do
+    :collaboration
+    |> Application.fetch_env!(:idea_response_ids)
+    |> Map.get(user.condition, [])
+  end
+
+  # bot-to-user comment_ids on comments
+  defp comment_response_ids(user) do
+    :collaboration
+    |> Application.fetch_env!(:comment_response_ids)
+    |> Map.get(user.condition, [])
   end
 
   def create_comment(%User{} = user, attrs \\ %{}) do
@@ -200,43 +227,14 @@ defmodule Collaboration.Contributions do
     end
   end
 
-  # bot-to-user comment_ids on ideas
-  def idea_response_ids(user) do
-    :collaboration
-    |> Application.fetch_env!(:idea_response_ids)
-    |> Map.get(user.condition, [])
-  end
-
-  # bot-to-user comment_ids on comments
-  def comment_response_ids(user) do
-    :collaboration
-    |> Application.fetch_env!(:comment_response_ids)
-    |> Map.get(user.condition, [])
-  end
-
   def get_bot_likes(user) do
     Application.fetch_env!(:collaboration, :delayed_likes)
     |> Map.get(user.condition, [])
     |> Enum.map(fn { comment_id, delay } -> [comment_id, remaining(user.inserted_at) + delay] end)
   end
 
-  def get_future_likes(user) do
-    user
-    |> get_bot_likes()
-    |> Enum.filter(fn [ _comment_id, delay] -> delay > 0 end)
-  end
-
-  def get_future_ratings(user) do
-    case user.condition do
-      6 -> [{ 1, 75, 4 }, { 2, 360, 5 }]
-      8 -> [{ 1, 75, 4 }, { 2, 360, 5 }]
-      5 -> [{ 6, 75, 4 }, { 7, 360, 5 }]
-      7 -> [{ 6, 75, 4 }, { 7, 360, 5 }]
-      _ -> []
-    end
-    |> Enum.map(fn { id, delay, rating } ->
-      [ id, max(0, remaining(user.inserted_at) + delay), rating ]
-    end)
+  def get_bot_ratings(user) do
+    Map.get(Application.fetch_env!(:collaboration, :future_ratings), user.condition, [])
   end
 
   @spec future(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()

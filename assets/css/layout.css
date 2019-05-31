@@ -15,10 +15,6 @@ nav.navbar li.active a{
   text-decoration: underline;
 }
 
-div.mce-fullscreen {
-  z-index: 1050;
-}
-
 i[drab-click],
 small[drab-click],
 span[drab-click],

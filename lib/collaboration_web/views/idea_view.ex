@@ -49,11 +49,20 @@ defmodule CollaborationWeb.IdeaView do
   end
 
   # calculates rating for an idea
-  def calc_rating(rating, raters, my_rating, old_rating \\ nil) do
-    all_raters = if my_rating && !old_rating, do: raters + 1, else: raters
+  def calc_rating(rating, raters, my_rating, bot_ratings) do
+
+    # add bot_ratings
+    all_raters = raters + Enum.count(bot_ratings)
+    rating = case all_raters do
+      0 -> nil
+      all_raters -> (rating * raters + Enum.sum(bot_ratings)) / all_raters
+    end
+    raters = raters + Enum.count(bot_ratings)
+
+    # conserider my_rating
+    all_raters = if my_rating, do: raters + 1, else: raters
+
     rating = cond do
-      old_rating ->
-        Float.round((rating * raters + my_rating - old_rating) / all_raters, 2)
       all_raters === 0 ->
         nil
       !my_rating ->
@@ -63,10 +72,11 @@ defmodule CollaborationWeb.IdeaView do
       true ->
         Float.round((rating * raters + my_rating) / all_raters, 2)
     end
+    # IO.inspect {rating, all_raters}
     {rating, all_raters}
   end
 
-  def render("idea.json", %{ idea: i, user: u, bot_comments: bot_comments }) do
+  def render("idea.json", %{idea: i, user: u, bot_ratings: bot_ratings, responses: responses}) do
 
     inserted_at = if u.condition == 0 || i.user_id == u.id,
       do: i.inserted_at,
@@ -76,12 +86,19 @@ defmodule CollaborationWeb.IdeaView do
       do: List.first(i.ratings).rating,
       else: nil
 
-    { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating)
+    bot_ratings = bot_ratings
+    |> Enum.filter(fn {id, _delay, _rating} -> id == i.id end)
+    |> Enum.filter(fn {_id, delay, _rating} -> remaining(u.inserted_at) + delay < 0 end)
+    |> Enum.map(fn {_id, _delay, rating} -> rating end)
+
+    { rating, raters } = calc_rating(i.fake_rating, i.fake_raters, my_rating, bot_ratings)
+
+    { idea_responses, comment_responses } = responses
 
     # add relevant bot-to-idea comment
     bot_to_idea_comments =
       if Enum.member?(u.ideas, i.id) do
-        comment = Enum.fetch!(bot_comments, Enum.find_index(u.ideas, fn x -> x == i.id end))
+        comment = Enum.fetch!(idea_responses, Enum.find_index(u.ideas, fn x -> x == i.id end))
         [Map.put(comment, :inserted_at, NaiveDateTime.add(i.inserted_at, @reaction_time))]
       else
         []
@@ -95,11 +112,10 @@ defmodule CollaborationWeb.IdeaView do
           NaiveDateTime.add(c.inserted_at, 60)}
         end)
       |> Enum.map(fn {i, inserted_at} ->
-          bot_comments
-          |> Enum.fetch!(i)
-          |> Map.put(:inserted_at, inserted_at)
-        end)
-    IO.inspect bot_to_comment_comments
+          comment_responses
+            |> Enum.fetch!(i)
+            |> Map.put(:inserted_at, inserted_at)
+          end)
 
     comments =
       # add relevant bot-to-comment comments
@@ -115,12 +131,7 @@ defmodule CollaborationWeb.IdeaView do
       |> Enum.filter(fn t -> remaining(t) > 0 end)
       |> List.first()
 
-    reload_in =
-      case reload_in do
-        nil -> nil
-        time -> remaining(time) * 1000
-      end
-
+    reload_in = if is_nil(reload_in), do: nil, else: remaining(reload_in)
 
     %{
       id: i.id,

@@ -27,12 +27,6 @@ export default class MainView {
 
     // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
-    $('#nav-topics a').popover({
-      container: 'body',
-      html: true,
-      placement: 'bottom',
-      trigger: 'hover'
-    });
 
     // enable timeago
     $('time').timeago();

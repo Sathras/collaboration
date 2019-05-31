@@ -193,6 +193,7 @@ currently being written. Preserves scroll position and does not flicker on reloa
 * fixed some timing issues in condition 7 and 8
 * gzip static resources for faster page load (now > 400 msec including all assets)
 * page will now correctly reload when a new bot-comment has been published
+* bot-ratings are now properly implemented
 
 
 
