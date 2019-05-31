@@ -9,7 +9,7 @@ defmodule CollaborationWeb.Endpoint do
     Plug.Static,
     at: "/",
     from: :collaboration,
-    gzip: true,
+    gzip: false,
     only: ~w(css fonts images js robots.txt)
   )
 
