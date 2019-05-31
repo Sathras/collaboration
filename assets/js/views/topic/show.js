@@ -48,7 +48,7 @@ export default class View extends MainView {
     // reload page after server-determined amount of milliseconds.
     // reload only, if not currently focusing on a textarea.
     const reload_in = $('body').data('reload-in')
-    if(reload_in > 0) setTimeout(() => { if(!this.focus) this.reload() }, 5 * 1000)
+    if(reload_in > 0) setTimeout(() => { if(!this.focus) this.reload() }, reload_in * 1000)
   }
 
   unmount() {
