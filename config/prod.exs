@@ -32,7 +32,7 @@ config :collaboration, Collaboration.Repo,
 
 config :collaboration,
   ga_code: "UA-119138942-1",                      # Google Analytics Code
-  password: System.get_env("PASSWORD_DEFAULT"),   # admin user password
+  password: System.get_env("PASSWORD_DEFAULT")    # admin user password
 
 # This line appears further down. Do not forget to uncomment it!
 config :phoenix, :serve_endpoints, true
