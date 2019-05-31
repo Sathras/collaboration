@@ -28,7 +28,7 @@ config :collaboration, Collaboration.Repo,
   username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
   database: "collaboration_prod",
-  pool_size: 5
+  pool_size: 10
 
 config :collaboration,
   ga_code: "UA-119138942-1",                      # Google Analytics Code
