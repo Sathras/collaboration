@@ -2,15 +2,17 @@
 
 APP="collaboration"
 
-BUILD_HOST="production"
+BUILD_HOST="fuchsberger.us"
 BUILD_USER="deploy"
 BUILD_AT="/tmp/edeliver/$APP/builds"
 
-# TODO: test if automated, if so delete next 2 lines, otherwise uncomment
-# START_DEPLOY=true
-# CLEAN_DEPLOY=true
+START_DEPLOY=true
+CLEAN_DEPLOY=true
 
-PRODUCTION_HOSTS="production"
+# prevent re-installing node modules; this defaults to "."
+GIT_CLEAN_PATHS="_build rel priv/static"
+
+PRODUCTION_HOSTS="fuchsberger.us"
 PRODUCTION_USER="deploy"
 DELIVER_TO="/home/deploy"
 
@@ -30,6 +32,7 @@ pre_erlang_clean_compile() {
       cd '$BUILD_AT'/assets
       node_modules/.bin/webpack --mode production --silent
     "
+
   status "Running phoenix.digest" # log output prepended with "----->"
     __sync_remote " # runs the commands on the build host
       [ -f ~/.profile ] && source ~/.profile # load profile (optional)
