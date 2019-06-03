@@ -36,8 +36,8 @@ defmodule CollaborationWeb.Router do
   scope "/", CollaborationWeb do
     pipe_through [ :browser, :protected ]
 
-    get "/topic", TopicController, :show
-    post "/topic", IdeaController, :create
+    get "/", TopicController, :show
+    post "/", IdeaController, :create
     resources "/comment", CommentController, only: [:index, :create]
     post "/rate", IdeaController, :rate
     delete "/rate/:idea_id", IdeaController, :unrate
@@ -58,7 +58,7 @@ defmodule CollaborationWeb.Router do
     get "/login", SessionController, :new
     post "/login", SessionController, :create
 
-    get "/", UserController, :new
-    post "/", UserController, :create
+    get "/start", UserController, :new
+    post "/start", UserController, :create
   end
 end
