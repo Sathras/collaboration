@@ -90,6 +90,4 @@ defmodule CollaborationWeb.LayoutView do
       render LayoutView, "flash.html", color: color, icon: icon, message: msg
     end)
   end
-
-  def version(), do: Collaboration.Mixfile.project[:version]
 end
