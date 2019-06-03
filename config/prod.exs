@@ -17,8 +17,7 @@ config :collaboration, CollaborationWeb.Endpoint,
   url: [scheme: "https", host: "collaboration.fuchsberger.us", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
-  code_reloader: false,
-  version: Application.spec(:collaboration, :vsn)
+  code_reloader: false
 
 config :collaboration, CollaborationWeb.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE")

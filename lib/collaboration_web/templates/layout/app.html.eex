@@ -19,7 +19,6 @@
     <title>Idea Nexus</title>
     <meta name="description" content="A collaboration tool">
     <meta name="author" content="Alexander Fuchsberger">
-    <meta name="version" content="<%= version() %>">
     <meta name="turbolinks-cache-control" content="no-preview">
 
     <%# JS files %>
